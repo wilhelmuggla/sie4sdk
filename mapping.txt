@@ -1,0 +1,317 @@
+
+Sie4Sdk   PHP Sie4 SDK and Sie5 conversion package
+
+This file is a part of Sie4Sdk
+
+author    Kjell-Inge Gustafsson, kigkonsult
+copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+link      https://kigkonsult.se
+license   Subject matter of licence is the software Sie4Sdk.
+          The above package, copyright, link and this licence notice shall be
+          included in all copies or substantial portions of the Sie4Sdk.
+
+          Sie4Sdk is free software: you can redistribute it and/or modify
+          it under the terms of the GNU Lesser General Public License as
+          published by the Free Software Foundation, either version 3 of
+          the License, or (at your option) any later version.
+
+          Sie4Sdk is distributed in the hope that it will be useful,
+          but WITHOUT ANY WARRANTY; without even the implied warranty of
+          MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+          GNU Lesser General Public License for more details.
+
+          You should have received a copy of the GNU Lesser General Public License
+          along with Sie4Sdk. If not, see <https://www.gnu.org/licenses/>.
+
+Here is a Sie4  - Sie4 Dto - array mapping scheme.
+All (most) object properties has get-/set-/is<Property>Set methods.
+Array properties has also count-/add<Property) methods.
+To support one-liners, class factory-methods are defined.
+
+You can find usefull constants in the Sie4 Interface.
+
+===============================================================================
+Sie4  label           comment     Sie4Dto property           array element key
+      subField
+===============================================================================
+
+#FLAGGA
+      x                           flagga (default 0)         FLAGGA
+
+#KSUMMA
+      x                           KSUMMA                     KSUMMA
+                      default 0, ingen KSUMMA
+
+===============================================================================
+Sie4  label           comment     Sie4Dto::idDto             array element key
+      subField                    IdDto property
+===============================================================================
+
+#PROGRAM
+      programnamn                 programnamn                PROGRAMNAMN
+      version                     version                    PROGRAMVERSION
+
+#FORMAT
+      PC8             skipped, default 'PC8'
+
+#GEN
+      datum                       getDate                    GENDATUM
+      sign                        genSign                    GENSIGN
+
+#SIETYP
+      typnr           skipped, default '4'
+
+#PROSA
+      text                        prosa                      PROSATEXT
+
+#FTYP
+      Företagstyp                 ftyp                       FORETAGSTYP
+
+#FNR
+      företagsid                  fnrId                      FNRID
+
+#ORGNR
+      orgnr                       orgnr                      ORGNRORGNR
+      förvnr                      multiple                   ORGNRFORNVR
+      verknr          skipped
+
+#BKOD
+      SNI-kod                     bkod                       SNIKOD
+
+#ADRESS                           adress (AdressDto)
+      kontakt                     kontakt                    ADRKONTAKT
+      utdelningsadr               utdelningsadr              UTDELNINGSADR
+      postadr                     postadr                    POSTADR
+      tel                         tel                        TEL
+
+#FNAMN
+      företagsnamn                fnamn                      FNAMN
+
+#RAR                              rarDtos (RarDto[])
+      årsnr                       arsnr                      RARASRNR
+      start                       start                      RARSTART
+      slut                        slut                       RARSLUT
+
+#TAXAR
+      år                          taxar                      TAXYEAR
+
+#OMFATTN
+      datum                       omfattn                    OMFATTNDATUM
+
+#KPTYP
+      typ                         kptyp                      KPTYPE
+
+#VALUTA
+      valutakod                   valutakod                  VALUTAKOD
+
+
+===============================================================================
+Sie4  label           comment     Sie4Dto::accountDtos[]     array element key
+      subField                    AccountDto property
+===============================================================================
+
+#KONTO
+      kontonr                     kontoNr                    KONTONR
+      kontoNamn                   kontoNamn                  KONTONAMN
+
+#KTYP kontonr
+      kontoTyp                    kontoTyp                   KONTOTYP
+
+#ENHET
+      kontonr
+      enhet                       enhet                      KONTOENHET
+
+#SRU  konto           skipped
+      SRU-kod         skipped
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::sruDtos[]         array element key
+      subField                    SruDto property
+===============================================================================
+
+#SRU
+      konto                       kontoNr                    SRUKONTO
+      SRU-kod                     sruKod                     SRUKOD
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::dimDtos[]         array element key
+      subField                    DimDto property
+===============================================================================
+
+#DIM
+      dimensionsnr                dimensionNr               DIMENSIONNR
+      namn                        dimensionsNamn             DIMENSIONNAMN
+
+#UNDERDIM
+      dimensionsnr    skipped
+      namn            skipped
+      superdimension  skipped
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::dimObjektDtos[]   array element key
+      subField                    DimObjektDto property
+===============================================================================
+
+#OBJEKT
+      dimensionsnr                dimensionNr               OBJEKTDIMENSIONNR
+      objektnr                    objektNr                   OBJEKTNR
+      objektnamn                  objektnamn                 OBJEKTNAMN
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::ibDtos[]          array element key
+      subField                    BalansDto property
+===============================================================================
+#IB
+      årsnr                        arsnr                     IBARSNR
+      konto                        kontoNr                   IBKONTONR
+      saldo                        saldo                     IBSALDO
+      kvantitet                    kvantitet                 IBKVANTITET
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::ubDtos[]          array element key
+      subField                    BalansDto property
+===============================================================================
+#UB
+      årsnr                        arsnr                     UBARSNR
+      konto                        kontoNr                   UBKONTONR
+      saldo                        saldo                     UBSALDO
+      kvantitet                    kvantitet                 UBKVANTITET
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::oibDtos[]          array element key
+      subField                    BalansObjektDto property
+===============================================================================
+#OIB
+      årsnr                        arsnr                     OIBARSNR
+      konto                        kontoNr                   OIBKONTONR
+      objektlista                  dimensionNtr              OIBDIMENSIONNR
+                                   objektNr                  OIBOBJEKTNR
+      saldo                        saldo                     OIBSALDO
+      kvantitet                    kvantitet                 OIBKVANTITET
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::iubDtos[]          array element key
+      subField                    BalansObjektDto property
+===============================================================================
+#OUB
+      årsnr                        arsnr                     OUBARSNR
+      konto                        kontoNr                   OUBKONTONR
+      objektlista                  dimensionNtr              OUBDIMENSIONNR
+                                   objektNr                  OUBOBJEKTNR
+      saldo                        saldo                     OUBSALDO
+      kvantitet                    kvantitet                 OUBKVANTITET
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::resDtos[]         array element key
+      subField                    BalansDto property
+===============================================================================
+#RES
+      årsnr                        arsnr                     RESARSNR
+      konto                        kontoNr                   RESKONTONR
+      saldo                        saldo                     RESSALDO
+      kvantitet                    kvantitet                 RESKVANTITET
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::pSaldoDtos[]      array element key
+      subField                    PeriodDto property
+===============================================================================
+#PSALDO
+      årsnr                        arsnr                     PSALDOARSNR
+      konto                        kontoNr                   PSALDOKONTONR
+      period                       period                    PSALDOPERIOD
+      objektlista                  dimensionNtr              PSALDODIMENSIONNR
+                                   objektNr                  PSALDOOBJEKTNR
+      saldo                        saldo                     PSALDOSALDO
+      kvantitet                    kvantitet                 PSALDOKVANTITET
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::pBudgetDtos[]     array element key
+      subField                    PeriodDto property
+===============================================================================
+#PBUDGET
+      årsnr                        arsnr                     PBUDGETARSNR
+      konto                        kontoNr                   PBUDGETKONTONR
+      period                       period                    PBUDGETPERIOD
+      objektlista                  dimensionNtr              PBUDGETDIMENSIONNR
+                                   objektNr                  PBUDGETOBJEKTNR
+      saldo                        saldo                     PBUDGETSALDO
+      kvantitet                    kvantitet                 PBUDGETKVANTITET
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::verDtos[]         array element key
+      subField                    VerDto property
+===============================================================================
+
+#VER
+      serie                       serie                      VERSERIE
+      vernr                       vernr                      VERNR
+      verdatum                    verdatum                   VERDATUM
+      vertext                     vertext                    VERTEXT
+      regdatum                    regdatum                   REGDATUM
+      sign                        sign                       VERSIGN
+
+
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::verDtos[]         array element key
+      subField                    VerDto::transDtos[]
+                                  TransDto property
+===============================================================================
+
+#TRANS
+                                  transType (fix #TRANS)
+      kontonr                     kontoNr                    TRANSKONTONR
+      objektlista                 objektlista
+                      array of DimObjektDto, above           TRANSDIMENSIONNR
+                                                             TRANSOBJEKTNR
+      belopp                      belopp                     TRANSBELOPP
+      transdat                    transdat                   TRANSDAT
+      transtext                   transtext                  TRANSTEXT
+      kvantitet                   kvantitet                  TRANSKVANTITET
+      sign                        sign                       TRANSSIGN
+
+#RTRANS
+                                  transType (fix #RTRANS)
+      kontonr                     kontoNr                    RTRANSKONTONR
+      objektlista                 objektlista
+                      array of DimObjektDto, above           RTRANSDIMENSIONNR
+                                                             RTRANSOBJEKTNR
+      belopp                      belopp                     RTRANSBELOPP
+      transdat                    transdat                   RTRANSDAT
+      transtext                   transtext                  RTRANSTEXT
+      kvantitet                   kvantitet                  RTRANSKVANTITET
+      sign                        sign                       RTRANSSIGN
+
+#BTRANS
+                                  transType (fix #BTRANS)
+      kontonr                     kontoNr                    BTRANSKONTONR
+      objektlista                 objektlista
+                      array of DimObjektDto, above           BTRANSDIMENSIONNR
+                                                             BTRANSOBJEKTNR
+      belopp                      belopp                     BTRANSBELOPP
+      transdat                    transdat                   BTRANSDAT
+      transtext                   transtext                  BTRANSTEXT
+      kvantitet                   kvantitet                  BTRANSKVANTITET
+      sign                        sign                       BTRANSSIGN

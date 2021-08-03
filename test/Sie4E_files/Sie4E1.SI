@@ -1,0 +1,65 @@
+#FLAGGA 0
+#PROGRAM "Försystem3" 3.3
+#FORMAT PC8
+#GEN 20080518
+#SIETYP 4
+#PROSA "Försystem3 3.3"
+#FNR Kalles
+#ORGNR 556334-3689 1
+#FNAMN "Målerifirman Axelsson & Johnsson AB"
+#RAR 0 20080101 20081231
+#VALUTA SEK
+
+#KONTO 1510 "Kundfordringar"
+#KTYP 1510 T
+
+#KONTO 4950 "Förändring av lager av färdiga varor"
+#KTYP 4950 K
+#ENHET 4950 st
+
+#DIM 1 "Avdelning"
+#OBJEKT 1 "0123" "Serviceavdelningen"
+#OBJEKT 1 "0124" "Försäljningsavdelningen"
+#OBJEKT 1 "0125" "Utvecklingsavdelningen"
+#OBJEKT 1 "456" "ITavdelningen"
+
+#DIM 6 "Projekt"
+#OBJEKT 6 "47" "Sie5-projektet"
+
+#DIM 7 "Anställningsnummer"
+
+#IB 0 1930 23780.78
+#UB 0 2440 -2380.39
+#RES 0 3011 -23780.78
+
+#VER "" "" 20080101 "Porto"
+{
+#TRANS 1910 {} -1000.00
+#TRANS 2640 {} 200.00
+#TRANS 6250 {} 800.00
+}
+
+#VER "" "" 20080101 "Div \"om- och tillkostnader\""
+{
+#TRANS 1910 {} -2000.00
+#TRANS 2640 {} 400.00
+#TRANS 6250 {"6" "47"} 1600.00
+}
+
+#VER A 567 20081216 "Kontant lön"
+{
+#TRANS 7010 {"1" "456" "6" "47"} 56700.00
+#TRANS 1910 {} -56700.00
+}
+
+#VER A 568 20081216 "Kontant lön 2"
+{
+#TRANS 7010 {"1" "456" "6" "47"} 56800.00
+#TRANS 1910 {} -56800.00
+}
+
+#VER A 569 20081216 "extra \"=citationtecken" 20081215 "anySign 1"
+{
+#TRANS 7010 {"1" "456" "6" "47"} 56900.00 20081215 "transtext 1" 10 "anySign 2"
+#TRANS 1910 {} -56900.00 20081215 "transtext 2" 10 "anySign 2"
+}
