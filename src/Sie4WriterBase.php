@@ -35,9 +35,11 @@ use Kigkonsult\Sie4Sdk\Dto\BalansDto;
 use Kigkonsult\Sie4Sdk\Dto\BalansObjektDto;
 use Kigkonsult\Sie4Sdk\Dto\DimDto;
 use Kigkonsult\Sie4Sdk\Dto\DimObjektDto;
+use Kigkonsult\Sie4Sdk\Dto\PeriodDto;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 use Kigkonsult\Sie4Sdk\Dto\SruDto;
 use Kigkonsult\Sie4Sdk\Dto\TransDto;
+use Kigkonsult\Sie4Sdk\Dto\UnderDimDto;
 use Kigkonsult\Sie4Sdk\Dto\VerDto;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 use Kigkonsult\Sie5Sdk\Impl\CommonFactory;
@@ -49,12 +51,39 @@ use function sprintf;
 
 abstract class Sie4WriterBase implements Sie4Interface
 {
+    /**
+     * @var string
+     */
     protected static $SIEENTRYFMT1 = '%s %s';
+
+    /**
+     * @var string
+     */
     protected static $SIEENTRYFMT2 = '%s %s %s';
+
+    /**
+     * @var string
+     */
     protected static $SIEENTRYFMT3 = '%s %s %s %s';
+
+    /**
+     * @var string
+     */
     protected static $SIEENTRYFMT4 = '%s %s %s %s %s';
+
+    /**
+     * @var string
+     */
     protected static $SIEENTRYFMT5 = '%s %s %s %s %s %s';
+
+    /**
+     * @var string
+     */
     protected static $SIEENTRYFMT6 = '%s %s %s %s %s %s %s';
+
+    /**
+     * @var string
+     */
     protected static $SIEENTRYFMT7 = '%s %s %s %s %s %s %s %s';
 
     /**
@@ -85,6 +114,7 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * @param mixed ...$args
+     * @return void
      */
     protected function appendKsumma( ...$args )
     {
@@ -105,7 +135,7 @@ abstract class Sie4WriterBase implements Sie4Interface
      * Return instance
      *
      * @param null|Sie4Dto $sie4Dto
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public static function factory( $sie4Dto = null ) : self
@@ -120,6 +150,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #PROGRAM programnamn version
+     *
+     * @return void
      */
     protected function writeProgram() {
         $programnamn = StringUtil::utf8toCP437(
@@ -141,6 +173,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #FORMAT PC8
+     *
+     * @return void
      */
     protected function writeFormat()
     {
@@ -157,6 +191,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #GEN datum sign
+     *
+     * @return void
      */
     protected function writeGen()
     {
@@ -165,7 +201,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         $this->appendKsumma( self::GEN, $datum );
         $sign    = StringUtil::$SP0;
         $genSign = $idDto->getSign();
-        if( $idDto->issignSet() && ( self::PRODUCTNAME != $genSign )) {
+        if( $idDto->isSignSet() && ( self::PRODUCTNAME != $genSign )) {
             $sign = StringUtil::utf8toCP437( $genSign );
             $this->appendKsumma( $sign );
             $sign = StringUtil::quoteString( $sign );
@@ -184,6 +220,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #SIETYP typnr
+     *
+     * @return void
      */
     protected function writeSietyp()
     {
@@ -200,6 +238,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #PROSA
+     *
+     * @return void
      */
     protected function writeProsa()
     {
@@ -208,13 +248,15 @@ abstract class Sie4WriterBase implements Sie4Interface
             $prosa = StringUtil::utf8toCP437( $idDto->getProsa());
             $this->appendKsumma( self::PROSA, $prosa );
             $this->output->append(
-                sprintf( self::$SIEENTRYFMT1, self::PROSA, $prosa )
+                sprintf( self::$SIEENTRYFMT1, self::PROSA, StringUtil::quoteString( $prosa ))
             );
         }
     }
 
     /**
      * #FTYP
+     *
+     * @return void
      */
     protected function writeFtyp()
     {
@@ -230,6 +272,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #FNR företagsid
+     *
+     * @return void
      */
     protected function writeFnr()
     {
@@ -245,6 +289,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #ORGNR orgnr förvnr verknr (förvnr = multiple if not is null|1)
+     *
+     * @return void
      */
     protected function writeOrgnr()
     {
@@ -268,6 +314,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #BKOD SNI-kod, Sie4E only
+     *
+     * @return void
      */
     protected function writeBkod()
     {
@@ -286,6 +334,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #ADRESS kontakt utdelningsadr postadr tel
+     *
+     * @return void
      */
     protected function writeAdress()
     {
@@ -311,6 +361,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #FNAMN företagsnamn
+     *
+     * @return void
      */
     protected function writeFnamn()
     {
@@ -330,6 +382,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #RAR årsnr start slut
+     *
+     * @return void
      */
     protected function writeRar()
     {
@@ -355,6 +409,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #TAXAR år
+     *
+     * @return void
      */
     protected function writeTaxar()
     {
@@ -374,6 +430,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #OMFATTN datum
+     *
+     * @return void
      */
     protected function writeOmfattn()
     {
@@ -393,6 +451,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #KPTYP typ
+     *
+     * @return void
      */
     protected function writeKptyp()
     {
@@ -412,6 +472,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #VALUTA valutakod
+     *
+     * @return void
      */
     protected function writeValuta()
     {
@@ -427,6 +489,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #KONTO/#KTYP/#ENHET
+     *
+     * @return void
      */
     protected function writeKonto()
     {
@@ -445,6 +509,7 @@ abstract class Sie4WriterBase implements Sie4Interface
      * #ENHET kontonr enhet
      *
      * @param AccountDto $accountDto
+     * @return void
      */
     private function writeKontoData( AccountDto $accountDto )
     {
@@ -459,7 +524,7 @@ abstract class Sie4WriterBase implements Sie4Interface
                 StringUtil::quoteString( $kontonamn )
             )
         );
-        $kontotyp = StringUtil::utf8toCP437( $accountDto->getKontoTyp() );
+        $kontotyp = StringUtil::utf8toCP437( $accountDto->getKontoTyp());
         $this->appendKsumma( self::KTYP, $kontoNr, $kontotyp );
         $this->output->append(
             sprintf(
@@ -485,6 +550,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #SRU
+     *
+     * @return void
      */
     protected function writeSRU()
     {
@@ -501,6 +568,7 @@ abstract class Sie4WriterBase implements Sie4Interface
      * #SRU kontoNr sruKod
      *
      * @param SruDto $sruDto
+     * @return void
      */
     private function writeSruData( SruDto $sruDto )
     {
@@ -519,6 +587,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #DIM
+     *
+     * @return void
      */
     protected function writeDim()
     {
@@ -535,6 +605,7 @@ abstract class Sie4WriterBase implements Sie4Interface
      * #DIM dimensionsnr namn
      *
      * @param DimDto $dimDto
+     * @return void
      */
     private function writeDimData( DimDto $dimDto )
     {
@@ -552,7 +623,48 @@ abstract class Sie4WriterBase implements Sie4Interface
     }
 
     /**
+     * #UNDERDIM
+     *
+     * @return void
+     */
+    protected function writeUnderDim()
+    {
+        if( 0 < $this->sie4Dto->countUnderDimDtos()) {
+            // empty row before #UNDERDIMs
+            $this->output->append( StringUtil::$SP0 );
+            foreach( $this->sie4Dto->getUnderDimDtos() as $underDimDto ) {
+                $this->writeUnderDimData( $underDimDto );
+            } // end foreach
+        }
+    }
+
+    /**
+     * #UNDERDIM dimensionsnr namn superdimension
+     *
+     * @param UnderDimDto $underDimDto
+     * @return void
+     */
+    private function writeUnderDimData( UnderDimDto $underDimDto )
+    {
+        $underDimId = $underDimDto->getDimensionNr();
+        $namn       = StringUtil::utf8toCP437( $underDimDto->getDimensionsNamn());
+        $superDimId = $underDimDto->getSuperDimNr();
+        $this->appendKsumma( self::UNDERDIM, $underDimId, $namn, $superDimId );
+        $this->output->append(
+            sprintf(
+                self::$SIEENTRYFMT3,
+                self::UNDERDIM,
+                $underDimId,
+                StringUtil::quoteString( $namn ),
+                $superDimId
+            )
+        );
+    }
+
+    /**
      * #OBJEKT
+     *
+     * @return void
      */
     protected function writeObjekt()
     {
@@ -569,6 +681,7 @@ abstract class Sie4WriterBase implements Sie4Interface
      * #OBJEKT dimensionsnr objektnr objektnamn
      *
      * @param DimObjektDto $dimObjektDto
+     * @return void
      */
     private function writeDimObjectData( DimObjektDto $dimObjektDto )
     {
@@ -589,8 +702,10 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * Managing writing of #IB and #UB
+     *
+     * @return void
      */
-    protected function writeIBUB()
+    protected function writeIbUb()
     {
         if( ! empty( $this->sie4Dto->countIbDtos())) {
             // empty row before #IB
@@ -615,6 +730,7 @@ abstract class Sie4WriterBase implements Sie4Interface
      *
      * @param BalansDto  $balansDto
      * @param string     $label
+     * @return void
      */
     protected function writeBalansDto( BalansDto $balansDto, string $label )
     {
@@ -639,6 +755,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * Managing writing of #OIB and #OUB
+     *
+     * @return void
      */
     protected function writeOibOub()
     {
@@ -659,12 +777,13 @@ abstract class Sie4WriterBase implements Sie4Interface
     }
 
     /**
-     * Writes single #IB/#UB
+     * Writes single #OIB/#OUB
      *
      * #O?B årsnr konto {dimensionsnr objektnr} saldo kvantitet(opt)
      *
      * @param BalansObjektDto  $balansObjektDto
      * @param string     $label
+     * @return void
      */
     protected function writeBalansObjektDto( BalansObjektDto $balansObjektDto, string $label )
     {
@@ -707,6 +826,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #RES
+     *
+     * @return void
      */
     protected function writeRes()
     {
@@ -721,6 +842,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * #PSALDO/PBUDGET
+     *
+     * @return void
      */
     protected function writePsaldoPbudget()
     {
@@ -728,20 +851,72 @@ abstract class Sie4WriterBase implements Sie4Interface
             // empty row before #PSALDOs
             $this->output->append( StringUtil::$SP0 );
             foreach( $this->sie4Dto->getPsaldoDtos() as $pSaldoDto ) {
-                $this->writeBalansObjektDto( $pSaldoDto, self::PSALDO );
+                $this->writePeriodDto( $pSaldoDto, self::PSALDO );
             } // end foreach
         }
         if( 0 < $this->sie4Dto->countPbudgetDtos()) {
             // empty row before #PBUDGETs
             $this->output->append( StringUtil::$SP0 );
             foreach( $this->sie4Dto->getPbudgetDtos() as $pBudgetDto ) {
-                $this->writeBalansObjektDto( $pBudgetDto, self::PBUDGET );
+                $this->writePeriodDto( $pBudgetDto, self::PBUDGET );
             } // end foreach
         }
     }
 
     /**
+     * Writes single #PBUDGET/#PSALDO
+     *
+     * #P? årsnr period konto {dimensionsnr objektnr} saldo kvantitet(opt)
+     *
+     * @param PeriodDto  $periodDto
+     * @param string     $label
+     * @return void
+     */
+    protected function writePeriodDto( PeriodDto $periodDto, string $label )
+    {
+        $arsnr       = $periodDto->getArsnr();
+        $period      = $periodDto->getPeriod();
+        $kontoNr     = $periodDto->getKontoNr();
+        $this->appendKsumma( $label, $arsnr, $period, $kontoNr );
+        $objektLista = StringUtil::$SP0;
+        if( $periodDto->isDimensionsNrSet() && $periodDto->isObjektNrSet()) {
+            $dimensionNr = $periodDto->getDimensionNr() ?? StringUtil::$SP0;
+            $objektNr    = $periodDto->getObjektNr() ?? StringUtil::$SP0;
+            $this->appendKsumma( $dimensionNr, $objektNr );
+            if( empty( $dimensionNr ) && empty( $objektNr )) {
+                $objektLista = StringUtil::curlyBacketsString( StringUtil::$SP0 );
+            }
+            else {
+                $objektLista = StringUtil::curlyBacketsString(
+                    StringUtil::quoteString((string) $dimensionNr ) .
+                    StringUtil::$SP1 .
+                    StringUtil::quoteString( $objektNr )
+                );
+            }
+        }
+        $saldo     = CommonFactory::formatAmount( $periodDto->getSaldo() ?? 0.0 );
+        $kvantitet = $periodDto->getKvantitet() ?? StringUtil::$SP0;
+        $this->appendKsumma( $saldo, $kvantitet );
+        $this->output->append(
+            rtrim(
+                sprintf(
+                    self::$SIEENTRYFMT6,
+                    $label,
+                    $arsnr,
+                    $period,
+                    $kontoNr,
+                    $objektLista,
+                    $saldo,
+                    $kvantitet
+                )
+            )
+        );
+    }
+
+    /**
      * Managing writing of #VER and #TRANS
+     *
+     * @return void
      */
     protected function writeVerDtos()
     {
@@ -761,6 +936,7 @@ abstract class Sie4WriterBase implements Sie4Interface
      * #VER serie vernr verdatum vertext regdatum sign
      *
      * @param VerDto $verDto
+     * @return void
      */
     protected function writeVerDto( VerDto $verDto )
     {
@@ -784,12 +960,11 @@ abstract class Sie4WriterBase implements Sie4Interface
         $datum     = $verDto->isVerdatumSet()
             ? $verDto->getVerdatum()
             : new DateTime();
-        $verdatum = $datum->format( self::SIE4YYYYMMDD );
+        $verdatum  = $datum->format( self::SIE4YYYYMMDD );
         $this->appendKsumma( $verdatum );
 
         if( $verDto->isVertextSet()) {
-            $vertext = $verDto->getVertext();
-            $vertext = StringUtil::utf8toCP437( $vertext );
+            $vertext = StringUtil::utf8toCP437( $verDto->getVertext());
             $this->appendKsumma( $vertext );
             $vertext = StringUtil::quoteString( $vertext );
         }
@@ -812,8 +987,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         }
 
         if( $verDto->isSignSet()) {
-            $sign = $verDto->getSign();
-            $sign = StringUtil::utf8toCP437( $sign );
+            $sign = StringUtil::utf8toCP437( $verDto->getSign());
             $this->appendKsumma( $sign );
             $sign = StringUtil::quoteString( $sign );
         }
@@ -833,7 +1007,6 @@ abstract class Sie4WriterBase implements Sie4Interface
                 $sign
             )
         );
-
         $this->output->append( StringUtil::d2qRtrim( $row ));
 
         $this->output->append( StringUtil::$CURLYBRACKETS[0] );
@@ -852,12 +1025,13 @@ abstract class Sie4WriterBase implements Sie4Interface
      *
      * @param TransDto $transDto
      * @param string $verdatum
+     * @return void
      */
     protected function writeTransDto( TransDto $transDto, string $verdatum )
     {
         $label   = $transDto->getTransType();
         $kontonr = StringUtil::utf8toCP437( $transDto->getKontoNr());
-        $this->appendKsumma( self::TRANS, $kontonr );
+        $this->appendKsumma( $label, $kontonr );
 
         if( 0 < $transDto->countObjektlista()) {
             list( $objektlista, $ksummaPart ) = self::getObjektLista(
@@ -934,7 +1108,7 @@ abstract class Sie4WriterBase implements Sie4Interface
      * Return string with (quoted) dimId and objectId pairs (if set)
      *
      * @param DimObjektDto[] $dimObjektDtos
-     * @return array
+     * @return string[]
      */
     protected static function getObjektLista( array $dimObjektDtos ) : array
     {
@@ -955,6 +1129,8 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * Computes and writes trailing Ksumma
+     *
+     * @return void
      */
     protected function computeAndWriteKsumma()
     {
@@ -971,7 +1147,7 @@ abstract class Sie4WriterBase implements Sie4Interface
 
     /**
      * @param Sie4Dto $sie4Dto
-     * @return static
+     * @return self
      */
     public function setSie4Dto( Sie4Dto $sie4Dto ) : self
     {

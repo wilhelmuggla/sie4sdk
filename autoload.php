@@ -36,24 +36,24 @@ spl_autoload_register(
         static $PATHTEST = null;
         static $TEST     = 'test';
         static $FMT      = '%s%s.php';
-        if( empty( $PATHSRC ) ) {
+        if( empty( $PATHSRC )) {
             $PATHSRC  = __DIR__ . DIRECTORY_SEPARATOR . $SRC . DIRECTORY_SEPARATOR;
             $PATHTEST = __DIR__ . DIRECTORY_SEPARATOR . $TEST . DIRECTORY_SEPARATOR;
         }
-        if( 0 != strncmp( $PREFIX, $class, 19 ) ) {
+        if( 0 != strncmp( $PREFIX, $class, 19 )) {
             return;
         }
         $class = substr( $class, 19 );
-        if( false !== strpos( $class, $BS ) ) {
+        if( false !== strpos( $class, $BS )) {
             $class = str_replace( $BS, DIRECTORY_SEPARATOR, $class );
         }
         $file = sprintf( $FMT, $PATHSRC, $class );
-        if( file_exists( $file ) ) {
+        if( file_exists( $file )) {
             include $file;
         }
         else {
             $file = sprintf( $FMT, $PATHTEST, $class );
-            if( file_exists( $file ) ) {
+            if( file_exists( $file )) {
                 include $file;
             }
         }

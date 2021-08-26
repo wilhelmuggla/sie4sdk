@@ -25,44 +25,41 @@
  *            along with Sie4Sdk. If not, see <https://www.gnu.org/licenses/>.
  */
 declare( strict_types = 1 );
-namespace Kigkonsult\Sie4Sdk\Dto\Traits;
+namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
-trait KvantitetTrait
+use DateTime;
+use Faker;
+use Kigkonsult\Sie4Sdk\Dto\PeriodDto as Dto;
+
+class PeriodDto
 {
     /**
-     * @var float
+     * @param string $kontoNr
+     * @param int $dimensionNr
+     * @param string $objektNr
+     * @return Dto
      */
-    protected $kvantitet = null;
-
-    /**
-     * Return kvantitet
-     *
-     * @return null|float
-     */
-    public function getKvantitet()
+    public static function load( string $kontoNr, int $dimensionNr, string $objektNr )
     {
-        return $this->kvantitet;
-    }
+        $faker = Faker\Factory::create();
 
-    /**
-     * Return bool true if kvantitet is set
-     *
-     * @return bool
-     */
-    public function isKvantitetSet() : bool
-    {
-        return ( null !== $this->kvantitet );
-    }
+        $dto = new Dto();
 
-    /**
-     * Set kvantitet
-     *
-     * @param int|float|string $kvantitet
-     * @return self
-     */
-    public function setKvantitet( $kvantitet ) : self
-    {
-        $this->kvantitet = (float) $kvantitet;
-        return $this;
+        $dto->setArsnr( 0 );
+
+        static $period = null;
+        if( empty( $period )) {
+            $period = ( new DateTime())->modify( '-1 month' )->format( 'Ym' );
+        }
+        $dto->setPeriod( $period );
+
+        $dto->setKontoNr( $kontoNr );
+        $dto->setDimensionNr( $dimensionNr );
+        $dto->setObjektNr( $objektNr );
+
+        $dto->setSaldo( $faker->randomFloat( 2, 1, 999999 ));
+        $dto->setKvantitet( $faker->randomDigitNot( 0 ));
+
+        return $dto;
     }
 }

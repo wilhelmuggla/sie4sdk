@@ -56,7 +56,7 @@ class AdressDto implements DtoInterface
      * @param string $utdelningsadr
      * @param string $postadr
      * @param string $tel
-     * @return static
+     * @return self
      */
     public static function factory(
         string $kontakt,
@@ -92,7 +92,7 @@ class AdressDto implements DtoInterface
 
     /**
      * @param string $kontakt
-     * @return static
+     * @return self
      */
     public function setKontakt( string $kontakt ) : self
     {
@@ -120,7 +120,7 @@ class AdressDto implements DtoInterface
 
     /**
      * @param string $utdelningsadr
-     * @return static
+     * @return self
      */
     public function setUtdelningsadr( string $utdelningsadr ) : self
     {
@@ -148,7 +148,7 @@ class AdressDto implements DtoInterface
 
     /**
      * @param string $postadr
-     * @return static
+     * @return self
      */
     public function setPostadr( string $postadr ) : self
     {
@@ -176,7 +176,7 @@ class AdressDto implements DtoInterface
 
     /**
      * @param string $tel
-     * @return static
+     * @return self
      */
     public function setTel( string $tel ) : self
     {

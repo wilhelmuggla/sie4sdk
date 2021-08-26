@@ -25,44 +25,27 @@
  *            along with Sie4Sdk. If not, see <https://www.gnu.org/licenses/>.
  */
 declare( strict_types = 1 );
-namespace Kigkonsult\Sie4Sdk\Dto\Traits;
+namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
-trait KvantitetTrait
+use Faker;
+use Kigkonsult\Sie4Sdk\Dto\AdressDto as Dto;
+
+class AdressDto
 {
     /**
-     * @var float
+     * @return Dto
      */
-    protected $kvantitet = null;
-
-    /**
-     * Return kvantitet
-     *
-     * @return null|float
-     */
-    public function getKvantitet()
+    public static function load()
     {
-        return $this->kvantitet;
-    }
+        $faker = Faker\Factory::create();
 
-    /**
-     * Return bool true if kvantitet is set
-     *
-     * @return bool
-     */
-    public function isKvantitetSet() : bool
-    {
-        return ( null !== $this->kvantitet );
-    }
+        $dto = new Dto();
 
-    /**
-     * Set kvantitet
-     *
-     * @param int|float|string $kvantitet
-     * @return self
-     */
-    public function setKvantitet( $kvantitet ) : self
-    {
-        $this->kvantitet = (float) $kvantitet;
-        return $this;
+        $dto->setKontakt( $faker->name );
+        $dto->setUtdelningsadr( $faker->streetAddress );
+        $dto->setPostadr( $faker->postcode . ' ' .  $faker->city );
+        $dto->setTel( $faker->phoneNumber );
+
+        return $dto;
     }
 }

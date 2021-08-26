@@ -18,12 +18,14 @@
 #ENHET 4950 st
 
 #DIM 1 "Avdelning"
+#UNDERDIM 21 "Underavdelning" 1
 #OBJEKT 1 "0123" "Serviceavdelningen"
 #OBJEKT 1 "0124" "Försäljningsavdelningen"
 #OBJEKT 1 "0125" "Utvecklingsavdelningen"
 #OBJEKT 1 "456" "ITavdelningen"
 
 #DIM 6 "Projekt"
+#UNDERDIM 62 "IT-projekt" 6
 #OBJEKT 6 "47" "Sie5-projektet"
 
 #DIM 7 "Anställningsnummer"

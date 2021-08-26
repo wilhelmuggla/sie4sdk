@@ -31,6 +31,9 @@ use Kigkonsult\Sie4Sdk\Sie4Interface;
 
 abstract class ArrayBase implements Sie4Interface
 {
+    /**
+     * @var string[][]
+     */
     protected static $TRANSKEYS = [
         self::TRANS => [
             self::TRANSKONTONR     => self::TRANSKONTONR,

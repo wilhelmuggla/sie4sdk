@@ -1,27 +1,27 @@
 
-Sie4Sdk   PHP Sie4 SDK and Sie5 conversion package
+Sie4Ito5   PHP Sie 4I to 5 conversion package
 
-This file is a part of Sie4Sdk
+This file is a part of Sie4SDK
 
 author    Kjell-Inge Gustafsson, kigkonsult
 copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
 link      https://kigkonsult.se
-license   Subject matter of licence is the software Sie4Sdk.
+license   Subject matter of licence is the software Sie4Ito5.
           The above package, copyright, link and this licence notice shall be
-          included in all copies or substantial portions of the Sie4Sdk.
+          included in all copies or substantial portions of the Sie4Ito5.
 
-          Sie4Sdk is free software: you can redistribute it and/or modify
+          Sie4Ito5 is free software: you can redistribute it and/or modify
           it under the terms of the GNU Lesser General Public License as
           published by the Free Software Foundation, either version 3 of
           the License, or (at your option) any later version.
 
-          Sie4Sdk is distributed in the hope that it will be useful,
+          Sie4Ito5 is distributed in the hope that it will be useful,
           but WITHOUT ANY WARRANTY; without even the implied warranty of
           MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
           GNU Lesser General Public License for more details.
 
           You should have received a copy of the GNU Lesser General Public License
-          along with Sie4Sdk. If not, see <https://www.gnu.org/licenses/>.
+          along with Sie4Ito5. If not, see <https://www.gnu.org/licenses/>.
 
 Here is a Sie4  - Sie4 Dto - array mapping scheme.
 All (most) object properties has get-/set-/is<Property>Set methods.
@@ -34,6 +34,12 @@ You can find usefull constants in the Sie4 Interface.
 Sie4  label           comment     Sie4Dto property           array element key
       subField
 ===============================================================================
+
+                      microtime   timestamp                  TIMESTAMP
+                        (true)
+
+                      unique      correlationId              GUID
+                        string
 
 #FLAGGA
       x                           flagga (default 0)         FLAGGA
@@ -121,9 +127,6 @@ Sie4  label           comment     Sie4Dto::accountDtos[]     array element key
       kontonr
       enhet                       enhet                      KONTOENHET
 
-#SRU  konto           skipped
-      SRU-kod         skipped
-
 
 ===============================================================================
 Sie4
@@ -143,13 +146,19 @@ Sie4
 ===============================================================================
 
 #DIM
-      dimensionsnr                dimensionNr               DIMENSIONNR
+      dimensionsnr                dimensionNr                DIMENSIONNR
       namn                        dimensionsNamn             DIMENSIONNAMN
 
+===============================================================================
+Sie4
+      label           comment     Sie4Dto::UnderDimDtos[]    array element key
+      subField                    UnderDimDto property
+===============================================================================
+
 #UNDERDIM
-      dimensionsnr    skipped
-      namn            skipped
-      superdimension  skipped
+      dimensionsnr                dimensionNr                UNDERDIMNR
+      namn                        dimensionsNamn             UNDERDIMNAMN
+      superdimension              superDimNr                 UNDERDIMSUPER
 
 
 ===============================================================================
@@ -159,7 +168,7 @@ Sie4
 ===============================================================================
 
 #OBJEKT
-      dimensionsnr                dimensionNr               OBJEKTDIMENSIONNR
+      dimensionsnr                dimensionNr                OBJEKTDIMENSIONNR
       objektnr                    objektNr                   OBJEKTNR
       objektnamn                  objektnamn                 OBJEKTNAMN
 

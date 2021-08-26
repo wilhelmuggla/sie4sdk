@@ -39,8 +39,8 @@ use Kigkonsult\Sie4Sdk\Dto\RarDto;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 use Kigkonsult\Sie4Sdk\Dto\SruDto;
 use Kigkonsult\Sie4Sdk\Dto\TransDto;
+use Kigkonsult\Sie4Sdk\Dto\UnderDimDto;
 use Kigkonsult\Sie4Sdk\Dto\VerDto;
-use Kigkonsult\Sie4Sdk\Util\ArrayUtil;
 use Kigkonsult\Sie4Sdk\Util\DateTimeUtil;
 
 use function array_keys;
@@ -54,6 +54,9 @@ use function ksort;
  *
  * input format
  * [
+ *     self::TIMESTAMP          => <microtime>
+ *     self::GUID               => <uniqueId>
+ *
  *     self::FLAGGPOST          => <0/1>,
  *
  *     self::PROGRAMNAMN        => <programNamn>,
@@ -94,7 +97,12 @@ use function ksort;
  *
  *     // instance data share the same index
  *     self::DIMENSIONNR        => [ *<dimId> ],
- *     self::OBJEKTID           => [ *<objektId> ],
+ *     self::DIMENSIONNAMN      => [ *<dimNamn> ],
+ *
+ *     // instance data share the same index
+ *     self::UNDERDIMNR         => [ *<underDimId> ],
+ *     self::UNDERDIMNAMN       => [ *<underDimNamn> ],
+ *     self::UNDERDIMSUPER      => [ *<superDimId> ],
  *
  *     // instance data share the same index
  *     self::OBJEKTDIMENSIONNR  => [ *<dimId> ],
@@ -194,7 +202,7 @@ use function ksort;
 class Array2Sie4Dto extends ArrayBase
 {
     /**
-     * @var array
+     * @var mixed[]
      */
     private $input = [];
 
@@ -206,15 +214,21 @@ class Array2Sie4Dto extends ArrayBase
     /**
      * Transform Sie4 array to SieDto, factory method
      *
-     * @param array $input
+     * @param mixed[] $input
      * @return Sie4Dto
      */
     public static function process( array $input ) : Sie4Dto
     {
         $instance          = new self();
-        $instance->input   = ArrayUtil::arrayChangeKeyCaseRecursive( $input );
+        $instance->input   = array_change_key_case( $input, CASE_UPPER );
         $instance->sie4Dto = new Sie4Dto();
 
+        if( isset( $instance->input[self::TIMESTAMP] )) {
+            $instance->sie4Dto->setTimestamp((float) $instance->input[self::TIMESTAMP] );
+        }
+        if( isset( $instance->input[self::GUID] )) {
+            $instance->sie4Dto->setCorrelationId( $instance->input[self::GUID] );
+        }
         if( isset( $instance->input[self::FLAGGPOST] )) {
             $instance->sie4Dto->setFlagga((int) $instance->input[self::FLAGGPOST] );
         }
@@ -223,6 +237,7 @@ class Array2Sie4Dto extends ArrayBase
         $instance->readAccountData();
         $instance->readSruData();
         $instance->readDimData();
+        $instance->readUnderDimData();
         $instance->readDimObjektData();
 
         $instance->readIbData();
@@ -243,6 +258,8 @@ class Array2Sie4Dto extends ArrayBase
 
     /**
      * Process identifikationsposter in order
+     *
+     * @return void
      */
     private function readIdData()
     {
@@ -345,7 +362,7 @@ class Array2Sie4Dto extends ArrayBase
             $idDto->setOrgnr( $this->input[self::ORGNRORGNR] );
         }
         if( isset( $this->input[self::ORGNRFORNVR] )) {
-            $idDto->setMultiple( $this->input[self::ORGNRFORNVR] );
+            $idDto->setMultiple((int) $this->input[self::ORGNRFORNVR] );
         }
 
         /**
@@ -500,6 +517,8 @@ class Array2Sie4Dto extends ArrayBase
      *     self::KONTOENHET => [ *<enhet> ],
      *     ....
      * ]
+     *
+     * @return void
      */
     private function readAccountData()
     {
@@ -531,6 +550,8 @@ class Array2Sie4Dto extends ArrayBase
      *     self::SRUKOD            => [ *<SRU-kod> ],
      *     ....
      * ]
+     *
+     * @return void
      */
     private function readSruData()
     {
@@ -553,9 +574,11 @@ class Array2Sie4Dto extends ArrayBase
      * [
      *     ....
      *     self::DIMENSIONNR    => [ *<dimId> ],
-     *     self::OBJEKTID       => [ *<objektId> ],
+     *     self::DIMENSIONNAMN  => [ *<dimNamn> ],
      *     ....
      * ]
+     *
+     * @return void
      */
     private function readDimData()
     {
@@ -572,6 +595,37 @@ class Array2Sie4Dto extends ArrayBase
     }
 
     /**
+     * Manage Sie4  'Kontoplansuppgifter', #UNDERDIM
+     *
+     * expected as
+     * [
+     *     ....
+     *     self::UNDERDIMNR     => [ *<underDimId> ],
+     *     self::UNDERDIMNAMN   => [ *<underDimNamn> ],
+     *     self::UNDERDIMSUPER  => [ *<superDimId> ],
+     *     ....
+     * ]
+     *
+     * @return void
+     */
+    private function readUnderDimData()
+    {
+        if( isset( $this->input[self::UNDERDIMNR] )) {
+            foreach( array_keys( $this->input[self::UNDERDIMNR] ) as $x ) {
+                $underDimDto = new UnderDimDto();
+                $underDimDto->setDimensionNr( $this->input[self::UNDERDIMNR][$x] );
+                if( isset( $this->input[self::UNDERDIMNAMN][$x] )) {
+                    $underDimDto->setDimensionsNamn( $this->input[self::UNDERDIMNAMN][$x] );
+                }
+                if( isset( $this->input[self::UNDERDIMSUPER][$x] )) {
+                    $underDimDto->setSuperDimNr((int) $this->input[self::UNDERDIMSUPER][$x] );
+                }
+                $this->sie4Dto->addUnderDimDto( $underDimDto );
+            } // end foreach
+        } // end if
+    }
+
+    /**
      * Manage Sie4  'Kontoplansuppgifter', #OBJEKT
      *
      * expected as
@@ -582,6 +636,8 @@ class Array2Sie4Dto extends ArrayBase
      *     self::OBJEKTNAMN        => [ *<objektNamn> ],
      *     ....
      * ]
+     *
+     * @return void
      */
     private function readDimObjektData()
     {
@@ -613,6 +669,8 @@ class Array2Sie4Dto extends ArrayBase
      *     self::IBKVANTITET        => [ *<kvantitet> ];
      *     ....
      * ]
+     *
+     * @return void
      */
     private function readIbData()
     {
@@ -647,6 +705,8 @@ class Array2Sie4Dto extends ArrayBase
      *     self::UBKVANTITET        => [ *<kvantitet> ];
      *     ....
      * ]
+     *
+     * @return void
      */
     private function readUbData()
     {
@@ -683,6 +743,8 @@ class Array2Sie4Dto extends ArrayBase
      *     self::OIBKVANTITET        => [ *<kvantitet> ];
      *     ....
      * ]
+     *
+     * @return void
      */
     private function readOibData()
     {
@@ -725,6 +787,8 @@ class Array2Sie4Dto extends ArrayBase
      *     self::OUBKVANTITET        => [ *<kvantitet> ];
      *     ....
      * ]
+     *
+     * @return void
      */
     private function readOubData()
     {
@@ -765,6 +829,8 @@ class Array2Sie4Dto extends ArrayBase
      *     self::RESKVANTITET        => [ *<kvantitet> ];
      *     ....
      * ]
+     *
+     * @return void
      */
     private function readResData()
     {
@@ -802,6 +868,8 @@ class Array2Sie4Dto extends ArrayBase
      *     self::PSALDOKVANTITET        => [ *<kvantitet> ];
      *     ....
      * ]
+     *
+     * @return void
      */
     private function readPsaldoData()
     {
@@ -848,6 +916,8 @@ class Array2Sie4Dto extends ArrayBase
      *     self::PBUDGETKVANTITET        => [ *<kvantitet> ];
      *     ....
      * ]
+     *
+     * @return void
      */
     private function readPbudgetData()
     {
@@ -895,6 +965,8 @@ class Array2Sie4Dto extends ArrayBase
      *     self::VERSIGN  => [ *<sign> ],
      *     .... // trans below
      * ]
+     *
+     * @return void
      */
     private function readVerTransData()
     {
@@ -961,6 +1033,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @param int    $verX
      * @param VerDto $verDto
+     * @return void
      */
     private function readTransData( int $verX, VerDto $verDto )
     {
@@ -1016,10 +1089,11 @@ class Array2Sie4Dto extends ArrayBase
      * Process single #TRANS/#RTRANS/#BTRANS
      *
      * @param TransDto $transDto
-     * @param array    $keyArr
+     * @param mixed[]  $keyArr
      * @param int      $verX
      * @param int      $transX
      * @param string   $label
+     * @return void
      */
     private function processTransData(
         TransDto $transDto,

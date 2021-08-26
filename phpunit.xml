@@ -2,7 +2,7 @@
 <!--
  Sie4Sdk  PHP Sie4 SDK and Sie5 conversion package
 
- This file is a part of Sie4Ito5
+ This file is a part of Sie4Sdk
 
  author    Kjell-Inge Gustafsson, kigkonsult
  copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
@@ -31,86 +31,82 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         syntaxCheck="false"
-         bootstrap="autoload.php"
-        >
+         bootstrap="autoload.php">
     <testsuites>
+        <testsuite name="Generated Sie4Dto Tests">
+            <file>test/TestGen.php</file>
+        </testsuite>
         <testsuite name="File parse/write Tests">
-            <file>./test/TestDemo.php</file>
-            <file>./test/TestFiles.php</file>
+            <file>test/TestFiles.php</file>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist
-                addUncoveredFilesFromWhitelist='true'
-                processUncoveredFilesFromWhitelist="true">
-            <file>./src/Sie4.php</file>
-            <file>./src/Sie4ELoader.php</file>
-            <file>./src/Sie4EWriter.php</file>
-            <file>./src/Sie4ILoader.php</file>
-            <file>./src/Sie4Interface.php</file>
-            <file>./src/Sie4IWriter.php</file>
-            <file>./src/Sie4Parser.php</file>
-            <file>./src/Sie4Validator.php</file>
-            <file>./src/Sie4WriterBase.php</file>
-            <file>./src/Sie5EntryLoader.php</file>
-            <file>./src/Sie5Loader.php</file>
-            <file>./src/Api/ArrayBase.php</file>
-            <file>./src/Api/Array2Sie4Dto.php</file>
-            <file>./src/Api/Json2Sie4Dto.php</file>
-            <file>./src/Api/Sie4Dto2Array.php</file>
-            <file>./src/Api/Sie4Dto2Json.php</file>
-            <file>./src/Dto/AccountDto.php</file>
-            <file>./src/Dto/AdressDto.php</file>
-            <file>./src/Dto/BalansDto.php</file>
-            <file>./src/Dto/BalansDtoInterface.php</file>
-            <file>./src/Dto/BalansObjektDto.php</file>
-            <file>./src/Dto/BalansObjektDtoInterface.php</file>
-            <file>./src/Dto/DimDto.php</file>
-            <file>./src/Dto/DimObjektDto.php</file>
-            <file>./src/Dto/IdDto.php</file>
-            <file>./src/Dto/Period.php</file>
-            <file>./src/Dto/RarDto.php</file>
-            <file>./src/Dto/Sie4Dto.php</file>
-            <file>./src/Dto/SruDto.php</file>
-            <file>./src/Dto/TransDto.php</file>
-            <file>./src/Dto/VerDto.php</file>
-            <file>./src/Dto/Traits/ArsnrTrait.php</file>
-            <file>./src/Dto/Traits/DimensionNrTrait.php</file>
-            <file>./src/Dto/Traits/KontoNrTrait.php</file>
-            <file>./src/Dto/Traits/KvantitetTrait.php</file>
-            <file>./src/Dto/Traits/ObjektNrTrait.php</file>
-            <file>./src/Dto/Traits/SignTrait.php</file>
-            <file>./src/Util/ArrayUtil.php</file>
-            <file>./src/Util/DateTimeUtil.php</file>
-            <file>./src/Util/FileUtil.php</file>
-            <file>./src/Util/StringUtil.php</file>
-        </whitelist>
-    </filter>
-  <logging>
-      <!-- Remove or comment after your own choice-->
-      <!-- Note, all 'logs' will be saved in 'testDocs' folder -->
-      <log type="coverage-html"
-           target="testDocs/PHPUnitCoverage"
-           lowUpperBound="35"
-           highLowerBound="70"/>
-      <!-- log type="coverage-clover"
-           target="testDocs/coverage.xml"/ -->
-      <!-- log type="coverage-php"
-           target="testDocs/coverage.serialized"/ -->
-      <!-- log type="coverage-text"
-           target="testDocs/PHPUnitReport.txt"
-           showUncoveredFiles="true"/ -->
-      <!-- log type="json"
-           target="testDocs/logfile.json"/ -->
-      <!-- log type="tap"
-           target="testDocs/logfile.tap"/ -->
-      <!-- log type="junit"
-           target="testDocs/logfile.xml"
-           logIncompleteSkipped="false"/ -->
-      <!-- log type="testdox-html"
-           target="testDocs/testdox.html"/ -->
-      <!-- log type="testdox-text"
-           target="testDocs/testdox.txt"/ -->
-  </logging>
+    <coverage includeUncoveredFiles="true"
+              processUncoveredFiles="true"
+              pathCoverage="false"
+              ignoreDeprecatedCodeUnits="false"
+              disableCodeCoverageIgnore="true">
+        <!-- ... -->
+        <include>
+            <directory suffix=".php">src</directory>
+            <file>src/Sie4ELoader.php</file>
+            <file>src/Sie4EWriter.php</file>
+            <file>src/Sie4ILoader.php</file>
+            <file>src/Sie4Interface.php</file>
+            <file>src/Sie4IWriter.php</file>
+            <file>src/Sie4Parser.php</file>
+            <file>src/Sie4Validator.php</file>
+            <file>src/Sie4WriterBase.php</file>
+            <file>src/Sie5EntryLoader.php</file>
+            <file>src/Sie5Loader.php</file>
+            <file>src/Api/ArrayBase.php</file>
+            <file>src/Api/Array2Sie4Dto.php</file>
+            <file>src/Api/Json2Sie4Dto.php</file>
+            <file>src/Api/Sie4Dto2Array.php</file>
+            <file>src/Api/Sie4Dto2Json.php</file>
+            <file>src/Dto/AccountDto.php</file>
+            <file>src/Dto/AdressDto.php</file>
+            <file>src/Dto/BalansDto.php</file>
+            <file>src/Dto/BalansDtoInterface.php</file>
+            <file>src/Dto/BalansObjektDto.php</file>
+            <file>src/Dto/BalansObjektDtoInterface.php</file>
+            <file>src/Dto/DimDto.php</file>
+            <file>src/Dto/DimObjektDto.php</file>
+            <file>src/Dto/IdDto.php</file>
+            <file>src/Dto/Period.php</file>
+            <file>src/Dto/RarDto.php</file>
+            <file>src/Dto/Sie4Dto.php</file>
+            <file>src/Dto/SruDto.php</file>
+            <file>src/Dto/TransDto.php</file>
+            <file>src/Dto/VerDto.php</file>
+            <file>src/Dto/Traits/ArsnrTrait.php</file>
+            <file>src/Dto/Traits/DimensionNrTrait.php</file>
+            <file>src/Dto/Traits/KontoNrTrait.php</file>
+            <file>src/Dto/Traits/KvantitetTrait.php</file>
+            <file>src/Dto/Traits/ObjektNrTrait.php</file>
+            <file>src/Dto/Traits/SignTrait.php</file>
+            <file>src/Util/ArrayUtil.php</file>
+            <file>src/Util/DateTimeUtil.php</file>
+            <file>src/Util/FileUtil.php</file>
+            <file>src/Util/StringUtil.php</file>
+        </include>
+        <!-- Require the PHP Xdebug (2.7.0 or later) and tokenizer extensions-->
+        <!-- Remove or comment after your own choice-->
+        <!-- Note, all output in report/logging will be saved in 'testDocs' folder -->
+        <!-- report>
+            <clover outputFile="testDocs/clover.xml"/>
+            <crap4j outputFile="testDocs/crap4j.xml" threshold="50"/>
+            <html outputDirectory="testDocs/PHPUnitCoverage" lowUpperBound="50" highLowerBound="90"/>
+            <php outputFile="testDocs/coverage.php"/>
+            <text outputFile="testDocs/coverage.txt" showUncoveredFiles="false" showOnlySummary="true"/>
+            <xml outputDirectory="testDocs/xml-coverage"/>
+        </report -->
+    </coverage>
+    <logging>
+        <!-- junit outputFile="testDocs/junit.xml"/ -->
+        <!-- teamcity outputFile="testDocs/teamcity.txt"/ -->
+        <!-- testdoxHtml outputFile="testDocs/testdox.html"/ -->
+        <!-- testdoxText outputFile="testDocs/testdox.txt"/ -->
+        <!-- testdoxXml outputFile="testDocs/testdox.xml"/ -->
+        <text outputFile="testDocs/logfile.txt"/>
+    </logging>
 </phpunit>

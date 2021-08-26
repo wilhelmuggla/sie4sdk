@@ -151,7 +151,7 @@ class IdDto implements DtoInterface
      *
      * @param string $fnrId
      * @param string $orgnr
-     * @return static
+     * @return self
      */
     public static function factory( string $fnrId, string $orgnr ) : self
     {
@@ -175,7 +175,7 @@ class IdDto implements DtoInterface
      * Set programnamn
      *
      * @param string $programnamn
-     * @return static
+     * @return self
      */
     public function setProgramnamn( string $programnamn ) : self
     {
@@ -197,7 +197,7 @@ class IdDto implements DtoInterface
      * Set version
      *
      * @param string $version
-     * @return static
+     * @return self
      */
     public function setVersion( string $version ) : self
     {
@@ -219,7 +219,7 @@ class IdDto implements DtoInterface
      * Set generation date
      *
      * @param DateTime $genDate
-     * @return static
+     * @return self
      */
     public function setGenDate( DateTime $genDate ) : self
     {
@@ -237,7 +237,7 @@ class IdDto implements DtoInterface
 
     /**
      * @param int|string $sieTyp
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public function setSieTyp( $sieTyp ) : self
@@ -267,7 +267,7 @@ class IdDto implements DtoInterface
 
     /**
      * @param string $prosa
-     * @return static
+     * @return self
      */
     public function setProsa( string $prosa ) : self
     {
@@ -295,7 +295,7 @@ class IdDto implements DtoInterface
 
     /**
      * @param string $ftyp
-     * @return static
+     * @return self
      */
     public function setFtyp( string $ftyp ) : self
     {
@@ -327,7 +327,7 @@ class IdDto implements DtoInterface
      * Set fnrId
      *
      * @param string $fnrId
-     * @return static
+     * @return self
      */
     public function setFnrId( string $fnrId ) : self
     {
@@ -359,7 +359,7 @@ class IdDto implements DtoInterface
      * Set orgnr
      *
      * @param string $orgnr
-     * @return static
+     * @return self
      */
     public function setOrgnr( string $orgnr ) : self
     {
@@ -381,7 +381,7 @@ class IdDto implements DtoInterface
      * Set multiple
      *
      * @param int $multiple
-     * @return static
+     * @return self
      */
     public function setMultiple( int $multiple ) : self
     {
@@ -409,7 +409,7 @@ class IdDto implements DtoInterface
 
     /**
      * @param string $bkod
-     * @return static
+     * @return self
      */
     public function setBkod( string $bkod ) : self
     {
@@ -437,7 +437,7 @@ class IdDto implements DtoInterface
 
     /**
      * @param AdressDto $adress
-     * @return static
+     * @return self
      */
     public function setAdress( AdressDto $adress ) : self
     {
@@ -469,7 +469,7 @@ class IdDto implements DtoInterface
      * Set fnamn
      *
      * @param string $fnamn
-     * @return static
+     * @return self
      */
     public function setFnamn( string $fnamn ) : self
     {
@@ -488,7 +488,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return array
+     * @return RarDto[]
      */
     public function getRarDtos() : array
     {
@@ -499,7 +499,7 @@ class IdDto implements DtoInterface
 
     /**
      * @param RarDto $rar
-     * @return static
+     * @return self
      */
     public function addRarDto( RarDto $rar ) : self
     {
@@ -509,10 +509,11 @@ class IdDto implements DtoInterface
 
     /**
      * @param RarDto[] $rarDtos
-     * @return static
+     * @return self
      */
     public function setRarDtos( array $rarDtos ) : self
     {
+        $this->rarDtos = [];
         foreach( $rarDtos as $rarDto ) {
             $this->addRarDto( $rarDto );
         }
@@ -539,7 +540,7 @@ class IdDto implements DtoInterface
 
     /**
      * @param int|string $taxar
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public function setTaxar( $taxar ) : self
@@ -569,7 +570,7 @@ class IdDto implements DtoInterface
 
     /**
      * @param DateTime $omfattn
-     * @return static
+     * @return self
      */
     public function setOmfattn( DateTime $omfattn ) : self
     {
@@ -597,7 +598,7 @@ class IdDto implements DtoInterface
 
     /**
      * @param string $kptyp
-     * @return static
+     * @return self
      */
     public function setKptyp( string $kptyp ) : self
     {
@@ -629,7 +630,7 @@ class IdDto implements DtoInterface
      * Set valutakod
      *
      * @param string $valutakod
-     * @return static
+     * @return self
      */
     public function setValutakod( string $valutakod ) : self
     {

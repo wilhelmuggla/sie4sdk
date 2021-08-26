@@ -78,7 +78,7 @@ class Sie5EntryLoader implements Sie4Interface
 
     /**
      * @param null|Sie4Dto $sie4IDto
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public static function factory( $sie4IDto = null ): self
@@ -145,15 +145,31 @@ class Sie5EntryLoader implements Sie4Interface
      * Process Sie4 idDto into SieEntry
      *
      * genSign logic also used in processVerDtos
+     *
+     * @return void
      */
     private function processIdDto()
     {
         $idDto    = $this->sie4IDto->getIdDto();
         $fileInfo = $this->sieEntry->getFileInfo();
+        $name     = $idDto->getProgramnamn();
+        $version  = $idDto->getVersion();
+        switch( true ) {
+            case ( empty( $name ) || ( self::PRODUCTNAME == $name )) :
+                $name    = SoftwareProductType::PRODUCTNAME;
+                $version = SoftwareProductType::PRODUCTVERSION;
+                break;
+            case ( false !== strpos( $name, self::PRODUCTNAME )) :
+                $name    = trim( str_replace( self::PRODUCTNAME, StringUtil::$SP0, $name ));
+                $version = trim( str_replace( self::PRODUCTVERSION, StringUtil::$SP0, $version ));
+                break;
+            default :
+                break;
+        } // end switch
         $fileInfo->setSoftwareProduct(
             SoftwareProductType::factoryNameVersion(
-                $idDto->getProgramnamn(),
-                $idDto->getVersion()
+                $name,
+                $version
             )
         );
 
@@ -188,6 +204,8 @@ class Sie5EntryLoader implements Sie4Interface
 
     /**
      * Process Sie4 accountDtos into SieEntry
+     *
+     * @return void
      */
     private function processAccountDtos()
     {
@@ -204,7 +222,7 @@ class Sie5EntryLoader implements Sie4Interface
             $accountTypeEntry = AccountTypeEntry::factoryIdNameType(
                 $accountDto->getKontoNr(),
                 $accountDto->getKontoNamn(),
-                AccountDto::getKontoType( $accountDto->getKontoTyp())
+                AccountDto::getKontoType( $accountDto->getKontoTyp(), false )
             );
             if( $accountDto->isEnhetSet()) {
                 $accountTypeEntry->setUnit( $accountDto->getEnhet());
@@ -215,6 +233,8 @@ class Sie5EntryLoader implements Sie4Interface
 
     /**
      * Process Sie4 dimDtos into SieEntry
+     *
+     * @return void
      */
     private function processDimDtos()
     {
@@ -237,6 +257,8 @@ class Sie5EntryLoader implements Sie4Interface
 
     /**
      * Process Sie4 dimObjektDtos into SieEntry
+     *
+     * @return void
      */
     private function processDimObjektDtos()
     {
@@ -290,6 +312,8 @@ class Sie5EntryLoader implements Sie4Interface
 
     /**
      * Process Sie4 verDtos into SieEntry
+     *
+     * @return void
      */
     private function processVerDtos()
     {
@@ -327,7 +351,7 @@ class Sie5EntryLoader implements Sie4Interface
                     $journalTypeEntryFound = true;
                     break;
                 }
-                if( 0 === strcmp((string) $serie, (string) $journalTypeEntryId )) {
+                if( 0 === strcmp( $serie, (string) $journalTypeEntryId )) {
                     $journalTypeEntryFound = true;
                     break;
                 }
@@ -355,6 +379,7 @@ class Sie5EntryLoader implements Sie4Interface
      * @param VerDto                $verDto
      * @param JournalEntryTypeEntry $journalEntryTypeEntry
      * @param string $genSign
+     * @return void
      */
     private static function processSingleVerDto(
         VerDto $verDto,
@@ -397,7 +422,8 @@ class Sie5EntryLoader implements Sie4Interface
     /**
      * @param TransDto             $transDto
      * @param LedgerEntryTypeEntry $ledgerEntryTypeEntry
-     * @param string               $verDatum SIE4YYYYMMDD
+     * @param string               $verDatum    SIE4YYYYMMDD
+     * @return void
      */
     private static function processSingleTransDto(
         TransDto $transDto,
@@ -443,12 +469,11 @@ class Sie5EntryLoader implements Sie4Interface
 
     /**
      * @param Sie4Dto $sie4IDto
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public function setSie4IDto( Sie4Dto $sie4IDto ) : self
     {
-        Sie4Validator::assertSie4IDto( $sie4IDto );
         $this->sie4IDto = $sie4IDto;
         return $this;
     }

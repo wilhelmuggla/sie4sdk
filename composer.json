@@ -27,7 +27,7 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/iCalcreator/sie4ito5/issues"
+        "issues": "https://github.com/iCalcreator/sie4Sdk/issues"
     },
     "funding": [
         {
@@ -37,7 +37,7 @@
     ],
     "autoload": {
         "files": ["autoload.php"],
-        "psr-4": { "Kigkonsult\\Sie4Ito5\\": ["src/"] }
+        "psr-4": { "Kigkonsult\\Sie4Sdk\\": ["src/"] }
     },
     "require": {
         "ext-iconv": "*",
@@ -47,6 +47,7 @@
         "kigkonsult/sie5sdk": ">=1.0.6"
     },
     "require-dev": {
+        "fzaninotto/faker": ">=v1.9.2",
         "phpunit/phpunit": ">=6.1.0",
         "phpcompatibility/php-compatibility": ">=9.3.5",
         "phpstan/phpstan": ">=0.9.3",

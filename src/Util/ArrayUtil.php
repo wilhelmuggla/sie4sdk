@@ -27,17 +27,17 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Util;
 
-use function array_change_key_case;
-use function array_map;
 use function array_pad;
-use function is_array;
 use function count;
 
 class ArrayUtil
 {
     /**
-     * @param array  $array
-     * @param string|array $key
+     * Assure array has keyed (array) elements
+     *
+     * @param mixed[]  $array
+     * @param string|string[] $key
+     * @return void
      */
     public static function assureIsArray( array & $array, $key )
     {
@@ -49,8 +49,11 @@ class ArrayUtil
     }
 
     /**
-     * @param array  $array
-     * @param int    $length
+     * Assure array has a number of elements
+     *
+     * @param string[]  $array
+     * @param int       $length
+     * @return void
      */
     public static function assureArrayLength( array & $array, int $length )
     {
@@ -60,29 +63,10 @@ class ArrayUtil
     }
 
     /**
-     * Recursive array_change_key_case, uppercased
+     * Add trailing eol to each array element
      *
-     * @param array $array
-     * @return array|array[]
-     * @link https://www.php.net/manual/en/function.array-change-key-case.php#114914
-     */
-    public static function arrayChangeKeyCaseRecursive( array $array ) : array
-    {
-        return array_map( function( $item ) {
-            if( is_array( $item )) {
-                $item = self::arrayChangeKeyCaseRecursive( $item );
-            }
-            return $item;
-        },
-            array_change_key_case( $array, CASE_UPPER )
-        );
-    }
-
-    /**
-     * Add end eol to each array element
-     *
-     * @param array $array
-     * @return array
+     * @param string[] $array
+     * @return string[]
      */
     public static function eolEndElements( array $array ) : array
     {

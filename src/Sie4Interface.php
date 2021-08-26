@@ -30,6 +30,15 @@ namespace Kigkonsult\Sie4Sdk;
 Interface Sie4Interface
 {
     /**
+     * Product constants
+     */
+    const PRODUCTNAME              = 'Kigkonsult\Sie4Sdk';
+    const PRODUCTVERSION           = '1.4.5';
+
+    const TIMESTAMP                = 'TIMESTAMP';
+    const GUID                     = 'GUID';
+
+    /**
      * Flaggpost
      */
 
@@ -39,12 +48,6 @@ Interface Sie4Interface
      */
     const FLAGGA                   = '#FLAGGA';
     const FLAGGPOST                = 'FLAGGA';
-
-    /**
-     * Product constants
-     */
-    const PRODUCTNAME              = 'Kigkonsult\Sie4Sdk';
-    const PRODUCTVERSION           = '1.4';
 
     /**
      * Constants for Sie4 labels and sub-labels values
@@ -236,9 +239,12 @@ Interface Sie4Interface
 
      /**
       * Underdimension
-      * valfri, ignoreras
+      * valfri
       */
     const UNDERDIM                 = '#UNDERDIM';
+    const UNDERDIMNR               = 'UNDERDIMNR';
+    const UNDERDIMNAMN             = 'UNDERDIMNAMN';
+    const UNDERDIMSUPER            = 'UNDERDIMSUPER';
 
      /**
       * Objekt

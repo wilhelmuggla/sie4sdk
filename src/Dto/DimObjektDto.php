@@ -47,6 +47,11 @@ class DimObjektDto extends DimDto
     private $objektNamn = null;
 
     /**
+     * @var string[]
+     */
+    public static $SORTER = [ DimObjektDto::class, 'dimObjektSorter' ];
+
+    /**
      * Sort DimObjektDto[] on dimensionsnr
      *
      * @override
@@ -68,7 +73,7 @@ class DimObjektDto extends DimDto
      * @param int|string $dimensionsNr
      * @param int|string $objektNr
      * @param null|string $objektNamn
-     * @return static
+     * @return self
      */
     public static function factoryDimObject( $dimensionsNr, $objektNr, $objektNamn = null ) : self
     {
@@ -105,7 +110,7 @@ class DimObjektDto extends DimDto
      * Set objektNamn
      *
      * @param string $objektNamn
-     * @return static
+     * @return self
      */
     public function setObjektNamn( string $objektNamn ) : self
     {

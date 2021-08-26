@@ -53,11 +53,11 @@ class AccountDto implements DtoInterface
     /**
      * Return Sie5 kontoTyp for Sie4 kontoTyp and v.v., false if not found
      *
-     * @param string    $type
-     * @param null|bool $forSie4
+     * @param string  $type
+     * @param bool    $forSie4
      * @return false|string
      */
-    public static function getKontoType( string $type, $forSie4 = false )
+    public static function getKontoType( string $type, bool $forSie4 )
     {
         static $KONTOTYPER = [
             AccountDto::T => AccountTypeEntry::ASSET,     // Tillgång
@@ -95,6 +95,11 @@ class AccountDto implements DtoInterface
     private $enhet = null;
 
     /**
+     * @var string[]
+     */
+    public static $SORTER = [ self::class, 'accountSorter' ];
+
+    /**
      * Sort AccountDto[] on kontonr
      *
      * @param AccountDto $a
@@ -113,7 +118,7 @@ class AccountDto implements DtoInterface
      * @param string $kontoNamn
      * @param string $kontoTyp
      * @param null|string $enhet
-     * @return static
+     * @return self
      */
     public static function factory(
         $kontoNr,
@@ -156,7 +161,7 @@ class AccountDto implements DtoInterface
      * Set kontoNamn
      *
      * @param string $kontoNamn
-     * @return static
+     * @return self
      */
     public function setKontoNamn( string $kontoNamn ) : self
     {
@@ -188,14 +193,14 @@ class AccountDto implements DtoInterface
      * Set kontoTyp
      *
      * @param string $kontoTyp
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public function setKontoTyp( string $kontoTyp ) : self
     {
         static $FMT = 'Ogiltig kontoTyp : ';
         $kontoTyp = strtoupper( $kontoTyp );
-        if( false === self::getKontoType( $kontoTyp )) {
+        if( false === self::getKontoType( $kontoTyp, false )) {
             throw new InvalidArgumentException( $FMT . $kontoTyp );
         }
         $this->kontoTyp = $kontoTyp;
@@ -226,7 +231,7 @@ class AccountDto implements DtoInterface
      * Set enhet
      *
      * @param string $enhet
-     * @return static
+     * @return self
      */
     public function setEnhet( string $enhet ) : AccountDto
     {

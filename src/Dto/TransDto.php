@@ -46,7 +46,7 @@ use function sprintf;
 class TransDto implements DtoInterface
 {
     /**
-     * @var array
+     * @var string[]
      */
     private static $allowedTypes = [ self::TRANS, self::RTRANS, self::BTRANS ];
 
@@ -87,7 +87,7 @@ class TransDto implements DtoInterface
      * @param int|string $kontoNr
      * @param float      $belopp
      * @param string     $transType
-     * @return static
+     * @return self
      */
     public static function factory( $kontoNr, float $belopp, $transType = self::TRANS ) : self
     {
@@ -108,7 +108,7 @@ class TransDto implements DtoInterface
 
     /**
      * @param string $transType
-     * @return static
+     * @return self
      */
     public function setTransType( string $transType ) : self
     {
@@ -147,7 +147,7 @@ class TransDto implements DtoInterface
      *
      * @param int $dimId
      * @param string $objektId
-     * @return static
+     * @return self
      */
     public function addDimIdObjektId( int $dimId, string $objektId ) : self
     {
@@ -160,7 +160,7 @@ class TransDto implements DtoInterface
      * Add objektlista element, DimObjektDto
      *
      * @param DimObjektDto $dimObjektDto
-     * @return static
+     * @return self
      */
     public function addObjektlista( DimObjektDto $dimObjektDto ) : self
     {
@@ -172,10 +172,11 @@ class TransDto implements DtoInterface
      * Set objektlista, array DimObjektDto[]
      *
      * @param DimObjektDto[] $dimObjektDtos
-     * @return static
+     * @return self
      */
     public function setObjektlista( array $dimObjektDtos ) : self
     {
+        $this->objektlista = [];
         foreach( $dimObjektDtos as $dimObjekt ) {
             $this->addObjektlista( $dimObjekt );
         }
@@ -206,7 +207,7 @@ class TransDto implements DtoInterface
      * Set belopp
      *
      * @param int|float|string $belopp
-     * @return static
+     * @return self
      */
     public function setBelopp( $belopp ) : self
     {
@@ -238,7 +239,7 @@ class TransDto implements DtoInterface
      * Set transdat
      *
      * @param DateTime $transdat
-     * @return static
+     * @return self
      */
     public function setTransdat( DateTime $transdat ) : self
     {
@@ -270,12 +271,11 @@ class TransDto implements DtoInterface
      * Set transtext
      *
      * @param string $transtext
-     * @return static
+     * @return self
      */
     public function setTranstext( string $transtext ) : self
     {
         $this->transtext = $transtext;
         return $this;
     }
-
 }

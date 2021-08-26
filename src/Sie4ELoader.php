@@ -27,7 +27,7 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk;
 
-use DateTime;
+use RuntimeException;
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\AccountDto;
 use Kigkonsult\Sie4Sdk\Dto\IdDto;
@@ -36,6 +36,7 @@ use Kigkonsult\Sie4Sdk\Dto\RarDto;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 use Kigkonsult\Sie4Sdk\Dto\TransDto;
 use Kigkonsult\Sie4Sdk\Dto\VerDto;
+use Kigkonsult\Sie4Sdk\Util\DateTimeUtil;
 use Kigkonsult\Sie5Sdk\Dto\BaseBalanceType;
 use Kigkonsult\Sie5Sdk\Dto\BudgetType;
 use Kigkonsult\Sie5Sdk\Dto\JournalEntryType;
@@ -43,7 +44,7 @@ use Kigkonsult\Sie5Sdk\Dto\LedgerEntryType;
 use Kigkonsult\Sie5Sdk\Dto\Sie;
 
 use function key;
-use function substr;
+use function reset;
 
 /**
  * Class Sie4ILoader
@@ -72,7 +73,7 @@ class Sie4ELoader implements Sie4Interface
 
     /**
      * @param null|Sie $sie
-     * @return static
+     * @return self
      */
     public static function factory( $sie = null ) : self
     {
@@ -84,23 +85,22 @@ class Sie4ELoader implements Sie4Interface
     }
 
     /**
+     * Return converted Sie into Sie4Dto
+     *
      * @param null|Sie $sie
      * @return Sie4Dto
      * @throws InvalidArgumentException;
+     * @throws RuntimeException;
      */
     public function getSie4EDto( $sie = null ) : Sie4Dto
     {
         static $FMT1 = 'Sie saknas';
-        static $FMT2 = 'Ofullständig Sie indata';
         if( ! empty( $sie )) {
             $this->sie4EDto = new Sie4Dto();
             $this->setSie( $sie );
         }
         if( ! $this->isSieSet()) {
             throw new InvalidArgumentException( $FMT1, 4201 );
-        }
-        if( ! $this->sie->isValid()) {
-            throw new InvalidArgumentException( $FMT2, 4201 );
         }
 
         $this->processIdData();
@@ -113,6 +113,9 @@ class Sie4ELoader implements Sie4Interface
 
     /**
      * Updates IdData
+     *
+     * @return void
+     * @throws RuntimeException
      */
     private function processIdData()
     {
@@ -150,7 +153,7 @@ class Sie4ELoader implements Sie4Interface
             $idDto->setOrgnr( $value );
             $value = $company->getMultiple();
             if( ! empty( $value )) {
-                $idDto->setMultiple( $company->getMultiple() );
+                $idDto->setMultiple( $value );
             }
         }
 
@@ -164,8 +167,8 @@ class Sie4ELoader implements Sie4Interface
             $idDto->addRarDto(
                 RarDto::factory(
                     $arsNr,
-                    self::gYearMonthToDateTime( $fiscalYearType->getStart(), false ),
-                    self::gYearMonthToDateTime( $fiscalYearType->getEnd(), true )
+                    DateTimeUtil::gYearMonthToDateTime( $fiscalYearType->getStart(), false ),
+                    DateTimeUtil::gYearMonthToDateTime( $fiscalYearType->getEnd(), true )
                 )
             );
             $arsNr -= 1;
@@ -184,6 +187,8 @@ class Sie4ELoader implements Sie4Interface
 
     /**
      * Updates AccountData, pSaldoData and pBudgetData
+     *
+     * @return void
      */
     private function processAccountData()
     {
@@ -230,7 +235,7 @@ class Sie4ELoader implements Sie4Interface
     {
         $period = new PeriodDto();
         $period->setArsnr( 0 );
-        $period->setPeriod( self::gYearMonthToYYYYmm( $baseBalanceType->getMonth()));
+        $period->setPeriod( DateTimeUtil::YYYYmmFromgYearMonth( $baseBalanceType->getMonth()));
         $period->setKontoNr( $kontoNr );
         $period->setSaldo( $baseBalanceType->getAmount());
         $kvantitet = $baseBalanceType->getQuantity();
@@ -263,7 +268,7 @@ class Sie4ELoader implements Sie4Interface
     {
         $period = new PeriodDto();
         $period->setArsnr( 0 );
-        $period->setPeriod( self::gYearMonthToYYYYmm( $budgetType->getMonth()));
+        $period->setPeriod( DateTimeUtil::YYYYmmFromgYearMonth( $budgetType->getMonth()));
         $period->setKontoNr( $kontoNr );
         $period->setSaldo( $budgetType->getAmount());
         $kvantitet = $budgetType->getQuantity();
@@ -280,6 +285,8 @@ class Sie4ELoader implements Sie4Interface
 
     /**
      * Updates DimData and DimObjektData
+     *
+     * @return void
      */
     private function processDimData()
     {
@@ -310,6 +317,8 @@ class Sie4ELoader implements Sie4Interface
 
     /**
      * Updates verDto/TransDto
+     *
+     * @return void
      */
     private function processVerData()
     {
@@ -430,46 +439,11 @@ class Sie4ELoader implements Sie4Interface
 
     /**
      * @param Sie $sie
-     * @return static
+     * @return self
      */
     public function setSie( Sie $sie ) : self
     {
         $this->sie = $sie;
         return $this;
     }
-    /**
-     * Return YYYYmm string from "xsd:gYearMonth" string
-     *
-     * @param string $gYearMonth
-     * @return string
-     */
-    private static function gYearMonthToYYYYmm( string $gYearMonth )
-    {
-        return substr( $gYearMonth, 0, 4 ) . substr( $gYearMonth, 5, 2 );
-    }
-
-    /**
-     * Return DateTime from "xsd:gYearMonth" string
-     *
-     * @param string $gYearMonth
-     * @param bool   $setEnd
-     * @return DateTime
-     */
-    private static function gYearMonthToDateTime( string $gYearMonth, bool $setEnd ) : DateTime
-    {
-        static $ONE = '01';
-        static $Y   = 'Y';
-        static $M   = 'm';
-        static $T   = 't';
-        $dateTime = new DateTime( $gYearMonth . $ONE );
-        if( $setEnd ) {
-            $dateTime->setDate(
-                (int) $dateTime->format( $Y ),
-                (int) $dateTime->format( $M ),
-                (int) $dateTime->format( $T )
-            );
-        }
-        return $dateTime;
-    }
-
 }

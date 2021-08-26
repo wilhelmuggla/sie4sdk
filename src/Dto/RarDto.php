@@ -64,7 +64,7 @@ class RarDto implements DtoInterface
      * @param int|string $arsnr
      * @param DateTime $start
      * @param DateTime $slut
-     * @return static
+     * @return self
      */
     public static function factory( $arsnr, DateTime $start, DateTime $slut ) : self
     {
@@ -94,7 +94,7 @@ class RarDto implements DtoInterface
 
     /**
      * @param DateTime $start
-     * @return static
+     * @return self
      */
     public function setStart( DateTime $start ) : self
     {
@@ -120,7 +120,7 @@ class RarDto implements DtoInterface
 
     /**
      * @param DateTime $slut
-     * @return static
+     * @return self
      */
     public function setSlut( DateTime $slut ) : self
     {

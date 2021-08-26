@@ -61,6 +61,8 @@ class Sie4IWriter extends Sie4WriterBase
     }
 
     /**
+     * Return Sie4I string (without input validation)
+     *
      * @param null|Sie4Dto $sie4IDto
      * @param null|string  $outputfile
      * @param null|bool    $writeKsumma
@@ -76,7 +78,6 @@ class Sie4IWriter extends Sie4WriterBase
         if( ! empty( $sie4IDto )) {
             $this->setSie4Dto( $sie4IDto );
         }
-        Sie4Validator::assertSie4IDto( $this->sie4Dto );
         if( ! empty( $outputfile )) {
             FileUtil::assertWriteFile( $outputfile, 5201 );
         }
@@ -109,9 +110,10 @@ class Sie4IWriter extends Sie4WriterBase
         $this->writeKonto();
         $this->writeSRU();
         $this->writeDim();
+        $this->writeUnderDim();
         $this->writeObjekt();
 
-        $this->writeIBUB();
+        $this->writeIbUb();
         $this->writeOibOub();
         $this->writeRes();
         $this->writePsaldoPbudget();
@@ -124,6 +126,6 @@ class Sie4IWriter extends Sie4WriterBase
         if( ! empty( $outputfile )) {
             FileUtil::writeFile( $outputfile, $output, 5205 );
         }
-        return implode( StringUtil::$SP0, $output );
+        return implode( $output );
     }
 }

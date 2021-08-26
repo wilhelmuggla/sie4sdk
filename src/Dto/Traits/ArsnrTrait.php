@@ -28,7 +28,6 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
 use InvalidArgumentException;
-use Kigkonsult\Sie4Sdk\Dto\DtoInterface;
 use Kigkonsult\Sie4Sdk\Sie4Validator;
 
 trait ArsnrTrait
@@ -56,7 +55,7 @@ trait ArsnrTrait
 
     /**
      * @param int|string $arsnr
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public function setArsnr( $arsnr ) : self

@@ -25,44 +25,28 @@
  *            along with Sie4Sdk. If not, see <https://www.gnu.org/licenses/>.
  */
 declare( strict_types = 1 );
-namespace Kigkonsult\Sie4Sdk\Dto\Traits;
+namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
-trait KvantitetTrait
+use Faker;
+use Kigkonsult\Sie4Sdk\Dto\BalansDto as Dto;
+
+class BalansDto
 {
     /**
-     * @var float
+     * @param string $kontoNr
+     * @return Dto
      */
-    protected $kvantitet = null;
-
-    /**
-     * Return kvantitet
-     *
-     * @return null|float
-     */
-    public function getKvantitet()
+    public static function load( string $kontoNr )
     {
-        return $this->kvantitet;
-    }
+        $faker = Faker\Factory::create();
 
-    /**
-     * Return bool true if kvantitet is set
-     *
-     * @return bool
-     */
-    public function isKvantitetSet() : bool
-    {
-        return ( null !== $this->kvantitet );
-    }
+        $dto = new Dto();
 
-    /**
-     * Set kvantitet
-     *
-     * @param int|float|string $kvantitet
-     * @return self
-     */
-    public function setKvantitet( $kvantitet ) : self
-    {
-        $this->kvantitet = (float) $kvantitet;
-        return $this;
+        $dto->setArsnr( 0 );
+        $dto->setKontoNr( $kontoNr );
+        $dto->setSaldo( $faker->randomFloat( 2, 1, 999999 ));
+        $dto->setKvantitet( $faker->randomDigitNot( 0 ));
+
+        return $dto;
     }
 }

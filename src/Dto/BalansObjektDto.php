@@ -42,6 +42,11 @@ class BalansObjektDto extends BalansDto
     use ObjektNrTrait;
 
     /**
+     * @var string[]
+     */
+    public static $SORTER = [ BalansObjektDto::class, 'balansObjektSorter' ];
+
+    /**
      * Sort BalansObjektDto[] on kontonr, arsnr, dimensionNr, objektNr
      *
      * @param BalansObjektDto $a
@@ -50,8 +55,8 @@ class BalansObjektDto extends BalansDto
      */
     public static function balansObjektSorter( BalansObjektDto $a, BalansObjektDto $b ) : int
     {
-        if( 0 !== ( $cmp = parent::balansSorter( $a, $b ))) {
-            return $cmp;
+        if( 0 !== ( $kontoNrArsnrCmp = parent::balansSorter( $a, $b ))) {
+            return $kontoNrArsnrCmp;
         }
         $dimnsionNrA = $a->getDimensionNr();
         $dimnsionNrB = $b->getDimensionNr();

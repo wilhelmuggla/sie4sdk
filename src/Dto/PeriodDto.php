@@ -41,6 +41,11 @@ class PeriodDto extends BalansObjektDto
     private $period = null;
 
     /**
+     * @var string[]
+     */
+    public static $SORTER = [ PeriodDto::class, 'periodSorter' ];
+
+    /**
      * Sort PeriodDto[] on kontonr, arsnr, dimensionNr, objektNr
      *
      * @param PeriodDto $a
@@ -74,7 +79,7 @@ class PeriodDto extends BalansObjektDto
      * Set period ÅÅÅÅMM
      *
      * @param int|string $period
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public function setPeriod( $period ) : self

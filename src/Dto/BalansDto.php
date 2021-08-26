@@ -52,6 +52,11 @@ class BalansDto implements DtoInterface
     use KvantitetTrait;
 
     /**
+     * @var string[]
+     */
+    static $SORTER = [ self::class, 'balansSorter' ];
+
+    /**
      * Sort BalansDto[] on kontonr, arsnr
      *
      * @param BalansDto $a
@@ -78,14 +83,14 @@ class BalansDto implements DtoInterface
      * @param int|string  $kontoNr
      * @param int|float|string $saldo
      * @param null|float  $kvantitet
-     * @return DtoInterface
+     * @return self
      */
     public static function factory(
         $arsnr,
         $kontoNr,
         $saldo,
         $kvantitet = null
-    ) : DtoInterface
+    ) : self
     {
         $class    = get_called_class();
         $instance = new $class();
@@ -121,7 +126,7 @@ class BalansDto implements DtoInterface
      * Set saldo
      *
      * @param int|float|string $saldo
-     * @return static
+     * @return self
      */
     public function setSaldo( $saldo ) : self
     {

@@ -32,9 +32,25 @@ use Exception;
 use RuntimeException;
 
 use function sprintf;
+use function str_replace;
+use function substr;
 
 class DateTimeUtil
 {
+    /**
+     * @var string
+     */
+    private static $DASH = '-';
+
+    /**
+     * @var string
+     */
+    private static $Y = 'Y';
+
+    /**
+     * @var string
+     */
+    private static $M = 'm';
 
     /**
      * @param string $dateTimeString
@@ -59,4 +75,66 @@ class DateTimeUtil
         return $dateTime;
     }
 
+    /**
+     * Return "xsd:gYearMonth" from DateTime
+     *
+     * @param DateTime $dateTime
+     * @return string
+     */
+    public static function gYearMonthFromDateTime( DateTime $dateTime ) : string
+    {
+        return $dateTime->format( self::$Y ) . self::$DASH . $dateTime->format( self::$M );
+    }
+
+    /**
+     * Return "xsd:gYearMonth" from YYYYmm string
+     *
+     * @param string $yyyymm
+     * @return string
+     */
+    public static function gYearMonthFromString( string $yyyymm ): string
+    {
+        return substr( $yyyymm, 0, 4 ) .
+            self::$DASH .
+            substr( $yyyymm, -2, 2 );
+    }
+
+    /**
+     * Return YYYYmm string from "xsd:gYearMonth" string
+     *
+     * @param string $gYearMonth
+     * @return string
+     */
+    public static function YYYYmmFromgYearMonth( string $gYearMonth ): string
+    {
+        return str_replace( self::$DASH, StringUtil::$SP0, $gYearMonth );
+    }
+
+    /**
+     * Return start/end DateTime from "xsd:gYearMonth" string (YYYY-mm)
+     *
+     * DateTime start has day 1
+     * DateTime end has last day in month
+     *
+     * @param string $gYearMonth
+     * @param bool   $setEnd
+     * @return DateTime
+     * @throws Exception
+     */
+    public static function gYearMonthToDateTime( string $gYearMonth, bool $setEnd ): DateTime
+    {
+        static $FIRST = '01';
+        static $T     = 't';
+        $year     = substr( $gYearMonth, 0, 4 );
+        $month    = substr( $gYearMonth, -2, 2 );
+        $dateTime = new DateTime( $year . $month . $FIRST );
+        if( $setEnd ) {
+            $dateTime->setDate(
+                (int)$dateTime->format( self::$Y ),
+                (int)$dateTime->format( self::$M ),
+                (int)$dateTime->format( $T )
+            );
+        }
+        return $dateTime;
+    }
 }

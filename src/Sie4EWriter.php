@@ -40,6 +40,8 @@ use function sprintf;
 class Sie4EWriter extends Sie4WriterBase
 {
     /**
+     * Return Sie4E string (without input validation)
+     *
      * @param null|Sie4Dto $sie4EDto
      * @param null|string  $outputfile
      * @param null|bool    $writeKsumma
@@ -55,7 +57,6 @@ class Sie4EWriter extends Sie4WriterBase
         if( ! empty( $sie4EDto )) {
             $this->setSie4Dto( $sie4EDto );
         }
-        Sie4Validator::assertSie4EDto( $this->sie4Dto );
         if( ! empty( $outputfile )) {
             FileUtil::assertWriteFile( $outputfile, 5201 );
         }
@@ -90,7 +91,13 @@ class Sie4EWriter extends Sie4WriterBase
         $this->writeKonto();
         $this->writeSRU();
         $this->writeDim();
+        $this->writeUnderDim();
         $this->writeObjekt();
+
+        $this->writeIbUb();
+        $this->writeOibOub();
+        $this->writeRes();
+        $this->writePsaldoPbudget();
 
         $this->writeVerDtos();
 
@@ -101,6 +108,6 @@ class Sie4EWriter extends Sie4WriterBase
         if( ! empty( $outputfile )) {
             FileUtil::writeFile( $outputfile, $output, 5205 );
         }
-        return implode( StringUtil::$SP0, $output );
+        return implode( $output );
     }
 }

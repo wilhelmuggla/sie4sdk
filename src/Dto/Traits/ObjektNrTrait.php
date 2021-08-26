@@ -27,8 +27,6 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
-use Kigkonsult\Sie4Sdk\Dto\DtoInterface;
-
 trait ObjektNrTrait
 {
     /**
@@ -60,7 +58,7 @@ trait ObjektNrTrait
      * Set objektNr
      *
      * @param string $objektNr
-     * @return static
+     * @return self
      */
     public function setObjektNr( string $objektNr ) : self
     {

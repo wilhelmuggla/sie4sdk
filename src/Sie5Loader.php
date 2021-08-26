@@ -34,6 +34,7 @@ use Kigkonsult\Sie4Sdk\Dto\PeriodDto;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 use Kigkonsult\Sie4Sdk\Dto\TransDto;
 use Kigkonsult\Sie4Sdk\Dto\VerDto;
+use Kigkonsult\Sie4Sdk\Util\DateTimeUtil;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 use Kigkonsult\Sie5Sdk\Dto\AccountingCurrencyType;
 use Kigkonsult\Sie5Sdk\Dto\AccountsType;
@@ -56,6 +57,10 @@ use Kigkonsult\Sie5Sdk\Dto\ObjectType;
 use Kigkonsult\Sie5Sdk\Dto\OriginalEntryInfoType;
 use Kigkonsult\Sie5Sdk\Dto\Sie;
 use Kigkonsult\Sie5Sdk\Dto\SoftwareProductType;
+
+use function strcmp;
+use function str_replace;
+use function trim;
 
 /**
  * Class Sie5Loader
@@ -84,7 +89,7 @@ class Sie5Loader implements Sie4Interface
 
     /**
      * @param null|Sie4Dto $sie4EDto
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public static function factory( $sie4EDto = null ): self
@@ -104,27 +109,27 @@ class Sie5Loader implements Sie4Interface
     private static function newSie() : Sie
     {
         return sie::factory()
-                       ->setXMLattribute(
-                           Sie::XMLNS,
-                           Sie::SIE5URI
-                       )
-                       ->setXMLattribute(
-                           Sie::XMLNS_XSI,
-                           Sie::XMLSCHEMAINSTANCE
-                       )
-                       ->setXMLattribute(
-                           Sie::XMLNS_XSD,
-                           Sie::XMLSCHEMA
-                       )
-                       ->setXMLattribute(
-                           Sie::XSI_SCHEMALOCATION,
-                           Sie::SIE5SCHEMALOCATION
-                       )
-                       ->setFileInfo(
-                           FileInfoType::factory()
-                                       ->setCompany( CompanyType::factory())
-                                       ->setFiscalYears( FiscalYearsType::factory())
-                       );
+            ->setXMLattribute(
+                Sie::XMLNS,
+                Sie::SIE5URI
+            )
+            ->setXMLattribute(
+                Sie::XMLNS_XSI,
+                Sie::XMLSCHEMAINSTANCE
+            )
+            ->setXMLattribute(
+                Sie::XMLNS_XSD,
+                Sie::XMLSCHEMA
+            )
+            ->setXMLattribute(
+                Sie::XSI_SCHEMALOCATION,
+                Sie::SIE5SCHEMALOCATION
+            )
+            ->setFileInfo(
+                FileInfoType::factory()
+                    ->setCompany( CompanyType::factory())
+                    ->setFiscalYears( FiscalYearsType::factory())
+            );
     }
 
     /**
@@ -152,15 +157,31 @@ class Sie5Loader implements Sie4Interface
      * Process Sie4 idDto into Sie
      *
      * genSign logic also used in processVerDtos
+     *
+     * @return void
      */
     private function processIdDto()
     {
         $idDto    = $this->sie4EDto->getIdDto();
         $fileInfo = $this->sie->getFileInfo();
+        $name     = $idDto->getProgramnamn();
+        $version  = $idDto->getVersion();
+        switch( true ) {
+            case ( empty( $name ) || ( self::PRODUCTNAME == $name )) :
+                $name    = SoftwareProductType::PRODUCTNAME;
+                $version = SoftwareProductType::PRODUCTVERSION;
+                break;
+            case StringUtil::isIn(self::PRODUCTNAME, $name ) :
+                $name    = trim( str_replace( self::PRODUCTNAME, StringUtil::$SP0, $name ));
+                $version = trim( str_replace( self::PRODUCTVERSION, StringUtil::$SP0, $version ));
+                break;
+            default :
+                break;
+        } // end switch
         $fileInfo->setSoftwareProduct(
             SoftwareProductType::factoryNameVersion(
-                $idDto->getProgramnamn(),
-                $idDto->getVersion()
+                $name,
+                $version
             )
         );
 
@@ -176,12 +197,12 @@ class Sie5Loader implements Sie4Interface
 
         $company = $fileInfo->getCompany();
         if( $idDto->isFnrIdSet()) {
-            $company->setClientId( $idDto->getFnrId() );
+            $company->setClientId( $idDto->getFnrId());
         }
 
         if( $idDto->isOrgnrSet()) {
-            $company->setOrganizationId( $idDto->getOrgnr() );
-            $company->setMultiple( $idDto->getMultiple() );
+            $company->setOrganizationId( $idDto->getOrgnr());
+            $company->setMultiple( $idDto->getMultiple());
         }
 
         $company->setName( $idDto->getFnamn());
@@ -191,8 +212,8 @@ class Sie5Loader implements Sie4Interface
             foreach( $idDto->getRarDtos() as $rarDto ) {
                 $fiscalYearsType->addFiscalYear(
                     FiscalYearType::factory()
-                        ->setStart( self::gYearMonthFromDateTime( $rarDto->getStart()))
-                        ->setEnd( self::gYearMonthFromDateTime( $rarDto->getSlut()))
+                        ->setStart( DateTimeUtil::gYearMonthFromDateTime( $rarDto->getStart()))
+                        ->setEnd( DateTimeUtil::gYearMonthFromDateTime( $rarDto->getSlut()))
                         ->setPrimary( ( 0 == $rarDto->getArsnr()))
                 );
             } // end foreach
@@ -207,6 +228,8 @@ class Sie5Loader implements Sie4Interface
 
     /**
      * Process Sie4 accountDtos into Sie
+     *
+     * @return void
      */
     private function processAccountDtos()
     {
@@ -224,7 +247,7 @@ class Sie5Loader implements Sie4Interface
             $accountType = AccountType::factoryIdNameType(
                 $kontoNr,
                 $accountDto->getKontoNamn(),
-                AccountDto::getKontoType( $accountDto->getKontoTyp())
+                AccountDto::getKontoType( $accountDto->getKontoTyp(), false )
             );
             if( $accountDto->isEnhetSet()) {
                 $accountType->setUnit( $accountDto->getEnhet());
@@ -261,7 +284,7 @@ class Sie5Loader implements Sie4Interface
     private static function getBaseBalanceType( PeriodDto $periodDto ) : BaseBalanceType
     {
         $baseBalanceType = BaseBalanceType::factoryMonthAmount(
-            self::gYearMonthFromString( $periodDto->getPeriod()),
+            DateTimeUtil::gYearMonthFromString( $periodDto->getPeriod()),
             $periodDto->getSaldo()
         );
         if( $periodDto->isKvantitetSet()) {
@@ -288,7 +311,7 @@ class Sie5Loader implements Sie4Interface
     private static function getBudgetType( PeriodDto $periodDto ) : BudgetType
     {
         $budgetType = BudgetType::factoryMonthAmount(
-            self::gYearMonthFromString( $periodDto->getPeriod()),
+            DateTimeUtil::gYearMonthFromString( $periodDto->getPeriod()),
             $periodDto->getSaldo()
         );
         if( $periodDto->isKvantitetSet()) {
@@ -307,6 +330,8 @@ class Sie5Loader implements Sie4Interface
 
     /**
      * Process Sie4 dimDtos into Sie
+     *
+     * @return void
      */
     private function processDimDtos()
     {
@@ -329,6 +354,8 @@ class Sie5Loader implements Sie4Interface
 
     /**
      * Process Sie4 dimObjektDtos into Sie
+     *
+     * @return void
      */
     private function processDimObjektDtos()
     {
@@ -382,6 +409,8 @@ class Sie5Loader implements Sie4Interface
 
     /**
      * Process Sie4 verDtos into Sie
+     *
+     * @return void
      */
     private function processVerDtos()
     {
@@ -392,7 +421,7 @@ class Sie5Loader implements Sie4Interface
             ? $this->sie4EDto->getIdDto()->getSign()
             : Sie::PRODUCTNAME;
         foreach( $this->sie4EDto->getVerDtos() as $verDto ) {
-            $JournalType      = $this->getJournalType(
+            $JournalType = $this->getJournalType(
                 $verDto->getSerie() ?? StringUtil::$SP0
             );
             $JournalEntryType = JournalEntryType::factory();
@@ -414,12 +443,12 @@ class Sie5Loader implements Sie4Interface
         $journals = $this->sie->getJournal();
         if( ! empty( $journals )) {
             foreach( $journals as $JournalType ) {
-                $JournalTypeId = $JournalType->getId();
+                $JournalTypeId = $JournalType->getId() ?? StringUtil::$SP0;
                 if( empty( $serie ) && empty( $JournalTypeId )) {
                     $JournalTypeFound = true;
                     break;
                 }
-                if( 0 === strcmp((string) $serie, ( $JournalTypeId ?? StringUtil::$SP0 ))) {
+                if( 0 === strcmp( $serie, $JournalTypeId )) {
                     $JournalTypeFound = true;
                     break;
                 }
@@ -443,6 +472,7 @@ class Sie5Loader implements Sie4Interface
      * @param VerDto                $verDto
      * @param JournalEntryType $JournalEntryType
      * @param string $genSign
+     * @return void
      */
     private static function processSingleVerDto(
         VerDto $verDto,
@@ -456,7 +486,7 @@ class Sie5Loader implements Sie4Interface
         // required
         $verDatum = $verDto->isVerdatumSet()
             ? $verDto->getVerdatum()
-            : new DateTime();
+            : ( new DateTime())->setTime( 0,0, 0 );
         $JournalEntryType->setJournalDate( $verDatum );
         if( $verDto->isVertextSet()) {
             $JournalEntryType->setText( $verDto->getVertext());
@@ -492,6 +522,7 @@ class Sie5Loader implements Sie4Interface
      * @param TransDto             $transDto
      * @param LedgerEntryType $LedgerEntryType
      * @param string               $verDatum SIE4YYYYMMDD
+     * @return void
      */
     private static function processSingleTransDto(
         TransDto $transDto,
@@ -516,7 +547,7 @@ class Sie5Loader implements Sie4Interface
             // skipped if equal to verDatum
             $transDat = $transDto->getTransdat();
             if( $verDatum != $transDat->format( self::SIE4YYYYMMDD )) {
-                $LedgerEntryType->setLedgerDate( $transDto->getTransdat() );
+                $LedgerEntryType->setLedgerDate( $transDto->getTransdat());
             }
         }
         if( $transDto->isTranstextSet()) {
@@ -537,44 +568,12 @@ class Sie5Loader implements Sie4Interface
 
     /**
      * @param Sie4Dto $sie4EDto
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public function setSie4EDto( Sie4Dto $sie4EDto ) : self
     {
-        Sie4Validator::assertSie4EDto( $sie4EDto );
         $this->sie4EDto = $sie4EDto;
         return $this;
-    }
-
-    /**
-     * @var string
-     */
-    private static $DASH = '-';
-
-    /**
-     * Return "xsd:gYearMonth" from DateTime
-     *
-     * @param DateTime $dateTime
-     * @return string
-     */
-    private static function gYearMonthFromDateTime( DateTime $dateTime )
-    {
-        static $Y = 'Y';
-        static $M = 'm';
-        return $dateTime->format( $Y ) . self::$DASH . $dateTime->format( $M );
-    }
-
-    /**
-     * Return "xsd:gYearMonth" from YYYYmm string
-     *
-     * @param string $yyyymm
-     * @return string
-     */
-    private static function gYearMonthFromString( string $yyyymm )
-    {
-        return substr( $yyyymm, 0, 4 ) .
-            self::$DASH .
-            substr( $yyyymm, 4, 2 );
     }
 }

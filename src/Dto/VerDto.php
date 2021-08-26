@@ -75,6 +75,11 @@ class VerDto implements DtoInterface
     private $transDtos = [];
 
     /**
+     * @var string[]
+     */
+    public static $SORTER = [ VerDto::class, 'verSorter' ];
+
+    /**
      * Sort VerDto[] on serie and vernr
      *
      * @param VerDto $a
@@ -108,7 +113,7 @@ class VerDto implements DtoInterface
      * @param null|int      $vernr
      * @param null|string   $verText
      * @param null|DateTime $verDatum  default 'now'
-     * @return static
+     * @return self
      */
     public static function factory(
         $vernr = null,
@@ -153,7 +158,7 @@ class VerDto implements DtoInterface
      * Set serie
      *
      * @param int|string $serie
-     * @return static
+     * @return self
      */
     public function setSerie( $serie ) : self
     {
@@ -185,7 +190,7 @@ class VerDto implements DtoInterface
      * Set vernr
      *
      * @param int $vernr
-     * @return static
+     * @return self
      */
     public function setVernr( int $vernr ) : self
     {
@@ -249,7 +254,7 @@ class VerDto implements DtoInterface
      * Set vertext
      *
      * @param string $vertext
-     * @return static
+     * @return self
      */
     public function setVertext( string $vertext ) : self
     {
@@ -281,7 +286,7 @@ class VerDto implements DtoInterface
      * Set regdatum, DateTime
      *
      * @param DateTime $regdatum
-     * @return static
+     * @return self
      */
     public function setRegdatum( DateTime $regdatum ) : self
     {
@@ -314,7 +319,7 @@ class VerDto implements DtoInterface
      *
      * @param int|string $kontoNr
      * @param float  $belopp
-     * @return static
+     * @return self
      */
     public function addTransKontoNrBelopp( $kontoNr, float $belopp ) : self
     {
@@ -327,7 +332,7 @@ class VerDto implements DtoInterface
      * Add single transDto #TRANS (default) / #RTRANS / #BTRANS
      *
      * @param TransDto $transDto
-     * @return static
+     * @return self
      */
     public function addTransDto( TransDto $transDto ) : self
     {
@@ -339,10 +344,11 @@ class VerDto implements DtoInterface
      * Set transDtos, array TransDto[] #TRANS (default) / #RTRANS / #BTRANS
      *
      * @param TransDto[] $transDtos
-     * @return static
+     * @return self
      */
     public function setTransDtos( array $transDtos ) : self
     {
+        $this->transDtos = [];
         foreach( $transDtos as $transDto ) {
             $this->addTransDto( $transDto );
         }

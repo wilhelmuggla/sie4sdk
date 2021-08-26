@@ -30,9 +30,11 @@ namespace Kigkonsult\Sie4Sdk\Api;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 use Kigkonsult\Sie4Sdk\Dto\TransDto;
 use Kigkonsult\Sie4Sdk\Util\ArrayUtil;
+use Kigkonsult\Sie4Sdk\Util\StringUtil;
 use Kigkonsult\Sie5Sdk\Impl\CommonFactory;
 
 use function array_keys;
+use function number_format;
 
 /**
  * Class Sie4Dto2Array
@@ -41,6 +43,9 @@ use function array_keys;
  *
  * output format
  * [
+ *     self::TIMESTAMP          => <microtime>
+ *     self::GUID               => <uniqueId>
+ *
  *     self::FLAGGPOST          => <0/1>,
  *
  *     self::PROGRAMNAMN        => <programNamn>,
@@ -81,7 +86,12 @@ use function array_keys;
  *
  *     // instance data share the same index
  *     self::DIMENSIONNR        => [ *<dimId> ],
- *     self::OBJEKTID           => [ *<objektId> ],
+ *     self::DIMENSIONNAMN      => [ *<dimNamn> ],
+ *
+ *     // instance data share the same index
+ *     self::UNDERDIMNR         => [ *<underDimId> ],
+ *     self::UNDERDIMNAMN       => [ *<underDimNamn> ],
+ *     self::UNDERDIMSUPER      => [ *<superDimId> ],
  *
  *     // instance data share the same index
  *     self::OBJEKTDIMENSIONNR  => [ *<dimId> ],
@@ -186,7 +196,7 @@ class Sie4Dto2Array extends ArrayBase
     private $sie4Dto = null;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $output = [];
 
@@ -194,21 +204,26 @@ class Sie4Dto2Array extends ArrayBase
      * Transform Sie4Dto to array, factory method
      *
      * @param Sie4Dto $sie4Dto
-     * @return array
+     * @return mixed[]
      */
     public static function process( Sie4Dto $sie4Dto ) : array
     {
+        static $DOT = '.';
         $instance          = new self();
         $instance->sie4Dto = $sie4Dto;
-        $instance->output  = [
-            self::FLAGGPOST => $instance->sie4Dto->getFlagga()
-        ];
+        $instance->output  = [];
+        $instance->output[self::TIMESTAMP] = number_format(
+            $instance->sie4Dto->getTimestamp(), 6, $DOT, StringUtil::$SP0
+        );
+        $instance->output[self::GUID]      = $instance->sie4Dto->getCorrelationId();
+        $instance->output[self::FLAGGPOST] = $instance->sie4Dto->getFlagga();
 
         $instance->processIdDto();
 
         $instance->processAccountDtos();
         $instance->processSruDtos();
         $instance->processDimDtos();
+        $instance->processUnderDimDtos();
         $instance->processDimObjektDtos();
 
         $instance->processIbDtos();
@@ -228,6 +243,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 id data
+     *
+     * @return void
      */
     private function processIdDto()
     {
@@ -290,6 +307,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 KONTO data
+     *
+     * @return void
      */
     private function processAccountDtos()
     {
@@ -321,6 +340,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 SRU data
+     *
+     * @return void
      */
     private function processSruDtos()
     {
@@ -347,6 +368,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 DIM data
+     *
+     * @return void
      */
     private function processDimDtos()
     {
@@ -358,9 +381,6 @@ class Sie4Dto2Array extends ArrayBase
             return;
         }
         ArrayUtil::assureIsArray( $this->output, $KEYS );
-        foreach( $KEYS as $key ) {
-            ArrayUtil::assureIsArray( $this->output, $key );
-        }
         foreach( $this->sie4Dto->getDimDtos() as $x => $dimDto ) {
             if( $dimDto->isDimensionsNrSet()) {
                 $this->output[self::DIMENSIONNR][$x]   = $dimDto->getDimensionNr();
@@ -372,7 +392,38 @@ class Sie4Dto2Array extends ArrayBase
     }
 
     /**
+     * Process Sie4 UNDERDIM data
+     *
+     * @return void
+     */
+    private function processUnderDimDtos()
+    {
+        static $KEYS = [
+            self::UNDERDIMNR,
+            self::UNDERDIMNAMN,
+            self::UNDERDIMSUPER
+        ];
+        if( empty( $this->sie4Dto->countUnderDimDtos())) {
+            return;
+        }
+        ArrayUtil::assureIsArray( $this->output, $KEYS );
+        foreach( $this->sie4Dto->getUnderDimDtos() as $x => $underDimDto ) {
+            if( $underDimDto->isDimensionsNrSet()) {
+                $this->output[self::UNDERDIMNR][$x]   = $underDimDto->getDimensionNr();
+            }
+            if( $underDimDto->isDimensionsNamnSet()) {
+                $this->output[self::UNDERDIMNAMN][$x] = $underDimDto->getDimensionsNamn();
+            }
+            if( $underDimDto->isSuperDimNrSet()) {
+                $this->output[self::UNDERDIMSUPER][$x] = $underDimDto->getSuperDimNr();
+            }
+        } // end foreach
+    }
+
+    /**
      * Process Sie4 OBJEKT data
+     *
+     * @return void
      */
     private function processDimObjektDtos()
     {
@@ -402,6 +453,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 IB data
+     *
+     * @return void
      */
     private function processIbDtos()
     {
@@ -433,6 +486,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 UB data
+     *
+     * @return void
      */
     private function processUbDtos()
     {
@@ -464,6 +519,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 OIB data
+     *
+     * @return void
      */
     private function processOibDtos()
     {
@@ -503,6 +560,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 OUB data
+     *
+     * @return void
      */
     private function processOubDtos()
     {
@@ -542,6 +601,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 RES data
+     *
+     * @return void
      */
     private function processResDtos()
     {
@@ -573,6 +634,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 PSALDO data
+     *
+     * @return void
      */
     private function processPsaldoDtos()
     {
@@ -616,6 +679,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 PBUDGET data
+     *
+     * @return void
      */
     private function processPbudgetDtos()
     {
@@ -659,6 +724,8 @@ class Sie4Dto2Array extends ArrayBase
 
     /**
      * Process Sie4 VER with TRANS/RTRANS/BTRANS data
+     *
+     * @return void
      */
     private function processVerDtos()
     {
@@ -729,6 +796,7 @@ class Sie4Dto2Array extends ArrayBase
      * @param int      $verX   ver order no
      * @param int      $transX trans order no (in ver)
      * @param TransDto $transDto
+     * @return void
      */
     private function processSingleTransDto(
         int $verX,
@@ -777,7 +845,7 @@ class Sie4Dto2Array extends ArrayBase
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getOutput() : array
     {

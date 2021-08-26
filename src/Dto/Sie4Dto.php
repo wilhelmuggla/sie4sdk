@@ -29,6 +29,7 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use InvalidArgumentException;
 
+use function microtime;
 use function usort;
 
 /**
@@ -37,7 +38,23 @@ use function usort;
 class Sie4Dto implements DtoInterface
 {
     /**
+     * Current Unix timestamp with microseconds, default 'microtime( true)' at instance create
+     *
+     * @var float
+     */
+    private $timestamp = null;
+
+    /**
+     * Unique guid, default set at instance create
+     *
+     * @var string
+     */
+    private $correlationId = null;
+
+    /**
      * FLAGGA default 0
+     *
+     * @var int
      */
     private $flagga = 0;
 
@@ -67,6 +84,11 @@ class Sie4Dto implements DtoInterface
      * @var DimDto[]  #DIM
      */
     private $dimDtos = [];
+
+    /**
+     * @var UnderDimDto[]  #UNDERDIM
+     */
+    private $underDimDtos = [];
 
     /**
      * @var DimObjektDto[]   #OBJECT
@@ -114,16 +136,85 @@ class Sie4Dto implements DtoInterface
     private $verDtos = [];
 
     /**
+     * Class constructor
+     */
+    public function __construct()
+    {
+        $this->setTimestamp( microtime( true ));
+        $this->setCorrelationId( self::getGuid());
+    }
+
+    /**
+     * @link https://stackoverflow.com/questions/21671179/how-to-generate-a-new-guid#26163679
+     * @return string
+     */
+    private static function getGuid() : string
+    {
+        static $FUNCTION = 'com_create_guid';
+        static $EXCL     = '{}';
+        static $FMTGUID  = '%04X%04X-%04X-%04X-%04X-%04X%04X%04X';
+        return ( true === function_exists( $FUNCTION ))
+            ? trim( $FUNCTION(), $EXCL )
+            : sprintf(
+                $FMTGUID,
+                mt_rand( 0, 65535 ),
+                mt_rand( 0, 65535 ),
+                mt_rand( 0, 65535 ),
+                mt_rand( 16384, 20479 ),
+                mt_rand( 32768, 49151 ),
+                mt_rand( 0, 65535 ),
+                mt_rand( 0, 65535 ),
+                mt_rand( 0, 65535 )
+            );
+    }
+
+    /**
      * Class factory method, set idDto
      *
      * @param IdDto $idDto
-     * @return static
+     * @return self
      */
     public static function factory( IdDto $idDto ) : self
     {
         $instance = new self();
         $instance->setIdDto( $idDto );
         return $instance;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTimestamp() : float
+    {
+        return $this->timestamp;
+    }
+
+    /**
+     * @param float $timestamp
+     * @return self
+     */
+    public function setTimestamp( float $timestamp ) : self
+    {
+        $this->timestamp = $timestamp;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCorrelationId() : string
+    {
+        return $this->correlationId;
+    }
+
+    /**
+     * @param string $correlationId
+     * @return self
+     */
+    public function setCorrelationId( string $correlationId ) : self
+    {
+        $this->correlationId = $correlationId;
+        return $this;
     }
 
     /**
@@ -136,7 +227,7 @@ class Sie4Dto implements DtoInterface
 
     /**
      * @param int $flagga
-     * @return static
+     * @return self
      */
     public function setFlagga( int $flagga ) : self
     {
@@ -168,7 +259,7 @@ class Sie4Dto implements DtoInterface
      * Set KSUMMA, (int) 0 if NOT
      *
      * @param int $ksumma
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public function setKsumma( int $ksumma ) : self
@@ -201,7 +292,7 @@ class Sie4Dto implements DtoInterface
      * Set IdDto
      *
      * @param IdDto $idDto
-     * @return static
+     * @return self
      */
     public function setIdDto( IdDto $idDto ) : self
     {
@@ -226,8 +317,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getAccountDtos() : array
     {
-        static $SORTER = [ AccountDto::class, 'accountSorter' ];
-        usort( $this->accountDtos, $SORTER );
+        usort( $this->accountDtos, AccountDto::$SORTER );
         return $this->accountDtos;
     }
 
@@ -238,7 +328,7 @@ class Sie4Dto implements DtoInterface
      * @param string $kontoNamn
      * @param string $kontoTyp
      * @param null|string $enhet
-     * @return static
+     * @return self
      */
     public function addAccount(
         $kontoNr,
@@ -261,7 +351,7 @@ class Sie4Dto implements DtoInterface
      * Add single AccountDto
      *
      * @param AccountDto $accountData
-     * @return static
+     * @return self
      */
     public function addAccountDto( AccountDto $accountData ) : self
     {
@@ -273,10 +363,11 @@ class Sie4Dto implements DtoInterface
      * Set array AccountDto[]
      *
      * @param AccountDto[] $accountDtos
-     * @return static
+     * @return self
      */
     public function setAccountDtos( array $accountDtos ) : self
     {
+        $this->accountDtos = [];
         foreach( $accountDtos as $accountDto ) {
             $this->addAccountDto( $accountDto );
         }
@@ -300,8 +391,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getSruDtos() : array
     {
-        static $SORTER = [ SruDto::class, 'sruSorter' ];
-        usort( $this->sruDtos, $SORTER );
+        usort( $this->sruDtos, SruDto::$SORTER );
         return $this->sruDtos;
     }
 
@@ -310,7 +400,7 @@ class Sie4Dto implements DtoInterface
      *
      * @param int|string $kontoNr
      * @param int|string $sruKod
-     * @return static
+     * @return self
      */
     public function addSru( $kontoNr, $sruKod ) : self
     {
@@ -321,7 +411,7 @@ class Sie4Dto implements DtoInterface
      * Add single SruDto
      *
      * @param SruDto $sruDto
-     * @return static
+     * @return self
      */
     public function addSruDto( SruDto $sruDto ) : self
     {
@@ -333,10 +423,11 @@ class Sie4Dto implements DtoInterface
      * Set array SruDto
      *
      * @param SruDto[] $sruDtos
-     * @return static
+     * @return self
      */
     public function setSruDtos( array $sruDtos ) : self
     {
+        $this->sruDtos = [];
         foreach( $sruDtos as $sruDto ) {
             $this->addSruDto( $sruDto );
         }
@@ -360,8 +451,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getDimDtos() : array
     {
-        static $SORTER = [ DimDto::class, 'dimSorter' ];
-        usort( $this->dimDtos, $SORTER );
+        usort( $this->dimDtos, DimDto::$SORTER );
         return $this->dimDtos;
     }
 
@@ -370,7 +460,7 @@ class Sie4Dto implements DtoInterface
      *
      * @param int|string $dimensionsNr
      * @param string $dimensionsNamn
-     * @return static
+     * @return self
      */
     public function addDim( $dimensionsNr, string $dimensionsNamn ) : self
     {
@@ -386,7 +476,7 @@ class Sie4Dto implements DtoInterface
      * Add single DimDto
      *
      * @param DimDto $dimDto
-     * @return static
+     * @return self
      */
     public function addDimDto( DimDto $dimDto ) : self
     {
@@ -398,12 +488,80 @@ class Sie4Dto implements DtoInterface
      * Set array DimDto
      *
      * @param DimDto[] $dimDtos
-     * @return static
+     * @return self
      */
     public function setDimDtos( array $dimDtos ) : self
     {
+        $this->dimDtos = [];
         foreach( $dimDtos as $dimDto ) {
             $this->addDimDto( $dimDto );
+        }
+        return $this;
+    }
+
+    /**
+     * Return int count UnderDimDtos
+     *
+     * @return int
+     */
+    public function countUnderDimDtos() : int
+    {
+        return count( $this->underDimDtos );
+    }
+
+    /**
+     * Return array UnderDimDto
+     *
+     * @return UnderDimDto[]
+     */
+    public function getUnderDimDtos() : array
+    {
+        usort( $this->underDimDtos, UnderDimDto::$SORTER );
+        return $this->underDimDtos;
+    }
+
+    /**
+     * Add single UnderDimDto using (under-)dimensionNr, dimensionsNamn, superDimNr
+     *
+     * @param int|string $dimensionsNr
+     * @param string     $dimensionsNamn
+     * @param int|string $superDimNr
+     * @return self
+     */
+    public function addUnderDim( $dimensionsNr, string $dimensionsNamn, $superDimNr ) : self
+    {
+        return $this->addUnderDimDto(
+            UnderDimDto::factoryUnderDim(
+                $dimensionsNr,
+                $dimensionsNamn,
+                $superDimNr
+            )
+        );
+    }
+
+    /**
+     * Add single UnderDimDto
+     *
+     * @param UnderDimDto $underDimDto
+     * @return self
+     */
+    public function addUnderDimDto( UnderDimDto $underDimDto ) : self
+    {
+        $this->underDimDtos[] = $underDimDto;
+        return $this;
+    }
+
+    /**
+     * Set array UnderDimDto
+     *
+     * @param UnderDimDto[] $underDimDtos
+     * @return self
+     */
+    public function setUnderDimDtos( array $underDimDtos ) : self
+    {
+        $this->underDimDtos = [];
+        foreach( $underDimDtos as $underdimDto ) {
+            $this->addUnderDimDto( $underdimDto );
         }
         return $this;
     }
@@ -425,8 +583,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getDimObjektDtos() : array
     {
-        static $SORTER = [ DimObjektDto::class, 'dimObjektSorter' ];
-        usort( $this->dimObjektDtos, $SORTER );
+        usort( $this->dimObjektDtos, DimObjektDto::$SORTER );
         return $this->dimObjektDtos;
     }
 
@@ -436,7 +593,7 @@ class Sie4Dto implements DtoInterface
      * @param int|string $dimensionsNr
      * @param int|string $objektNr
      * @param string $objektNamn
-     * @return static
+     * @return self
      */
     public function addDimObjekt( $dimensionsNr, $objektNr, string $objektNamn ) : self
     {
@@ -453,7 +610,7 @@ class Sie4Dto implements DtoInterface
      * Add single DimObjektDto
      *
      * @param DimObjektDto $dimObjektDto
-     * @return static
+     * @return self
      */
     public function addDimObjektDto( DimObjektDto $dimObjektDto ) : self
     {
@@ -465,10 +622,11 @@ class Sie4Dto implements DtoInterface
      * Set array DimObjektDto[]
      *
      * @param DimObjektDto[] $dimObjektDtos
-     * @return static
+     * @return self
      */
     public function setDimObjektDtos( array $dimObjektDtos ) : self
     {
+        $this->dimObjektDtos = [];
         foreach( $dimObjektDtos as $dimObjektDto ) {
             $this->addDimObjektDto( $dimObjektDto );
         }
@@ -526,8 +684,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getIbDtos() : array
     {
-        static $SORTER = [ BalansDto::class, 'balansSorter' ];
-        usort( $this->ibDtos, $SORTER );
+        usort( $this->ibDtos, BalansDto::$SORTER );
         return $this->ibDtos;
     }
 
@@ -535,7 +692,7 @@ class Sie4Dto implements DtoInterface
      * Add single ibDto
      *
      * @param BalansDto $ibDto
-     * @return static
+     * @return self
      */
     public function addIbDto( BalansDto $ibDto ) : self
     {
@@ -547,10 +704,11 @@ class Sie4Dto implements DtoInterface
      * Set array ibDto
      *
      * @param BalansDto[] $ibDtos
-     * @return static
+     * @return self
      */
     public function setIbDtos( array $ibDtos ) : self
     {
+        $this->ibDtos = [];
         foreach( $ibDtos as $ibDto ) {
             $this->addIbDto( $ibDto );
         }
@@ -608,8 +766,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getUbDtos() : array
     {
-        static $SORTER = [ BalansDto::class, 'balansSorter' ];
-        usort( $this->ubDtos, $SORTER );
+        usort( $this->ubDtos, BalansDto::$SORTER );
         return $this->ubDtos;
     }
 
@@ -617,7 +774,7 @@ class Sie4Dto implements DtoInterface
      * Add single ubDto
      *
      * @param BalansDto $ubDto
-     * @return static
+     * @return self
      */
     public function addUbDto( BalansDto $ubDto ) : self
     {
@@ -629,10 +786,11 @@ class Sie4Dto implements DtoInterface
      * Set array ubDto
      *
      * @param BalansDto[] $ubDtos
-     * @return static
+     * @return self
      */
     public function setUbDtos( array $ubDtos ) : self
     {
+        $this->ubDtos = [];
         foreach( $ubDtos as $ubDto ) {
             $this->addUbDto( $ubDto );
         }
@@ -656,8 +814,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getOibDtos() : array
     {
-        static $SORTER = [ BalansObjektDto::class, 'balansObjektSorter' ];
-        usort( $this->oibDtos, $SORTER );
+        usort( $this->oibDtos, BalansObjektDto::$SORTER );
         return $this->oibDtos;
     }
 
@@ -665,7 +822,7 @@ class Sie4Dto implements DtoInterface
      * Add single oibDto
      *
      * @param BalansObjektDto $oibDto
-     * @return static
+     * @return self
      */
     public function addOibDto( BalansObjektDto $oibDto ) : self
     {
@@ -677,10 +834,11 @@ class Sie4Dto implements DtoInterface
      * Set array oibDto
      *
      * @param BalansObjektDto[] $oibDtos
-     * @return static
+     * @return self
      */
     public function setOibDtos( array $oibDtos ) : self
     {
+        $this->oibDtos = [];
         foreach( $oibDtos as $oibDto ) {
             $this->addOibDto( $oibDto );
         }
@@ -704,8 +862,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getOubDtos() : array
     {
-        static $SORTER = [ BalansObjektDto::class, 'balansObjektSorter' ];
-        usort( $this->oubDtos, $SORTER );
+        usort( $this->oubDtos, BalansObjektDto::$SORTER );
         return $this->oubDtos;
     }
 
@@ -713,7 +870,7 @@ class Sie4Dto implements DtoInterface
      * Add single oubDto
      *
      * @param BalansObjektDto $oubDto
-     * @return static
+     * @return self
      */
     public function addOubDto( BalansObjektDto $oubDto ) : self
     {
@@ -725,10 +882,11 @@ class Sie4Dto implements DtoInterface
      * Set array oubDto
      *
      * @param BalansObjektDto[] $oubDtos
-     * @return static
+     * @return self
      */
     public function setOubDtos( array $oubDtos ) : self
     {
+        $this->oubDtos = [];
         foreach( $oubDtos as $oubDto ) {
             $this->addOubDto( $oubDto );
         }
@@ -752,8 +910,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getSaldoDtos() : array
     {
-        static $SORTER = [ BalansDto::class, 'balansSorter' ];
-        usort( $this->saldoDtos, $SORTER );
+        usort( $this->saldoDtos, BalansDto::$SORTER );
         return $this->saldoDtos;
     }
 
@@ -761,7 +918,7 @@ class Sie4Dto implements DtoInterface
      * Add single saldoDto
      *
      * @param BalansDto $saldoDto
-     * @return static
+     * @return self
      */
     public function addSaldoDto( BalansDto $saldoDto ) : self
     {
@@ -773,10 +930,11 @@ class Sie4Dto implements DtoInterface
      * Set array saldoDto
      *
      * @param BalansDto[] $saldoDtos
-     * @return static
+     * @return self
      */
     public function setSaldoDtos( array $saldoDtos ) : self
     {
+        $this->saldoDtos = [];
         foreach( $saldoDtos as $saldoDto ) {
             $this->addSaldoDto( $saldoDto );
         }
@@ -834,8 +992,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getPsaldoDtos() : array
     {
-        static $SORTER = [ PeriodDto::class, 'periodSorter' ];
-        usort( $this->pSaldoDtos, $SORTER );
+        usort( $this->pSaldoDtos, PeriodDto::$SORTER );
         return $this->pSaldoDtos;
     }
 
@@ -843,7 +1000,7 @@ class Sie4Dto implements DtoInterface
      * Add single pSaldoDto
      *
      * @param PeriodDto $pSaldoDto
-     * @return static
+     * @return self
      */
     public function addPsaldoDto( PeriodDto $pSaldoDto ) : self
     {
@@ -855,10 +1012,11 @@ class Sie4Dto implements DtoInterface
      * Set array pSaldoDto
      *
      * @param PeriodDto[] $pSaldoDtos
-     * @return static
+     * @return self
      */
     public function setPsaldoDtos( array $pSaldoDtos ) : self
     {
+        $this->pSaldoDtos = [];
         foreach( $pSaldoDtos as $pSaldoDto ) {
             $this->addPsaldoDto( $pSaldoDto );
         }
@@ -916,8 +1074,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getPbudgetDtos() : array
     {
-        static $SORTER = [ PeriodDto::class, 'periodSorter' ];
-        usort( $this->pBudgetDtos, $SORTER );
+        usort( $this->pBudgetDtos, PeriodDto::$SORTER );
         return $this->pBudgetDtos;
     }
 
@@ -925,7 +1082,7 @@ class Sie4Dto implements DtoInterface
      * Add single pBudgetDto
      *
      * @param PeriodDto $pBudgetDto
-     * @return static
+     * @return self
      */
     public function addPbudgetDto( PeriodDto $pBudgetDto ) : self
     {
@@ -937,10 +1094,11 @@ class Sie4Dto implements DtoInterface
      * Set array pBudgetDto
      *
      * @param PeriodDto[] $pBudgetDtos
-     * @return static
+     * @return self
      */
     public function setPbudgetDtos( array $pBudgetDtos ) : self
     {
+        $this->pBudgetDtos = [];
         foreach( $pBudgetDtos as $pBudgetDto ) {
             $this->addPbudgetDto( $pBudgetDto );
         }
@@ -978,8 +1136,7 @@ class Sie4Dto implements DtoInterface
      */
     public function getVerDtos() : array
     {
-        static $SORTER = [ VerDto::class, 'verSorter' ];
-        usort( $this->verDtos, $SORTER );
+        usort( $this->verDtos, VerDto::$SORTER );
         return $this->verDtos;
     }
 
@@ -988,7 +1145,7 @@ class Sie4Dto implements DtoInterface
      *
      * @param VerDto $verDto
      *
-     * @return static
+     * @return self
      */
     public function addVerDto( VerDto $verDto ) : self
     {
@@ -1000,10 +1157,11 @@ class Sie4Dto implements DtoInterface
      * Set array VerDto[]
      *
      * @param VerDto[] $verDtos
-     * @return static
+     * @return self
      */
     public function setVerDtos( array $verDtos ) : self
     {
+        $this->verDtos = [];
         foreach( $verDtos as $verDto ) {
             $this->addVerDto( $verDto );
         }

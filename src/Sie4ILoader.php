@@ -64,7 +64,7 @@ class Sie4ILoader implements Sie4Interface
 
     /**
      * @param null|SieEntry $sieEntry
-     * @return static
+     * @return self
      */
     public static function factory( $sieEntry = null ) : self
     {
@@ -76,6 +76,8 @@ class Sie4ILoader implements Sie4Interface
     }
 
     /**
+     * Return converted SieEntry into Sie4Dto
+     *
      * @param null|SieEntry $sieEntry
      * @return Sie4Dto
      * @throws InvalidArgumentException;
@@ -83,16 +85,12 @@ class Sie4ILoader implements Sie4Interface
     public function getSie4IDto( $sieEntry = null ) : Sie4Dto
     {
         static $FMT1 = 'SieEntry saknas';
-        static $FMT2 = 'Ofullständig SieEntry indata';
         if( ! empty( $sieEntry )) {
             $this->sie4IDto = new Sie4Dto();
             $this->setSieEntry( $sieEntry );
         }
         if( ! $this->isSieEntrySet()) {
             throw new InvalidArgumentException( $FMT1, 4201 );
-        }
-        if( ! $this->sieEntry->isValid()) {
-            throw new InvalidArgumentException( $FMT2, 4201 );
         }
 
         $this->processIdData();
@@ -105,6 +103,8 @@ class Sie4ILoader implements Sie4Interface
 
     /**
      * Updates IdData
+     *
+     * @return void
      */
     private function processIdData()
     {
@@ -164,6 +164,8 @@ class Sie4ILoader implements Sie4Interface
 
     /**
      * Updates AccountData
+     *
+     * @return void
      */
     private function processAccountData()
     {
@@ -183,6 +185,8 @@ class Sie4ILoader implements Sie4Interface
 
     /**
      * Updates DimData and DimObjektData
+     *
+     * @return void
      */
     private function processDimData()
     {
@@ -213,6 +217,8 @@ class Sie4ILoader implements Sie4Interface
 
     /**
      * Updates verDto/TransDto
+     *
+     * @return void
      */
     private function processVerData()
     {
@@ -333,7 +339,7 @@ class Sie4ILoader implements Sie4Interface
 
     /**
      * @param SieEntry $sieEntry
-     * @return static
+     * @return self
      */
     public function setSieEntry( SieEntry $sieEntry ) : self
     {

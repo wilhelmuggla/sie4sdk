@@ -27,95 +27,77 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
-use InvalidArgumentException;
-use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
-use Kigkonsult\Sie4Sdk\Sie4Validator;
-
-use function strcmp;
-
-/**
- * Class SruDto
- */
-class SruDto implements DtoInterface
+class UnderDimDto extends DimDto
 {
-    use KontoNrTrait;
-
     /**
-     * @var null|int
+     * @var int
      */
-    private $sruKod = null;
+    protected $superDimNr = null;
 
     /**
      * @var string[]
      */
-    public static $SORTER = [ self::class, 'sruSorter' ];
+    public static $SORTER = [ self::class, 'underDimSorter' ];
 
     /**
-     * Sort SruDto[] on kontonr, sruKod
+     * Sort UnderDimDto[] on (super-)dimensionsnr and (under-)dimensionsnr
      *
-     * @param SruDto $a
-     * @param SruDto $b
+     * @param UnderDimDto $a
+     * @param UnderDimDto $b
      * @return int
      */
-    public static function sruSorter( SruDto $a, SruDto $b ) : int
+    public static function underDimSorter( UnderDimDto $a, UnderDimDto $b ) : int
     {
-        $kontoNrA = $a->getKontoNr();
-        $kontoNrB = $b->getKontoNr();
-        if( $kontoNrA < $kontoNrB ) {
-            return -1;
+        if( 0 === ( $superDimCmp = strcmp(
+            (string) $a->getSuperDimNr(),
+            (string) $b->getSuperDimNr())
+            )
+        ) {
+            return strcmp((string) $a->getDimensionNr(), (string) $b->getDimensionNr());
         }
-        if( $kontoNrA > $kontoNrB ) {
-            return 1;
-        }
-        return strcmp((string) $a->getSruKod(), (string) $b->getSruKod());
+        return $superDimCmp;
     }
 
     /**
-     * Class factory method, kontoNr/Namn/Typ, enhet opt
+     * Class factory method, set dimensionNr, dimensionsNamn and superDimNr
      *
-     * @param int|string $kontoNr
-     * @param int|string $sruKod
+     * @param int|string $dimensionsNr
+     * @param string $dimensionsNamn
+     * @param int|string $superDimNr
      * @return self
      */
-    public static function factory( $kontoNr, $sruKod ) : self
+    public static function factoryUnderDim( $dimensionsNr, string $dimensionsNamn, $superDimNr ) : self
     {
         $instance = new self();
-        $instance->setKontoNr( $kontoNr );
-        $instance->setSruKod( $sruKod );
+        $instance->setDimensionNr( $dimensionsNr );
+        $instance->setDimensionsNamn( $dimensionsNamn );
+        $instance->setSuperDimNr((int) $superDimNr );
         return $instance;
     }
 
     /**
-     * Return sruKod
-     *
-     * @return null|int
+     * @return int
      */
-    public function getSruKod()
+    public function getSuperDimNr() : int
     {
-        return $this->sruKod;
+        return $this->superDimNr;
     }
 
     /**
-     * Return bool true if sruKod is set
-     *
      * @return bool
      */
-    public function isSruKodSet() : bool
+    public function isSuperDimNrSet() : bool
     {
-        return ( null !== $this->sruKod );
+        return ( null !== $this->superDimNr );
     }
 
     /**
-     * Set sruKod
-     *
-     * @param int|string $sruKod
-     * @return self
-     * @throws InvalidArgumentException
+     * @param int $superDimNr
+     * @return UnderDimDto
      */
-    public function setSruKod( $sruKod ) : self
+    public function setSuperDimNr( int $superDimNr ) : UnderDimDto
     {
-        Sie4Validator::assertIntegerish( self::SRU, $sruKod );
-        $this->sruKod = (int) $sruKod;
+        $this->superDimNr = $superDimNr;
         return $this;
     }
 }

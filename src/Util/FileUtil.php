@@ -45,6 +45,7 @@ class FileUtil
      *
      * @param string $fileName
      * @param int    $errCode
+     * @return void
      * @throws InvalidArgumentException
      */
     public static function assertReadFile( string $fileName, int $errCode )
@@ -70,7 +71,7 @@ class FileUtil
      *
      * @param string $fileName
      * @param int    $errCode
-     * @return array
+     * @return string[]
      * @throws RuntimeException
      */
     public static function readFile( string $fileName, int $errCode ) : array
@@ -89,10 +90,11 @@ class FileUtil
     }
 
     /**
-     * Assert file is writable, created if not exists
+     * Assert file is writable, create (touch) if not exists
      *
      * @param string $fileName
      * @param int    $errCode
+     * @return void
      * @throws InvalidArgumentException
      */
     public static function assertWriteFile( string $fileName, int $errCode )
@@ -112,8 +114,9 @@ class FileUtil
      * Write file from array
      *
      * @param string  $fileName
-     * @param string|array $output
+     * @param string|string[] $output
      * @param int     $errCode
+     * @return void
      * @throws RunTimeException
      */
     public static function writeFile( string $fileName, $output, int $errCode )

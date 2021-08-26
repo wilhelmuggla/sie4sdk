@@ -41,6 +41,11 @@ class DimDto implements DtoInterface
     protected $dimensionsNamn = null;
 
     /**
+     * @var string[]
+     */
+    public static $SORTER = [ self::class, 'dimSorter' ];
+
+    /**
      * Sort DimDto[] on dimensionsnr
      *
      * @param DimDto $a
@@ -53,19 +58,17 @@ class DimDto implements DtoInterface
     }
 
     /**
-     * Class factory method, set dimensionNr and, dimensionsNamn
+     * Class factory method, set dimensionNr and dimensionsNamn
      *
      * @param int|string $dimensionsNr
      * @param string $dimensionsNamn
-     * @return static
+     * @return self
      */
     public static function factoryDim( $dimensionsNr, string $dimensionsNamn ) : self
     {
         $instance = new self();
         $instance->setDimensionNr( $dimensionsNr );
-        if( ! empty( $dimensionsNamn )) {
-            $instance->setDimensionsNamn( $dimensionsNamn );
-        }
+        $instance->setDimensionsNamn( $dimensionsNamn );
         return $instance;
     }
 
@@ -93,7 +96,7 @@ class DimDto implements DtoInterface
      * Set dimensionsNamn
      *
      * @param string $dimensionsNamn
-     * @return static
+     * @return self
      */
     public function setDimensionsNamn( string $dimensionsNamn ) : self
     {

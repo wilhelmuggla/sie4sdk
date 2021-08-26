@@ -27,8 +27,6 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
-use Kigkonsult\Sie4Sdk\Dto\DtoInterface;
-
 trait SignTrait
 {
     /**
@@ -60,7 +58,7 @@ trait SignTrait
      * Set sign
      *
      * @param string $sign
-     * @return static
+     * @return self
      */
     public function setSign( string $sign ) : self
     {

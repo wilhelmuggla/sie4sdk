@@ -28,7 +28,6 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
 use InvalidArgumentException;
-use Kigkonsult\Sie4Sdk\Dto\DtoInterface;
 use Kigkonsult\Sie4Sdk\Sie4Interface;
 use Kigkonsult\Sie4Sdk\Sie4Validator;
 
@@ -63,7 +62,7 @@ trait KontoNrTrait
      * Set kontoNr
      *
      * @param int|string $kontoNr
-     * @return static
+     * @return self
      * @throws InvalidArgumentException
      */
     public function setKontoNr( $kontoNr ) : self
