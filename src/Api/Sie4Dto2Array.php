@@ -44,7 +44,7 @@ use function number_format;
  * output format
  * [
  *     self::TIMESTAMP          => <microtime>
- *     self::GUID               => <uniqueId>
+ *     self::GUID               => <guid>
  *
  *     self::FLAGGPOST          => <0/1>,
  *
@@ -151,6 +151,8 @@ use function number_format;
  *     self::PBUDGETKVANTITET   => [ *<kvantitet> ];
  *
  *     // instance data share the same index
+ *     self::VERTIMESTAMP       => [ *<microtime> ]
+ *     self::VERGUID            => [ *<guid> ]
  *     self::VERDATUM           => [ *<SIE4YYYYMMDD-verdatum> ],
  *     self::VERSERIE           => [ *serie> ],
  *     self::VERNR              => [ *<vernr> ],
@@ -160,6 +162,8 @@ use function number_format;
  *
  *     // Ledger data instances within Journal entry data instance share same index
  *     // Journal entry data in index order
+ *     self::TRANSTIMESTAMP     => [ *[ *<microtime> ] ]
+ *     self::TRANSGUID          => [ *[ *<guid> ] ]
  *     self::TRANSKONTONR       => [ *[ *<kontonr> ] ]
  *     self::TRANSDIMENSIONNR   => [ *[ *[ *<dimId> ] ] ],
  *     self::TRANSOBJEKTNR      => [ *[ *[ *<objektnr> ] ] ],
@@ -168,6 +172,8 @@ use function number_format;
  *     self::TRANSTEXT          => [ *[ *<transText> ] ]
  *     self::TRANSKVANTITET     => [ *[ *<kvantitet> ] ]
  *
+ *     self::RTRANSTIMESTAMP    => [ *[ *<microtime> ] ]
+ *     self::RTRANSGUID         => [ *[ *<guid> ] ]
  *     self::RTRANSKONTONR      => [ *[ *<kontonr> ] ]
  *     self::RTRANSDIMENSIONNR  => [ *[ *[ *<dimId> ] ] ],
  *     self::RTRANSOBJEKTNR     => [ *[ *[ *<objektnr> ] ] ],
@@ -176,6 +182,8 @@ use function number_format;
  *     self::RTRANSTEXT         => [ *[ *<transText> ] ]
  *     self::RTRANSKVANTITET    => [ *[ *<kvantitet> ] ]
  *
+ *     self::BTRANSTIMESTAMP    => [ *[ *<microtime> ] ]
+ *     self::BTRANSGUID         => [ *[ *<guid> ] ]
  *     self::BTRANSKONTONR      => [ *[ *<kontonr> ] ]
  *     self::BTRANSDIMENSIONNR  => [ *[ *[ *<dimId> ] ] ],
  *     self::BTRANSOBJEKTNR     => [ *[ *[ *<objektnr> ] ] ],
@@ -208,12 +216,11 @@ class Sie4Dto2Array extends ArrayBase
      */
     public static function process( Sie4Dto $sie4Dto ) : array
     {
-        static $DOT = '.';
         $instance          = new self();
         $instance->sie4Dto = $sie4Dto;
         $instance->output  = [];
         $instance->output[self::TIMESTAMP] = number_format(
-            $instance->sie4Dto->getTimestamp(), 6, $DOT, StringUtil::$SP0
+            $instance->sie4Dto->getTimestamp(), 6, StringUtil::$DOT, StringUtil::$SP0
         );
         $instance->output[self::GUID]      = $instance->sie4Dto->getCorrelationId();
         $instance->output[self::FLAGGPOST] = $instance->sie4Dto->getFlagga();
@@ -730,12 +737,16 @@ class Sie4Dto2Array extends ArrayBase
     private function processVerDtos()
     {
         static $KEYS = [
+            self::VERTIMESTAMP,
+            self::VERGUID,
             self::VERSERIE,
             self::VERNR,
             self::VERDATUM,
             self::VERTEXT,
             self::REGDATUM,
             self::VERSIGN,
+            self::TRANSTIMESTAMP,
+            self::TRANSGUID,
             self::TRANSKONTONR,
             self::TRANSDIMENSIONNR,
             self::TRANSOBJEKTNR,
@@ -744,6 +755,8 @@ class Sie4Dto2Array extends ArrayBase
             self::TRANSTEXT,
             self::TRANSKVANTITET,
             self::TRANSSIGN,
+            self::RTRANSTIMESTAMP,
+            self::RTRANSGUID,
             self::RTRANSKONTONR,
             self::RTRANSDIMENSIONNR,
             self::RTRANSOBJEKTNR,
@@ -752,6 +765,8 @@ class Sie4Dto2Array extends ArrayBase
             self::RTRANSTEXT,
             self::RTRANSKVANTITET,
             self::RTRANSSIGN,
+            self::BTRANSTIMESTAMP,
+            self::BTRANSGUID,
             self::BTRANSKONTONR,
             self::BTRANSDIMENSIONNR,
             self::BTRANSOBJEKTNR,
@@ -766,6 +781,12 @@ class Sie4Dto2Array extends ArrayBase
         }
         ArrayUtil::assureIsArray( $this->output, $KEYS );
         foreach( $this->sie4Dto->getVerDtos() as $verX => $verDto ) {
+
+            $this->output[self::VERTIMESTAMP][$verX] = number_format(
+                $verDto->getTimestamp(), 6, StringUtil::$DOT, StringUtil::$SP0
+            );
+            $this->output[self::VERGUID][$verX]      = $verDto->getCorrelationId();
+
             if( $verDto->isSerieSet()) {
                 $this->output[self::VERSERIE][$verX] = $verDto->getSerie();
             }
@@ -804,11 +825,20 @@ class Sie4Dto2Array extends ArrayBase
         TransDto $transDto
     )
     {
-        $label  = $transDto->getTransType();
-        $keyArr = self::$TRANSKEYS[$label];
+        $label    = $transDto->getTransType();
+        $keyArr   = self::$TRANSKEYS[$label];
+
+        $key      = $keyArr[self::TRANSTIMESTAMP];
+        $this->output[$key][$verX][$transX] =
+            number_format(
+                $transDto->getTimestamp(), 6, StringUtil::$DOT, StringUtil::$SP0
+            );
+        $key      = $keyArr[self::TRANSGUID];
+        $this->output[$key][$verX][$transX] = $transDto->getCorrelationId();
+
         if( $transDto->isKontoNrSet()) {
-            $keyKontoNr                                = $keyArr[self::TRANSKONTONR];
-            $this->output[$keyKontoNr][$verX][$transX] = $transDto->getKontoNr();
+            $key  = $keyArr[self::TRANSKONTONR];
+            $this->output[$key][$verX][$transX] = $transDto->getKontoNr();
         }
         if( 0 < $transDto->countObjektlista()) {
             $key  = $keyArr[self::TRANSDIMENSIONNR];

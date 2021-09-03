@@ -29,28 +29,15 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use InvalidArgumentException;
 
-use function microtime;
 use function usort;
 
 /**
  * Class Sie5EntryLoader
+
+ * Inherit unique timestamp and guid properties from parent
  */
-class Sie4Dto implements DtoInterface
+class Sie4Dto extends BaseId
 {
-    /**
-     * Current Unix timestamp with microseconds, default 'microtime( true)' at instance create
-     *
-     * @var float
-     */
-    private $timestamp = null;
-
-    /**
-     * Unique guid, default set at instance create
-     *
-     * @var string
-     */
-    private $correlationId = null;
-
     /**
      * FLAGGA default 0
      *
@@ -136,39 +123,6 @@ class Sie4Dto implements DtoInterface
     private $verDtos = [];
 
     /**
-     * Class constructor
-     */
-    public function __construct()
-    {
-        $this->setTimestamp( microtime( true ));
-        $this->setCorrelationId( self::getGuid());
-    }
-
-    /**
-     * @link https://stackoverflow.com/questions/21671179/how-to-generate-a-new-guid#26163679
-     * @return string
-     */
-    private static function getGuid() : string
-    {
-        static $FUNCTION = 'com_create_guid';
-        static $EXCL     = '{}';
-        static $FMTGUID  = '%04X%04X-%04X-%04X-%04X-%04X%04X%04X';
-        return ( true === function_exists( $FUNCTION ))
-            ? trim( $FUNCTION(), $EXCL )
-            : sprintf(
-                $FMTGUID,
-                mt_rand( 0, 65535 ),
-                mt_rand( 0, 65535 ),
-                mt_rand( 0, 65535 ),
-                mt_rand( 16384, 20479 ),
-                mt_rand( 32768, 49151 ),
-                mt_rand( 0, 65535 ),
-                mt_rand( 0, 65535 ),
-                mt_rand( 0, 65535 )
-            );
-    }
-
-    /**
      * Class factory method, set idDto
      *
      * @param IdDto $idDto
@@ -179,42 +133,6 @@ class Sie4Dto implements DtoInterface
         $instance = new self();
         $instance->setIdDto( $idDto );
         return $instance;
-    }
-
-    /**
-     * @return float
-     */
-    public function getTimestamp() : float
-    {
-        return $this->timestamp;
-    }
-
-    /**
-     * @param float $timestamp
-     * @return self
-     */
-    public function setTimestamp( float $timestamp ) : self
-    {
-        $this->timestamp = $timestamp;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCorrelationId() : string
-    {
-        return $this->correlationId;
-    }
-
-    /**
-     * @param string $correlationId
-     * @return self
-     */
-    public function setCorrelationId( string $correlationId ) : self
-    {
-        $this->correlationId = $correlationId;
-        return $this;
     }
 
     /**

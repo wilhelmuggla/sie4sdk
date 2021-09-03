@@ -34,6 +34,8 @@ use Kigkonsult\Sie4Sdk\Api\Sie4Dto2Array;
 use Kigkonsult\Sie4Sdk\Api\Sie4Dto2Json;
 use Kigkonsult\Sie4Sdk\Dto\IdDto;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
+use Kigkonsult\Sie4Sdk\Dto\TransDto;
+use Kigkonsult\Sie4Sdk\Dto\VerDto;
 use Kigkonsult\Sie4Sdk\DtoLoader\Sie4Dto as Sie4Gen;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 use PHPUnit\Framework\TestCase;
@@ -75,7 +77,7 @@ class TestGen extends TestCase
         static $ERR1 = '#%d-%d Sie4%sDto assert error, %s%s%s';
         static $ERR2 = '#%d-%d Sie4%sDto string compare error';
 
-        // create sie4String
+        // create utf8 sie4String
         $sie4String1 = StringUtil::cp437toUtf8(
             Sie4EWriter::factory()->process( $sie4Dto )
         );
@@ -127,6 +129,12 @@ class TestGen extends TestCase
         $jsonString = Sie4Dto2Json::process( $sie4Dto );
         // echo $jsonString . PHP_EOL;
         $sie4Dto3    = Json2Sie4Dto::process( $jsonString );
+
+        // test timestamp+guid, uniqueness in SieDto
+        // check timestamps and guids - same in sie4Dto and sie4Dto3
+        $this->checkTimeStampGuid( $case, $sie4Dto, $sie4Dto3 );
+
+        // check $sie4Dto/$sie4Dto3 strings
         $sie4String3 = Sie4EWriter::factory()->process( $sie4Dto3 );
         $this->assertEquals(
             $sie4String1,
@@ -148,7 +156,7 @@ class TestGen extends TestCase
         $this->assertEquals(
             $sie4String1,
             $sie4String4,
-            sprintf( $ERR2, $case, 4, 'E' )
+            sprintf( $ERR2, $case, 7, 'E' )
         );
 
         // prep as Sie4I
@@ -190,7 +198,7 @@ class TestGen extends TestCase
             sprintf(
                 $ERR1,
                 $case,
-                5,
+                9,
                 'I',
                 $outcome,
                 PHP_EOL,
@@ -211,7 +219,7 @@ class TestGen extends TestCase
         // validate SieEntry
         $this->assertTrue(
             $sieEntry->isValid( $expected ),
-            sprintf( $ERR1, $case, 5, 'I', '', PHP_EOL, var_export( $expected, true ), PHP_EOL )
+            sprintf( $ERR1, $case, 10, 'I', '', PHP_EOL, var_export( $expected, true ), PHP_EOL )
         );
 
         // parse SieEntry into Sie4
@@ -233,7 +241,7 @@ class TestGen extends TestCase
             sprintf(
                 $ERR1,
                 $case,
-                6,
+                11,
                 'I',
                 $outcome,
                 PHP_EOL,
@@ -252,7 +260,86 @@ class TestGen extends TestCase
         $this->assertEquals(
             $sie4String3,
             $sie4String5,
-            sprintf( $ERR2, $case, 7, 'I' )
+            sprintf( $ERR2, $case, 12, 'I' )
         );
+    }
+
+    /**
+     * test timestamp+guid, uniqueness in SieDto
+     * check timestamps and guids - same in sie4Dto and sie4Dto3
+     *
+     * @param int     $case
+     * @param Sie4Dto $expected
+     * @param Sie4Dto $actual
+     */
+    public function checkTimeStampGuid( int $case, Sie4Dto $expected, Sie4Dto $actual )
+    {
+        static $ERR3 = '#%d-%d Sie4%sDto %s error, %s - %s';
+        $tsGuidArr = [ (string) $actual->getTimestamp() . $actual->getCorrelationId() ];
+        $exp       = $expected->getTimestamp();
+        $value     = $actual->getTimestamp();
+        $this->assertEquals(
+            $exp,
+            $value,
+            sprintf( $ERR3, $case, 41, 'E', Sie4Dto::TIMESTAMP, $exp, (string) $value)
+        );
+        $exp   = $expected->getCorrelationId();
+        $value = $actual->getCorrelationId();
+        $this->assertEquals(
+            $exp,
+            $value,
+            sprintf( $ERR3, $case, 42, 'E', Sie4Dto::GUID, $exp, $value )
+        );
+        $sie4DtoVerDtos = $expected->getVerDtos();
+        foreach( $actual->getVerDtos() as $vx => $verDto ) {
+            $testV = $vx + 50;
+            $exp   = $sie4DtoVerDtos[$vx]->getTimestamp();
+            $value = $verDto->getTimestamp();
+            $this->assertEquals(
+                $exp,
+                $value,
+                sprintf( $ERR3, $case, $testV, 'E', Sie4Dto::VERTIMESTAMP, $exp, (string) $value )
+            );
+            $exp   = $sie4DtoVerDtos[$vx]->getCorrelationId();
+            $value = $verDto->getCorrelationId();
+            $this->assertEquals(
+                $exp,
+                $value,
+                sprintf( $ERR3, $case, $testV, 'E', Sie4Dto::VERGUID, $exp, $value )
+            );
+
+            $key   = (string) $verDto->getTimestamp() . $verDto->getCorrelationId();
+            $this->assertFalse(
+                in_array( $key, $tsGuidArr ),
+                sprintf( $ERR3, $case, $testV, 'E', VerDto::VER, $vx, $key )
+            );
+            $tsGuidArr[] = $key;
+
+            $verTransDtos = $sie4DtoVerDtos[$vx]->getTransDtos();
+            foreach( $verDto->getTransDtos() as $tx => $transDto ) {
+                $testT = $testV . '-' . $tx;
+                $exp   = $verTransDtos[$tx]->getTimestamp();
+                $value = $transDto->getTimestamp();
+                $this->assertEquals(
+                    $exp,
+                    $value,
+                    sprintf( $ERR3, $case, $testT, 'E', Sie4Dto::TRANSTIMESTAMP, $exp, (string) $value )
+                );
+                $exp   = $verTransDtos[$tx]->getCorrelationId();
+                $value = $transDto->getCorrelationId();
+                $this->assertEquals(
+                    $exp,
+                    $value,
+                    sprintf( $ERR3, $case, $testT, 'E', Sie4Dto::TRANSGUID, $exp, $value )
+                );
+
+                $key = (string) $transDto->getTimestamp() . $transDto->getCorrelationId();
+                $this->assertFalse(
+                    in_array( $key, $tsGuidArr ),
+                    sprintf( $ERR3, $case, $testT, 'E', TransDto::TRANS, $vx . '-' . $tx,  $key )
+                );
+                $tsGuidArr[] = $key;
+            } // end foreach
+        } // end foreach
     }
 }

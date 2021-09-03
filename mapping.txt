@@ -274,6 +274,11 @@ Sie4
 ===============================================================================
 
 #VER
+                      microtime   timestamp                  VERTIMESTAMP
+                        (true)
+
+                      unique      correlationId              VERGUID
+                        string
       serie                       serie                      VERSERIE
       vernr                       vernr                      VERNR
       verdatum                    verdatum                   VERDATUM
@@ -290,7 +295,12 @@ Sie4
 ===============================================================================
 
 #TRANS
-                                  transType (fix #TRANS)
+                      microtime   timestamp                  TRANSTIMESTAMP
+                        (true)
+
+                      unique      correlationId              TRANSGUID
+                        string
+                                  transType (auto #TRANS)
       kontonr                     kontoNr                    TRANSKONTONR
       objektlista                 objektlista
                       array of DimObjektDto, above           TRANSDIMENSIONNR
@@ -302,6 +312,11 @@ Sie4
       sign                        sign                       TRANSSIGN
 
 #RTRANS
+                      microtime   timestamp                  RTRANSTIMESTAMP
+                        (true)
+
+                      unique      correlationId              RTRANSGUID
+                        string
                                   transType (fix #RTRANS)
       kontonr                     kontoNr                    RTRANSKONTONR
       objektlista                 objektlista
@@ -314,6 +329,11 @@ Sie4
       sign                        sign                       RTRANSSIGN
 
 #BTRANS
+                      microtime   timestamp                  BTRANSTIMESTAMP
+                        (true)
+
+                      unique      correlationId              BTRANSGUID
+                        string
                                   transType (fix #BTRANS)
       kontonr                     kontoNr                    BTRANSKONTONR
       objektlista                 objektlista

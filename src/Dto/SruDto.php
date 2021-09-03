@@ -46,7 +46,7 @@ class SruDto implements DtoInterface
     private $sruKod = null;
 
     /**
-     * @var string[]
+     * @var callable
      */
     public static $SORTER = [ self::class, 'sruSorter' ];
 

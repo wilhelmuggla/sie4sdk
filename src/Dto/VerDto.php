@@ -36,11 +36,13 @@ use function strcmp;
 /**
  * Class VerDto
  *
+ * Inherit unique timestamp and guid properties from parent
+ *
  * Verdatum and trans required
  * In each trans, kontonr and belopp required,
  *   in trans objektlista, if exists, pairs of dimension and objektnr required
  */
-class VerDto implements DtoInterface
+class VerDto extends BaseId
 {
     /**
      * @var null|int|string
@@ -75,7 +77,7 @@ class VerDto implements DtoInterface
     private $transDtos = [];
 
     /**
-     * @var string[]
+     * @var callable
      */
     public static $SORTER = [ VerDto::class, 'verSorter' ];
 
@@ -101,9 +103,12 @@ class VerDto implements DtoInterface
 
     /**
      * VerDto constructor
+     *
+     * Sets unique timestamp, guid and verdatum
      */
     public function __construct()
     {
+        parent::__construct();
         $this->setVerdatum( new DateTime());
     }
 

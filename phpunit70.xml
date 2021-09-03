@@ -2,7 +2,7 @@
 <!--
  Sie4Sdk  PHP Sie4 SDK and Sie5 conversion package
 
- This file is a part of Sie4Sdk
+ This file is a part of Sie4Ito5
 
  author    Kjell-Inge Gustafsson, kigkonsult
  copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
@@ -31,7 +31,9 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         bootstrap="autoload.php">
+         syntaxCheck="false"
+         bootstrap="autoload.php"
+        >
     <testsuites>
         <testsuite name="Generated Sie4Dto Tests">
             <file>test/TestGen.php</file>
@@ -40,13 +42,10 @@
             <file>test/TestFiles.php</file>
         </testsuite>
     </testsuites>
-    <coverage includeUncoveredFiles="true"
-              processUncoveredFiles="true"
-              pathCoverage="false"
-              ignoreDeprecatedCodeUnits="false"
-              disableCodeCoverageIgnore="true">
-        <!-- ... -->
-        <include>
+    <filter>
+        <whitelist
+                addUncoveredFilesFromWhitelist='true'
+                processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>
             <file>src/Sie4ELoader.php</file>
             <file>src/Sie4EWriter.php</file>
@@ -89,25 +88,32 @@
             <file>src/Util/GuidUtil.php</file>
             <file>src/Util/FileUtil.php</file>
             <file>src/Util/StringUtil.php</file>
-        </include>
-        <!-- Require the PHP Xdebug (2.7.0 or later) and tokenizer extensions-->
-        <!-- Remove or comment after your own choice-->
-        <!-- Note, all output in report/logging will be saved in 'testDocs' folder -->
-        <report>
-            <!-- clover outputFile="testDocs/clover.xml"/ -->
-            <!-- crap4j outputFile="testDocs/crap4j.xml" threshold="50"/ -->
-            <html outputDirectory="testDocs/PHPUnitCoverage" lowUpperBound="60" highLowerBound="80"/>
-            <php outputFile="testDocs/coverage.php"/>
-            <!-- text outputFile="testDocs/coverage.txt" showUncoveredFiles="false" showOnlySummary="true"/ -->
-            <!-- xml outputDirectory="testDocs/xml-coverage"/ -->
-        </report>
-    </coverage>
-    <logging>
-        <!-- junit outputFile="testDocs/junit.xml"/ -->
-        <!-- teamcity outputFile="testDocs/teamcity.txt"/ -->
-        <!-- testdoxHtml outputFile="testDocs/testdox.html"/ -->
-        <!-- testdoxText outputFile="testDocs/testdox.txt"/ -->
-        <!-- testdoxXml outputFile="testDocs/testdox.xml"/ -->
-        <text outputFile="testDocs/logfile.txt"/>
-    </logging>
+        </whitelist>
+    </filter>
+  <logging>
+      <!-- Remove or comment after your own choice-->
+      <!-- Note, all 'logs' will be saved in 'testDocs' folder -->
+      <log type="coverage-html"
+           target="testDocs/PHPUnitCoverage"
+           lowUpperBound="35"
+           highLowerBound="70"/>
+      <!-- log type="coverage-clover"
+           target="testDocs/coverage.xml"/ -->
+      <!-- log type="coverage-php"
+           target="testDocs/coverage.serialized"/ -->
+      <!-- log type="coverage-text"
+           target="testDocs/PHPUnitReport.txt"
+           showUncoveredFiles="true"/ -->
+      <!-- log type="json"
+           target="testDocs/logfile.json"/ -->
+      <!-- log type="tap"
+           target="testDocs/logfile.tap"/ -->
+      <!-- log type="junit"
+           target="testDocs/logfile.xml"
+           logIncompleteSkipped="false"/ -->
+      <!-- log type="testdox-html"
+           target="testDocs/testdox.html"/ -->
+      <!-- log type="testdox-text"
+           target="testDocs/testdox.txt"/ -->
+  </logging>
 </phpunit>

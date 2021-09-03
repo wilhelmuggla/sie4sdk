@@ -42,7 +42,7 @@
     "require": {
         "ext-iconv": "*",
         "ext-json": "*",
-        "php": "^7.0",
+        "php": ">=7.0",
         "kigkonsult/asit": ">=1.8",
         "kigkonsult/sie5sdk": ">=1.0.6"
     },

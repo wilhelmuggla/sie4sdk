@@ -48,17 +48,17 @@ class IdDto implements DtoInterface
     /**
      * @var string
      */
-    private $programnamn = null;
+    private $programnamn;
 
     /**
      * @var string
      */
-    private $version = null;
+    private $version;
 
     /**
      * @var DateTime
      */
-    private $genDate = null;
+    private $genDate;
 
     /**
      * sign used as genSign

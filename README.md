@@ -92,12 +92,16 @@ $sieEntryXML = Sie5Writer::factory()->write( $sieEntry );
 __*Sie4Sdk*__ 
 - require PHP7+
 - uses kigkonsult\\[Sie5Sdk] for Sie5 Sie/SieEntry conversion and parse/write XML parts.
-- the Sie4 input/output string/file is in PHP CP437 encding, IBM PC 8-bitars extended ASCII (Codepage 437),
+- the _Sie4_ input/output string/file is in PHP CP437 encding, IBM PC 8-bitars extended ASCII (Codepage 437),
 all other PHP inbounding encoding (UTF-8)
-- Sie4Dto equipped with (unique) time/guid properties - _timestamp_ / _correlationId_<br> auto populated at instance create   
+- _Sie4Dto_, _VerDto_ and _TransDto_ are equipped with<br>
+  unique time/guid properties - _timestamp_ (float) / _correlationId_ (string)<br>
+   auto populated at instance create
 - usefull constants are found in the Sie4Interface
-- for the Sie4Dto - array mapping scheme, review mapping.txt.<br>
-  For array(/json) format, review top of src/Api/Array2Sie4Dto.php file
+- review mapping.txt for
+  - Dto class and property structure
+  - the _Sie4Dto_ - array mapping scheme<br>
+  or review top of src/Api/Array2Sie4Dto.php file
 
 
 To set up Sie4Sdk as a network service (using REST APIs, as a microservice etc), [Comet] is to recommend.

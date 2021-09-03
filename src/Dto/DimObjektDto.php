@@ -47,7 +47,7 @@ class DimObjektDto extends DimDto
     private $objektNamn = null;
 
     /**
-     * @var string[]
+     * @var callable
      */
     public static $SORTER = [ DimObjektDto::class, 'dimObjektSorter' ];
 

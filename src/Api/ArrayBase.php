@@ -36,6 +36,8 @@ abstract class ArrayBase implements Sie4Interface
      */
     protected static $TRANSKEYS = [
         self::TRANS => [
+            self::TRANSTIMESTAMP   => self::TRANSTIMESTAMP,
+            self::TRANSGUID        => self::TRANSGUID,
             self::TRANSKONTONR     => self::TRANSKONTONR,
             self::TRANSDIMENSIONNR => self::TRANSDIMENSIONNR,
             self::TRANSOBJEKTNR    => self::TRANSOBJEKTNR,
@@ -46,6 +48,8 @@ abstract class ArrayBase implements Sie4Interface
             self::TRANSSIGN        => self::TRANSSIGN,
         ],
         self::RTRANS => [
+            self::TRANSTIMESTAMP   => self::RTRANSTIMESTAMP,
+            self::TRANSGUID        => self::RTRANSGUID,
             self::TRANSKONTONR     => self::RTRANSKONTONR,
             self::TRANSDIMENSIONNR => self::RTRANSDIMENSIONNR,
             self::TRANSOBJEKTNR    => self::RTRANSOBJEKTNR,
@@ -56,6 +60,8 @@ abstract class ArrayBase implements Sie4Interface
             self::TRANSSIGN        => self::RTRANSSIGN,
         ],
         self::BTRANS => [
+            self::TRANSTIMESTAMP   => self::BTRANSTIMESTAMP,
+            self::TRANSGUID        => self::BTRANSGUID,
             self::TRANSKONTONR     => self::BTRANSKONTONR,
             self::TRANSDIMENSIONNR => self::BTRANSDIMENSIONNR,
             self::TRANSOBJEKTNR    => self::BTRANSOBJEKTNR,

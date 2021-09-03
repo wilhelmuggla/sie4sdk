@@ -52,9 +52,9 @@ class BalansDto implements DtoInterface
     use KvantitetTrait;
 
     /**
-     * @var string[]
+     * @var callable
      */
-    static $SORTER = [ self::class, 'balansSorter' ];
+    static public $SORTER = [ self::class, 'balansSorter' ];
 
     /**
      * Sort BalansDto[] on kontonr, arsnr

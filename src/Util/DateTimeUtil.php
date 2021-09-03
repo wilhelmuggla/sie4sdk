@@ -29,6 +29,7 @@ namespace Kigkonsult\Sie4Sdk\Util;
 
 use DateTime;
 use Exception;
+use InvalidArgumentException;
 use RuntimeException;
 
 use function sprintf;
@@ -76,6 +77,23 @@ class DateTimeUtil
     }
 
     /**
+     * @param float $timestamp
+     * @param int   $errCode
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public static function assertTimestamp( float $timestamp, int $errCode ) {
+        static $TIMESTAMP = 'timestamp';
+        static $AT        = '@';
+        try {
+            self::getDateTime( $AT . (int)$timestamp, $TIMESTAMP, $errCode );
+        }
+        catch( RuntimeException $e ) {
+            throw new InvalidArgumentException( $e->getMessage(), ( $errCode + 1 ), $e );
+        }
+    }
+
+    /**
      * Return "xsd:gYearMonth" from DateTime
      *
      * @param DateTime $dateTime
@@ -119,7 +137,8 @@ class DateTimeUtil
      * @param string $gYearMonth
      * @param bool   $setEnd
      * @return DateTime
-     * @throws Exception
+     * @throws RuntimeException
+
      */
     public static function gYearMonthToDateTime( string $gYearMonth, bool $setEnd ): DateTime
     {
@@ -127,13 +146,23 @@ class DateTimeUtil
         static $T     = 't';
         $year     = substr( $gYearMonth, 0, 4 );
         $month    = substr( $gYearMonth, -2, 2 );
-        $dateTime = new DateTime( $year . $month . $FIRST );
+        try {
+            $dateTime = new DateTime( $year . $month . $FIRST );
+        }
+        catch( Exception $e ) {
+            throw new RuntimeException( $e->getMessage(), null, $e );
+        }
         if( $setEnd ) {
+            try {
             $dateTime->setDate(
-                (int)$dateTime->format( self::$Y ),
-                (int)$dateTime->format( self::$M ),
-                (int)$dateTime->format( $T )
+                (int) $dateTime->format( self::$Y ),
+                (int) $dateTime->format( self::$M ),
+                (int) $dateTime->format( $T )
             );
+            }
+            catch( Exception $e ) {
+                throw new RuntimeException( $e->getMessage(), null, $e );
+            }
         }
         return $dateTime;
     }

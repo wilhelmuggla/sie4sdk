@@ -44,7 +44,9 @@ use Kigkonsult\Sie4Sdk\Dto\TransDto;
 use Kigkonsult\Sie4Sdk\Dto\UnderDimDto;
 use Kigkonsult\Sie4Sdk\Dto\VerDto;
 use Kigkonsult\Sie4Sdk\Util\DateTimeUtil;
+use Kigkonsult\Sie4Sdk\Util\GuidUtil;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
+use RuntimeException;
 
 use function intval;
 use function is_scalar;
@@ -86,11 +88,11 @@ class Sie4Validator implements Sie4Interface
         static $FMT3 = 'Ogiltigt antal KSUMMA : ';
         static $FMTx = ' saknas';
         if( empty( $sie4Input->count())) {
-            throw new InvalidArgumentException( $FMT1, 3211 );
+            throw new InvalidArgumentException( $FMT1, 3011 );
         }
         $sie4Input->rewind();
         if( ! $sie4Input->valid()) {
-            throw new InvalidArgumentException( $FMT2, 3212 );
+            throw new InvalidArgumentException( $FMT2, 3012 );
         }
         $flaggaExist = $sieType4Exist = $orgNrExist = $verExist = false;
         $ksummaCnt   = 0;
@@ -131,19 +133,41 @@ class Sie4Validator implements Sie4Interface
             $sie4Input->next();
         } // end while
         if( ! $flaggaExist ) {
-            throw new InvalidArgumentException( self::VER . $FMTx, 3213 );
+            throw new InvalidArgumentException( self::VER . $FMTx, 3013 );
         }
         if( ! in_array( $ksummaCnt, [ 0, 2 ] )) {
-            throw new InvalidArgumentException( $FMT3 . $ksummaCnt, 3214 );
+            throw new InvalidArgumentException( $FMT3 . $ksummaCnt, 3014 );
         }
         if( ! $sieType4Exist ) {
-            throw new InvalidArgumentException( self::SIETYP . $FMTx, 3215 );
+            throw new InvalidArgumentException( self::SIETYP . $FMTx, 3015 );
         }
         if( ! $orgNrExist ) {
-            throw new InvalidArgumentException( self::ORGNR . $FMTx, 3216 );
+            throw new InvalidArgumentException( self::ORGNR . $FMTx, 3016 );
         }
         if( ! $verExist ) {
-            throw new InvalidArgumentException( self::VER . $FMTx, 3217 );
+            throw new InvalidArgumentException( self::VER . $FMTx, 3017 );
+        }
+    }
+
+    /**
+     * Assert sie4Dto : timestamp, guid, flagga and IdDto
+     *
+     * @param Sie4Dto $sie4Dto
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public static function assertBase( Sie4Dto $sie4Dto )
+    {
+        static $FMT5 = 'Ogiltig flagga (0,1 förväntas) : ';
+        static $FMT7 = 'Sie4 idDto saknas';
+        DateTimeUtil::assertTimestamp( $sie4Dto->getTimestamp(), 3211 );
+        GuidUtil::assertGuid( $sie4Dto->getCorrelationId(), 3215 );
+        $flagga =$sie4Dto->getFlagga();
+        if( ! in_array( $flagga, [ 0, 1 ] )) {
+            throw new InvalidArgumentException( $FMT5 . $flagga, 3215 );
+        }
+        if( ! $sie4Dto->isIdDtoSet()) {
+            throw new InvalidArgumentException( $FMT7, 3217 );
         }
     }
 
@@ -156,12 +180,9 @@ class Sie4Validator implements Sie4Interface
      */
     public static function assertSie4IDto( Sie4Dto $sie4IDto )
     {
-        static $FMT1 = 'Sie4 idDto saknas';
-        static $FMT2 = '%s får inte förekomma i Sie4';
+        static $FMT6 = '%s får inte förekomma i Sie4';
         static $FMT9 = 'verifikationer saknas';
-        if( ! $sie4IDto->isIdDtoSet()) {
-            throw new InvalidArgumentException( $FMT1, 3311 );
-        }
+        self::assertBase( $sie4IDto );
         self::assertIdDto( $sie4IDto->getIdDto(), false );
 
         if( 0 < $sie4IDto->countAccountDtos()) {
@@ -191,25 +212,25 @@ class Sie4Validator implements Sie4Interface
         }
 
         if( 0 < $sie4IDto->countIbDtos()) {
-            throw new InvalidArgumentException( sprintf( $FMT2, self::IB ), 3313 );
+            throw new InvalidArgumentException( sprintf( $FMT6, self::IB ), 3313 );
         }
         if( 0 < $sie4IDto->countUbDtos()) {
-            throw new InvalidArgumentException( sprintf( $FMT2, self::UB ), 3314 );
+            throw new InvalidArgumentException( sprintf( $FMT6, self::UB ), 3314 );
         }
         if( 0 < $sie4IDto->countOibDtos()) {
-            throw new InvalidArgumentException( sprintf( $FMT2, self::OIB ), 3315 );
+            throw new InvalidArgumentException( sprintf( $FMT6, self::OIB ), 3315 );
         }
         if( 0 < $sie4IDto->countOubDtos()) {
-            throw new InvalidArgumentException( sprintf( $FMT2, self::OUB ), 3316 );
+            throw new InvalidArgumentException( sprintf( $FMT6, self::OUB ), 3316 );
         }
         if( 0 < $sie4IDto->countSaldoDtos()) {
-            throw new InvalidArgumentException( sprintf( $FMT2, self::RES ), 3317 );
+            throw new InvalidArgumentException( sprintf( $FMT6, self::RES ), 3317 );
         }
         if( 0 < $sie4IDto->countPsaldoDtos()) {
-            throw new InvalidArgumentException( sprintf( $FMT2, self::PSALDO ), 3318 );
+            throw new InvalidArgumentException( sprintf( $FMT6, self::PSALDO ), 3318 );
         }
         if( 0 < $sie4IDto->countPbudgetDtos()) {
-            throw new InvalidArgumentException( sprintf( $FMT2, self::PBUDGET ), 3319 );
+            throw new InvalidArgumentException( sprintf( $FMT6, self::PBUDGET ), 3319 );
         }
         if( empty( $sie4IDto->countVerDtos())) {
             throw new InvalidArgumentException( $FMT9,3320 );
@@ -228,14 +249,11 @@ class Sie4Validator implements Sie4Interface
      */
     public static function assertSie4EDto( Sie4Dto $sie4EDto )
     {
-        static $FMT1 = 'Sie4 idDto saknas';
         static $FMT3 = 'Konton saknas';
         static $FMT4 = 'Ingående balanser saknas';
         static $FMT5 = 'Utgående balanser saknas';
         static $FMT6 = 'Saldo (resultat) saknas';
-        if( ! $sie4EDto->isIdDtoSet()) {
-            throw new InvalidArgumentException( $FMT1, 3411 );
-        }
+        self::assertBase( $sie4EDto );
         self::assertIdDto( $sie4EDto->getIdDto(), true );
         if( 0 < $sie4EDto->countAccountDtos()) {
             foreach( $sie4EDto->getAccountDtos() as $x => $accountDto ) {
@@ -319,8 +337,9 @@ class Sie4Validator implements Sie4Interface
     /**
      * Validate mandatory properties in IdDto
      *
-     * Program name/version, gen date and Company name required
-     * Sietyp 4 default
+     * Flagga, Program name/version, format, gen date, sieType and Company name required
+     * Sie4E requires RAR, Sietyp 4 default
+     * format ignored, auto set to 'PC8'
      * gen date and program name/version auto set if missing
      *   in Sie4IDto, Sie4IWriter and Sie5EntryLoader
      *
@@ -331,23 +350,28 @@ class Sie4Validator implements Sie4Interface
      */
     public static function assertIdDto( IdDto $idDto, bool $isSie4Export )
     {
-        static $FMT1 = 'SIETYP saknas eller inte 4';
-        static $FMT2 = 'BKOD får inte förekomma i Sie4';
-        static $FMT3 = 'Företagsnamn saknas';
-        static $FMT4 = 'RAR saknas';
-        static $FMT5 = 'OMFATTN får inte förekomma i Sie4';
+        static $FMT2 = 'PROGRAM saknas';
+        static $FMT5 = 'SIETYP saknas eller inte 4';
+        static $FMT6 = 'BKOD får inte förekomma i Sie4';
+        static $FMT7 = 'Företagsnamn saknas';
+        static $FMT8 = 'RAR saknas';
+        static $FMT9 = 'OMFATTN får inte förekomma i Sie4';
+        $programNamn = $idDto->getProgramnamn();
+        if( empty( $programNamn )) {
+            throw new InvalidArgumentException( $FMT2, 3511 );
+        }
         $sieType = $idDto->getSieTyp();
         if( self::$FOUR != $sieType ) {
-            throw new InvalidArgumentException( $FMT1 . $sieType, 3511 );
+            throw new InvalidArgumentException( $FMT5 . $sieType, 3515 );
         }
         if( ! $isSie4Export && $idDto->isBkodSet()) {
-            throw new InvalidArgumentException( $FMT2, 3512 );
+            throw new InvalidArgumentException( $FMT6, 3516 );
         }
         if( $idDto->isAdressSet()) {
             self::assertAdressDto( $idDto->getAdress());
         }
         if( ! $idDto->isFnamnSet()) {
-            throw new InvalidArgumentException( $FMT3, 3513 );
+            throw new InvalidArgumentException( $FMT7, 3517 );
         }
         if( 0 < $idDto->countRarDtos()) {
             foreach( $idDto->getRarDtos() as $x =>$rarDto ) {
@@ -355,10 +379,10 @@ class Sie4Validator implements Sie4Interface
             }
         }
         elseif( $isSie4Export ) {
-            throw new InvalidArgumentException( $FMT4, 3514 );
+            throw new InvalidArgumentException( $FMT8, 3518 );
         }
         if( ! $isSie4Export && $idDto->isOmfattnSet()) {
-            throw new InvalidArgumentException( $FMT5, 3515 );
+            throw new InvalidArgumentException( $FMT9, 3519 );
         }
     }
 
@@ -646,19 +670,20 @@ class Sie4Validator implements Sie4Interface
         static $FMT1 = 'ver %s (#%d), datum saknas';
         static $FMT2 = 'ver %s (#%d), konteringsrader saknas';
         static $FMT3 = 'ver %s (#%d), ej i balans, %f'; // %.2F
-        static $DOT  = '.';
         static $SP0  = '';
+        DateTimeUtil::assertTimestamp( $verDto->getTimestamp(), 3701 );
+        Util\GuidUtil::assertGuid( $verDto->getCorrelationId(), 3703 );
         $verNr = $verDto->getVernr() ?? StringUtil::$SP0;
         if( ! $verDto->isVerdatumSet()) {
             throw new InvalidArgumentException(
                 sprintf( $FMT1, $verNr, $x ),
-                3701
+                3705
             );
         }
         if( empty( $verDto->countTransDtos())) {
             throw new InvalidArgumentException(
                 sprintf( $FMT2, $verNr, $x ),
-                3703
+                3706
             );
         }
         $balans = 0.00;
@@ -668,10 +693,10 @@ class Sie4Validator implements Sie4Interface
             }
             self::assertTransDto( $verNr, $x, $kx, $transDto );
         } // end foreach
-        if( 0.00 != (float) number_format( $balans, 2, $DOT, $SP0 )) {
+        if( 0.00 != (float) number_format( $balans, 2, StringUtil::$DOT, $SP0 )) {
             throw new InvalidArgumentException(
                 sprintf( $FMT3, $verNr, $x, $balans ),
-                3705
+                3707
             );
         }
     }
@@ -700,12 +725,14 @@ class Sie4Validator implements Sie4Interface
         static $FMT3 = 'ver %s, kontoNr saknas';
         static $FMT4 = 'ver %s, belopp saknas';
         static $FMT6 = 'ver %s, dimensionsnr och objektnr (#%d) förväntas';
+        DateTimeUtil::assertTimestamp( $transDto->getTimestamp(), 3711 );
+        Util\GuidUtil::assertGuid( $transDto->getCorrelationId(), 3713 );
         $errKey = sprintf( $FMT0, $verNr, $vx, $transDto->getTransType(), $kx );
         if( ! $transDto->isKontoNrSet()) {
-            throw new InvalidArgumentException( sprintf( $FMT3, $errKey ),3711 );
+            throw new InvalidArgumentException( sprintf( $FMT3, $errKey ),3715 );
         }
         if( ! $transDto->isBeloppSet()) {
-            throw new InvalidArgumentException( sprintf( $FMT4, $errKey ), 3712 );
+            throw new InvalidArgumentException( sprintf( $FMT4, $errKey ), 3717 );
         }
         if( 0 < $transDto->countObjektlista()) {
             foreach( $transDto->getObjektlista() as $x => $dimObjekt ) {

@@ -55,6 +55,11 @@ class StringUtil
     /**
      * @var string
      */
+    public static $DOT  = '.';
+
+    /**
+     * @var string
+     */
     public static $SP1  = ' ';
 
     /**
@@ -264,7 +269,7 @@ class StringUtil
      * Split post on label and label data, on missing leading #, all is content
      *
      * @param string $post
-     * @return mixed[]  [ string, string[] ]  i.e. [ label, contentParts[] ]
+     * @return mixed[]       [ string, string[] ]  i.e. [ label, contentParts[] ]
      */
     public static function splitPost( string $post ) : array
     {
@@ -382,7 +387,7 @@ class StringUtil
             if( $BS == $input[$x] ) {
                 $x2 = $x + 1;
                 if( isset( $input[$x2] ) && ( self::$QUOTE == $input[$x2] )) {
-                    $output .= (string) self::$SEP;
+                    $output .= self::$SEP;
                     $x += 1;
                     continue;
                 }
@@ -393,6 +398,8 @@ class StringUtil
     }
 
     /**
+     * Return bool true if string is an empty string surrounded with brackets
+     *
      * @param string $content
      * @param int $x
      * @return bool
@@ -418,6 +425,8 @@ class StringUtil
     }
 
     /**
+     * Return bool true if string is an empty quoted string
+     *
      * @param string $content
      * @param int $x
      * @return bool
@@ -440,6 +449,16 @@ class StringUtil
             }
         } // end for
         return false;
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    public static function trimBrackets( string $string ) : string
+    {
+        static $EXCL = '{}';
+        return trim( $string, $EXCL );
     }
 
     /**

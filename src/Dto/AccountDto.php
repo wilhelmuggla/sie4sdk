@@ -95,7 +95,7 @@ class AccountDto implements DtoInterface
     private $enhet = null;
 
     /**
-     * @var string[]
+     * @var callable
      */
     public static $SORTER = [ self::class, 'accountSorter' ];
 

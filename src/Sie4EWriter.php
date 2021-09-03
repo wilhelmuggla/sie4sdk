@@ -32,7 +32,6 @@ use Kigkonsult\Asit\It;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 use Kigkonsult\Sie4Sdk\Util\ArrayUtil;
 use Kigkonsult\Sie4Sdk\Util\FileUtil;
-use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 use function implode;
 use function sprintf;
@@ -42,20 +41,20 @@ class Sie4EWriter extends Sie4WriterBase
     /**
      * Return Sie4E string (without input validation)
      *
-     * @param null|Sie4Dto $sie4EDto
+     * @param null|Sie4Dto $sie4Dto
      * @param null|string  $outputfile
      * @param null|bool    $writeKsumma
      * @return string
      * @throws InvalidArgumentException
      */
     public function process(
-        $sie4EDto = null,
+        $sie4Dto = null,
         $outputfile = null,
         $writeKsumma = null
     ) : string
     {
-        if( ! empty( $sie4EDto )) {
-            $this->setSie4Dto( $sie4EDto );
+        if( ! empty( $sie4Dto )) {
+            $this->setSie4Dto( $sie4Dto );
         }
         if( ! empty( $outputfile )) {
             FileUtil::assertWriteFile( $outputfile, 5201 );

@@ -42,7 +42,7 @@ class BalansObjektDto extends BalansDto
     use ObjektNrTrait;
 
     /**
-     * @var string[]
+     * @var callable
      */
     public static $SORTER = [ BalansObjektDto::class, 'balansObjektSorter' ];
 

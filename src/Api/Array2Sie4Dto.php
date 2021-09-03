@@ -55,7 +55,7 @@ use function ksort;
  * input format
  * [
  *     self::TIMESTAMP          => <microtime>
- *     self::GUID               => <uniqueId>
+ *     self::GUID               => <guid>
  *
  *     self::FLAGGPOST          => <0/1>,
  *
@@ -162,6 +162,8 @@ use function ksort;
  *     self::PBUDGETKVANTITET   => [ *<kvantitet> ];
  *
  *     // instance data share the same index
+ *     self::VERTIMESTAMP       => [ *<microtime> ]
+ *     self::VERGUID            => [ *<guid> ]
  *     self::VERDATUM           => [ *<SIE4YYYYMMDD-verdatum> ],
  *     self::VERSERIE           => [ *serie> ],
  *     self::VERNR              => [ *<vernr> ],
@@ -171,6 +173,8 @@ use function ksort;
  *
  *     // Ledger data instances within Journal entry data instance share same index
  *     // Journal entry data in index order
+ *     self::TRANSTIMESTAMP     => [ *[ *<microtime> ] ]
+ *     self::TRANSGUID          => [ *[ *<guid> ] ]
  *     self::TRANSKONTONR       => [ *[ *<kontonr> ] ]
  *     self::TRANSDIMENSIONNR   => [ *[ *[ *<dimId> ] ] ],
  *     self::TRANSOBJEKTNR      => [ *[ *[ *<objektnr> ] ] ],
@@ -179,6 +183,8 @@ use function ksort;
  *     self::TRANSTEXT          => [ *[ *<transText> ] ]
  *     self::TRANSKVANTITET     => [ *[ *<kvantitet> ] ]
  *
+ *     self::RTRANSTIMESTAMP    => [ *[ *<microtime> ] ]
+ *     self::RTRANSGUID         => [ *[ *<guid> ] ]
  *     self::RTRANSKONTONR      => [ *[ *<kontonr> ] ]
  *     self::RTRANSDIMENSIONNR  => [ *[ *[ *<dimId> ] ] ],
  *     self::RTRANSOBJEKTNR     => [ *[ *[ *<objektnr> ] ] ],
@@ -187,13 +193,15 @@ use function ksort;
  *     self::RTRANSTEXT         => [ *[ *<transText> ] ]
  *     self::RTRANSKVANTITET    => [ *[ *<kvantitet> ] ]
  *
+ *     self::BTRANSTIMESTAMP    => [ *[ *<microtime> ] ]
+ *     self::BTRANSGUID         => [ *[ *<guid> ] ]
  *     self::BTRANSKONTONR      => [ *[ *<kontonr> ] ]
  *     self::BTRANSDIMENSIONNR  => [ *[ *[ *<dimId> ] ] ],
  *     self::BTRANSOBJEKTNR     => [ *[ *[ *<objektnr> ] ] ],
  *     self::BTRANSBELOPP       => [ *[ *<belopp> ] ]
  *     self::BTRANSDAT          => [ *[ *<SIE4YYYYMMDD-transdat> ] ]
  *     self::BTRANSTEXT         => [ *[ *<transText> ] ]
- *     self::BRTRANSKVANTITET    => [ *[ *<kvantitet> ] ]
+ *     self::BRTRANSKVANTITET   => [ *[ *<kvantitet> ] ]
  *
  *     // crc32-value
  *     self::KSUMMAPOST         => <crc32-value>,
@@ -975,6 +983,16 @@ class Array2Sie4Dto extends ArrayBase
         }
         foreach( array_keys( $this->input[self::VERDATUM] ) as $verX ) {
             $verDto = new VerDto();
+
+            if( isset( $this->input[self::VERTIMESTAMP][$verX] )) {
+                // accepts empty
+                $verDto->setTimestamp((float) $this->input[self::VERTIMESTAMP][$verX] );
+            }
+            if( isset( $this->input[self::VERGUID][$verX] ) &&
+                ! empty( $this->input[self::VERGUID][$verX] )) {
+                $verDto->setCorrelationId( $this->input[self::VERGUID][$verX] );
+            }
+
             $verDto->setVerdatum(
                 DateTimeUtil::getDateTime(
                     $this->input[self::VERDATUM][$verX],
@@ -1103,6 +1121,17 @@ class Array2Sie4Dto extends ArrayBase
         string $label
     )
     {
+        $keyTimestamp = $keyArr[self::TRANSTIMESTAMP];
+        if( isset( $this->input[$keyTimestamp][$verX][$transX] )) {
+            // accepts empty
+            $transDto->setTimestamp((float) $this->input[$keyTimestamp][$verX][$transX] );
+        }
+        $keyGuid      = $keyArr[self::TRANSGUID];
+        if( isset( $this->input[$keyGuid][$verX][$transX] ) &&
+            ! empty( $this->input[$keyGuid][$verX][$transX] )) {
+            $transDto->setCorrelationId( $this->input[$keyGuid][$verX][$transX] );
+        }
+
         $keyDimNr    = $keyArr[self::TRANSDIMENSIONNR];
         $keyObjektNr = $keyArr[self::TRANSOBJEKTNR];
         if( isset( $this->input[$keyDimNr][$verX][$transX] )) {

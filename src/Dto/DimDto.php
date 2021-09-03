@@ -41,7 +41,7 @@ class DimDto implements DtoInterface
     protected $dimensionsNamn = null;
 
     /**
-     * @var string[]
+     * @var callable
      */
     public static $SORTER = [ self::class, 'dimSorter' ];
 

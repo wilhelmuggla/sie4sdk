@@ -33,7 +33,7 @@ Interface Sie4Interface
      * Product constants
      */
     const PRODUCTNAME              = 'Kigkonsult\Sie4Sdk';
-    const PRODUCTVERSION           = '1.4.5';
+    const PRODUCTVERSION           = '1.4.8';
 
     const TIMESTAMP                = 'TIMESTAMP';
     const GUID                     = 'GUID';
@@ -320,6 +320,8 @@ Interface Sie4Interface
       * Enbart verdatum obligatoriskt, auto-gen (now) om det saknas i Sie4
       */
     const VER                      = '#VER';
+    const VERTIMESTAMP             = 'VERTIMESTAMP';
+    const VERGUID                  = 'VERGUID';
     const VERSERIE                 = 'VERSERIE';
     const VERNR                    = 'VERNR';
     const VERDATUM                 = 'VERDATUM';
@@ -337,6 +339,8 @@ Interface Sie4Interface
       * Obligatoriskt : kontonr/belopp
       */
     const TRANS                    = '#TRANS';
+    const TRANSTIMESTAMP           = 'TRANSTIMESTAMP';
+    const TRANSGUID                = 'TRANSGUID';
     const TRANSKONTONR             = 'TRANSKONTONR';
     const TRANSDIMENSIONNR         = 'TRANSDIMENSIONNR';
     const TRANSOBJEKTNR            = 'TRANSOBJEKTNR';
@@ -346,6 +350,8 @@ Interface Sie4Interface
     const TRANSKVANTITET           = 'TRANSKVANTITET';
     const TRANSSIGN                = 'TRANSSIGN';
     const RTRANS                   = '#RTRANS';
+    const RTRANSTIMESTAMP          = 'RTRANSTIMESTAMP';
+    const RTRANSGUID               = 'RTRANSGUID';
     const RTRANSKONTONR            = 'RTRANSKONTONR';
     const RTRANSDIMENSIONNR        = 'RTRANSDIMENSIONNR';
     const RTRANSOBJEKTNR           = 'RTRANSOBJEKTNR';
@@ -355,6 +361,8 @@ Interface Sie4Interface
     const RTRANSKVANTITET          = 'RTRANSKVANTITET';
     const RTRANSSIGN               = 'RTRANSSIGN';
     const BTRANS                   = '#BTRANS';
+    const BTRANSTIMESTAMP          = 'BTRANSTIMESTAMP';
+    const BTRANSGUID               = 'BTRANSGUID';
     const BTRANSKONTONR            = 'BTRANSKONTONR';
     const BTRANSDIMENSIONNR        = 'BTRANSDIMENSIONNR';
     const BTRANSOBJEKTNR           = 'BTRANSOBJEKTNR';

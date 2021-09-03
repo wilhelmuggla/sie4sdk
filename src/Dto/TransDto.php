@@ -40,10 +40,12 @@ use function sprintf;
 /**
  * Class TransDto
  *
+ * Inherit unique timestamp and guid properties from parent
+ *
  * kontonr and belopp required,
  *   in objektlista, pairs of dimension and objektnr required
  */
-class TransDto implements DtoInterface
+class TransDto extends BaseId
 {
     /**
      * @var string[]

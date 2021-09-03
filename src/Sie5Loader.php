@@ -247,7 +247,7 @@ class Sie5Loader implements Sie4Interface
             $accountType = AccountType::factoryIdNameType(
                 $kontoNr,
                 $accountDto->getKontoNamn(),
-                AccountDto::getKontoType( $accountDto->getKontoTyp(), false )
+                (string) AccountDto::getKontoType( $accountDto->getKontoTyp(), false )
             );
             if( $accountDto->isEnhetSet()) {
                 $accountType->setUnit( $accountDto->getEnhet());
@@ -421,9 +421,8 @@ class Sie5Loader implements Sie4Interface
             ? $this->sie4EDto->getIdDto()->getSign()
             : Sie::PRODUCTNAME;
         foreach( $this->sie4EDto->getVerDtos() as $verDto ) {
-            $JournalType = $this->getJournalType(
-                $verDto->getSerie() ?? StringUtil::$SP0
-            );
+            $serie = $verDto->isSerieSet() ? (string) $verDto->getSerie() : StringUtil::$SP0;
+            $JournalType = $this->getJournalType( $serie );
             $JournalEntryType = JournalEntryType::factory();
             $JournalType->addJournalEntry( $JournalEntryType );
             self::processSingleVerDto( $verDto, $JournalEntryType, $genSign );

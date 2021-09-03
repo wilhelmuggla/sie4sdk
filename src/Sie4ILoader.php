@@ -27,6 +27,7 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk;
 
+use Exception;
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\AccountDto;
 use Kigkonsult\Sie4Sdk\Dto\IdDto;
@@ -80,6 +81,7 @@ class Sie4ILoader implements Sie4Interface
      *
      * @param null|SieEntry $sieEntry
      * @return Sie4Dto
+     * @throws Exception
      * @throws InvalidArgumentException;
      */
     public function getSie4IDto( $sieEntry = null ) : Sie4Dto
@@ -177,7 +179,7 @@ class Sie4ILoader implements Sie4Interface
             $this->sie4IDto->addAccount(
                 $accountTypeEntry->getId(),
                 $accountTypeEntry->getName(),
-                AccountDto::getKontoType( $accountTypeEntry->getType(), true ),
+                (string) AccountDto::getKontoType( $accountTypeEntry->getType(), true ),
                 $accountTypeEntry->getUnit()
             );
         } // end foreach

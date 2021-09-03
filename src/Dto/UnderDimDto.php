@@ -35,7 +35,7 @@ class UnderDimDto extends DimDto
     protected $superDimNr = null;
 
     /**
-     * @var string[]
+     * @var callable
      */
     public static $SORTER = [ self::class, 'underDimSorter' ];
 

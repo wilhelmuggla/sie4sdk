@@ -27,67 +27,79 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
-use InvalidArgumentException;
-use Kigkonsult\Sie4Sdk\Sie4Validator;
+use Kigkonsult\Sie4Sdk\Util\GuidUtil;
+use Kigkonsult\Sie4Sdk\Util\StringUtil;
+
+use function microtime;
 
 /**
- * Class BalansDto
+ * Baseclass for Sie4Dto and VerDto, provides unique timestamp and guid
  */
-class PeriodDto extends BalansObjektDto
+abstract class BaseId implements DtoInterface
 {
     /**
-     * @var null|string  ÅÅÅÅMM
-     */
-    private $period = null;
-
-    /**
-     * @var callable
-     */
-    public static $SORTER = [ PeriodDto::class, 'periodSorter' ];
-
-    /**
-     * Sort PeriodDto[] on kontonr, arsnr, dimensionNr, objektNr
+     * Current Unix timestamp with microseconds, default 'microtime( true)' at instance create
      *
-     * @param PeriodDto $a
-     * @param PeriodDto $b
-     * @return int
+     * @var float
      */
-    public static function periodSorter( PeriodDto $a, PeriodDto $b ) : int
+    protected $timestamp = null;
+
+    /**
+     * Unique (random) guid, default set at instance create
+     *
+     * Auto-loaded guid without surrounding brackets
+     * using GuidUtil::getGuid()
+     *
+     * @var string
+     */
+    protected $correlationId = null;
+
+    /**
+     * Class constructor
+     */
+    public function __construct()
     {
-        return parent::balansObjektSorter( $a, $b );
+        $this->setTimestamp( microtime( true ));
+        $this->setCorrelationId( GuidUtil::getGuid() );
     }
 
     /**
-     * Return bool true is period is set
-     *
-     * @return null|string
+     * @return float
      */
-    public function getPeriod()
+    public function getTimestamp() : float
     {
-        return $this->period;
+        return $this->timestamp;
     }
 
     /**
-     * @return bool
-     */
-    public function isPeriodSet() : bool
-    {
-        return ( null !== $this->period );
-    }
-
-    /**
-     * Set period ÅÅÅÅMM
-     *
-     * @param int|string $period
+     * @param float $timestamp
      * @return self
-     * @throws InvalidArgumentException
      */
-    public function setPeriod( $period ) : self
+    public function setTimestamp( float $timestamp ) : self
     {
-        static $PERIOD = 'period';
-        Sie4Validator::assertIntegerish( $PERIOD, $period );
-        Sie4Validator::assertYYYYMMDate( $PERIOD, $period );
-        $this->period = (string) $period;
+        $this->timestamp = $timestamp;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCorrelationId() : string
+    {
+        return $this->correlationId;
+    }
+
+    /**
+     * Load guid (without validation)
+     *
+     * Use GuidUtil::assertGuid() for validation
+     *
+     * @param string $correlationId
+     * @return self
+     */
+    public function setCorrelationId( string $correlationId ) : self
+    {
+        $this->correlationId = StringUtil::trimBrackets( $correlationId );
         return $this;
     }
 }
