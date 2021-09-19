@@ -1030,7 +1030,7 @@ class Array2Sie4Dto extends ArrayBase
                 $verDto->setSign( $this->input[self::VERSIGN][$verX] );
             }
             if( isset( $this->input[self::TRANSKONTONR][$verX] )) {
-                $this->readTransData( $verX, $verDto );
+                $this->readTransData((int) $verX, $verDto );
             }
             $this->sie4Dto->addVerDto( $verDto );
         } // end foreach
@@ -1094,7 +1094,7 @@ class Array2Sie4Dto extends ArrayBase
                 $transDto = new TransDto();
                 $transDto->setTransType( $label );
                 $transDto->setKontoNr( $this->input[$keyKontoNr][$verX][$transX] );
-                $this->processTransData( $transDto, $keyArr, $verX, $transX, $label );
+                $this->processTransData( $transDto, $keyArr, $verX, (int) $transX, $label );
                 $transDtos[$transX] = $transDto;
                 break; // lx found
             } // end foreach

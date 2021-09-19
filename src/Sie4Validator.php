@@ -46,7 +46,6 @@ use Kigkonsult\Sie4Sdk\Dto\VerDto;
 use Kigkonsult\Sie4Sdk\Util\DateTimeUtil;
 use Kigkonsult\Sie4Sdk\Util\GuidUtil;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
-use RuntimeException;
 
 use function intval;
 use function is_scalar;
@@ -658,7 +657,7 @@ class Sie4Validator implements Sie4Interface
     /**
      * Validate mandatory properties in VerDto and TransDtos array property
      *
-     * Verdatum and trans required
+     * Verdatum and trans required, TransDto (in TransDtos array) in balance
      *
      * @param int    $x
      * @param VerDto $verDto
@@ -672,7 +671,7 @@ class Sie4Validator implements Sie4Interface
         static $FMT3 = 'ver %s (#%d), ej i balans, %f'; // %.2F
         static $SP0  = '';
         DateTimeUtil::assertTimestamp( $verDto->getTimestamp(), 3701 );
-        Util\GuidUtil::assertGuid( $verDto->getCorrelationId(), 3703 );
+        GuidUtil::assertGuid( $verDto->getCorrelationId(), 3703 );
         $verNr = $verDto->getVernr() ?? StringUtil::$SP0;
         if( ! $verDto->isVerdatumSet()) {
             throw new InvalidArgumentException(
@@ -709,25 +708,25 @@ class Sie4Validator implements Sie4Interface
      *
      * @param int|string $verNr
      * @param int        $vx     ver order no
-     * @param int        $kx     trans order no
+     * @param int        $tx     trans order no
      * @param TransDto   $transDto
      * @return void
      * @throws InvalidArgumentException
      */
     public static function assertTransDto(
-        $verNr,
-        int $vx,
-        int $kx,
+                 $verNr,
+        int      $vx,
+        int      $tx,
         TransDto $transDto
     )
     {
         static $FMT0 = '%s (#%d) %s (#%d)';
         static $FMT3 = 'ver %s, kontoNr saknas';
         static $FMT4 = 'ver %s, belopp saknas';
-        static $FMT6 = 'ver %s, dimensionsnr och objektnr (#%d) förväntas';
+        static $FMT6 = 'ver %s, dimensionsnr och objektnr (#%d) förväntas (%s/%s)';
         DateTimeUtil::assertTimestamp( $transDto->getTimestamp(), 3711 );
-        Util\GuidUtil::assertGuid( $transDto->getCorrelationId(), 3713 );
-        $errKey = sprintf( $FMT0, $verNr, $vx, $transDto->getTransType(), $kx );
+        GuidUtil::assertGuid( $transDto->getCorrelationId(), 3713 );
+        $errKey = sprintf( $FMT0, $verNr, $vx, $transDto->getTransType(), $tx );
         if( ! $transDto->isKontoNrSet()) {
             throw new InvalidArgumentException( sprintf( $FMT3, $errKey ),3715 );
         }
@@ -739,7 +738,13 @@ class Sie4Validator implements Sie4Interface
                 if( ! $dimObjekt->isDimensionsNrSet() ||
                     ! $dimObjekt->isObjektNrSet() ) {
                     throw new InvalidArgumentException(
-                        sprintf( $FMT6, $errKey, $x ),
+                        sprintf(
+                            $FMT6,
+                            $errKey,
+                            $x,
+                            ( $dimObjekt->getDimensionNr() ?? StringUtil::$SP1),
+                            ( $dimObjekt->getObjektNr() ?? StringUtil::$SP1)
+                        ),
                         3713
                     );
                 }

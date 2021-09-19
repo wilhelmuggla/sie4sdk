@@ -150,7 +150,7 @@ class DateTimeUtil
             $dateTime = new DateTime( $year . $month . $FIRST );
         }
         catch( Exception $e ) {
-            throw new RuntimeException( $e->getMessage(), null, $e );
+            throw new RuntimeException( $e->getMessage(), 19501, $e );
         }
         if( $setEnd ) {
             try {
@@ -161,7 +161,7 @@ class DateTimeUtil
             );
             }
             catch( Exception $e ) {
-                throw new RuntimeException( $e->getMessage(), null, $e );
+                throw new RuntimeException( $e->getMessage(), 19502, $e );
             }
         }
         return $dateTime;

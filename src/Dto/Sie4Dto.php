@@ -955,7 +955,7 @@ class Sie4Dto extends BaseId
      * Return PeriodDto for pBudget with arsnr == 0 and kontonr
      *
      * @param string $kontoNr
-     * @return false|BalansDto
+     * @return false|PeriodDto
      */
     public function getPbudgetForKontoNr( string $kontoNr )
     {

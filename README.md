@@ -118,10 +118,6 @@ Note för VER
 * if _regdatum_ is missing, _verdatum_ is used
 * if _sign_ is missing, GEN _sign_ is used
 
-Note för TRANS
-* only support for _dimensionsnummer_ and _objektnummer_ in the _objektlista_<br>
-    i.e. no support for _hierarkiska dimensioner_
-
 Sie4 dates has format _YYYYmmdd_, Sie/SieEntry _YYYY-MM-DDThh:mm:ssZ_
 
 The (Sie4) KSUMMA checksum is experimental.

@@ -1060,12 +1060,10 @@ class Sie4Parser implements Sie4Interface
     /**
      * Manage 'Verifikationsposter'
      *
-     * Note för #VER
-     *   if 'regdatum' is missing, 'verdatum' is used
-     *
-     * Note för #TRANS
-     *   only support for 'dimensionsnummer och objektnummer' in the 'objektlista'
-     *   i.e. no support for 'hierarkiska dimensioner'
+     * Note för VER
+     * if verdatum is missing, date 'now' is used
+     * if regdatum is missing, verdatum is used
+     * if sign is missing, GEN _sign_ is used
      *
      * @param string $label
      * @param string[] $rowData
@@ -1117,7 +1115,6 @@ class Sie4Parser implements Sie4Interface
     /**
      * Manage #VER data
      *
-     * valfri
      * #VER serie vernr verdatum vertext regdatum sign
      *
      * @param string[] $rowData
@@ -1200,6 +1197,8 @@ class Sie4Parser implements Sie4Interface
 
     /**
      * Create DimObjektDtos from objektlista, i.e. pairs of dimId/objectId
+     *
+     * DimensionNr may contain underdimension, i.e. 'hierarkiska dimensioner'
      *
      * @param TransDto $transDto
      * @param string   $objektlista

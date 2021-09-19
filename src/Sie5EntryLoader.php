@@ -275,7 +275,7 @@ class Sie5EntryLoader implements Sie4Interface
             $dimensionNr = $dimObjektDto->getDimensionNr();
             // find or create DimensionTypeEntry
             $found = false;
-            foreach( $dimensions->getDimension() as $dimensionTypeEntry ) {
+            foreach((array) $dimensions->getDimension() as $dimensionTypeEntry ) {
                 if( $dimensionNr == $dimensionTypeEntry->getId()) {
                     $found = true;
                     break;

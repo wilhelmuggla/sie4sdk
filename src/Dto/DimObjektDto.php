@@ -62,7 +62,7 @@ class DimObjektDto extends DimDto
     public static function dimObjektSorter( DimObjektDto $a, DimObjektDto $b ) : int
     {
         if( 0 === ( $dimCmp = parent::dimSorter( $a, $b ))) {
-            return strcmp( $a->getObjektNr(), $b->getObjektNr());
+            return strcmp((string) $a->getObjektNr(), (string) $b->getObjektNr());
         }
         return $dimCmp;
     }

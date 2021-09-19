@@ -199,7 +199,7 @@ class Sie4ELoader implements Sie4Interface
         if( empty( $accounts )) {
             return;
         }
-        foreach( $accounts->getAccount() as $accountTypeEntry ) {
+        foreach((array) $accounts->getAccount() as $accountTypeEntry ) {
             $kontoNr = $accountTypeEntry->getId();
             $this->sie4EDto->addAccount(
                 $kontoNr,
@@ -297,7 +297,7 @@ class Sie4ELoader implements Sie4Interface
         if( empty( $dimensions )) {
             return;
         }
-        foreach( $dimensions->getDimension() as $dimensionTypeEntry ) {
+        foreach((array) $dimensions->getDimension() as $dimensionTypeEntry ) {
             $dimensionsNr   = $dimensionTypeEntry->getId();
             $dimensionsNamn = $dimensionTypeEntry->getName();
             $this->sie4EDto->addDim(

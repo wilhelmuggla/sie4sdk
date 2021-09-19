@@ -1,20 +1,25 @@
 
-1.4.1 SIETYP (fix 4), new property of IdDto, default 4
-1.4.2 KSUMMA new property of Sie4IDto, default 0 (not set)
-      Sie4I::sie4IDto2String()/sie4IDto2File(), arg writeKsumma removed
+1.4.1  SIETYP (fix 4), new property of IdDto, default 4
+1.4.2  KSUMMA new property of Sie4IDto, default 0 (not set)
+       Sie4I::sie4IDto2String()/sie4IDto2File(), arg writeKsumma removed
 
-      Sie4IDto renamed Sie4Dto
-      IdDto extended with all labels
-      new AdressDto, BalansDto, BalansObjektDto, PeriodDto, RarDto, SruDto
-      new traits for arsnr, dimensionNr, kontoNr, kvantitet, objektNr, sign
-      Sie4IParser renamed Sie4Parser, parse all labels
+       Sie4IDto renamed Sie4Dto
+       IdDto extended with all labels
+       new AdressDto, BalansDto, BalansObjektDto, PeriodDto, RarDto, SruDto
+       new traits for arsnr, dimensionNr, kontoNr, kvantitet, objektNr, sign
+       Sie4IParser renamed Sie4Parser, parse all labels
 
-      new Sie (5 export) classes corresponding to SieEntry (5 import)
+       new Sie (5 export) classes corresponding to SieEntry (5 import)
 
-1.4.3 unique timestamp and guid for Sie4Sdk ('batch id')
-1.4.4 #UNDERDIM included
-1.4.5 write quote bug
+1.4.3  unique timestamp and guid for Sie4Sdk ('batch id')
+1.4.4  #UNDERDIM included
+1.4.5  write quote bug
 
-1.4.6 VerDto/TransDto new properties : (float) timestamp / (string, guid) correlationid
-1.4.7 new Util/GuidUtil class
-1.4.8 extended tests
+1.4.6  VerDto/TransDto new properties : (float) timestamp / (string, guid) correlationid
+1.4.7  new Util/GuidUtil class
+1.4.8  extended tests
+
+1.4.9  Sie4validator updates
+1.4.10 TRANS 'Objektlista' may contain underdimension, #UNDERDIM
+1.4.11 Type hint updates
+1.4.12 Sie4Dto::getPbudgetForKontoNr type return error

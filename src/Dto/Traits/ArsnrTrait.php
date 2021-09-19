@@ -38,9 +38,9 @@ trait ArsnrTrait
     protected $arsnr = null;
 
     /**
-     * @return int
+     * @return null|int
      */
-    public function getArsnr() : int
+    public function getArsnr()
     {
         return $this->arsnr;
     }

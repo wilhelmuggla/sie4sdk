@@ -66,6 +66,6 @@ class BalansObjektDto extends BalansDto
         if( $dimnsionNrA > $dimnsionNrB ) {
             return 1;
         }
-        return strcmp( $a->getObjektNr(), $b->getObjektNr());
+        return strcmp((string) $a->getObjektNr(), (string) $b->getObjektNr());
     }
 }
