@@ -45,7 +45,7 @@ use function sprintf;
  * kontonr and belopp required,
  *   in objektlista, pairs of dimension and objektnr required
  */
-class TransDto extends BaseId
+class TransDto extends BaseId implements KontoNrInterface
 {
     /**
      * @var string[]
@@ -70,12 +70,12 @@ class TransDto extends BaseId
     private $belopp = null;
 
     /**
-     * @var null|DateTime
+     * @var DateTime
      */
     private $transdat = null;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $transtext = null;
 
@@ -188,7 +188,7 @@ class TransDto extends BaseId
     /**
      * Return belopp
      *
-     * @return null|float
+     * @return float
      */
     public function getBelopp()
     {
@@ -220,7 +220,7 @@ class TransDto extends BaseId
     /**
      * Return transdat
      *
-     * @return null|DateTime
+     * @return DateTime
      */
     public function getTransdat()
     {
@@ -252,7 +252,7 @@ class TransDto extends BaseId
     /**
      * Return transtext
      *
-     * @return null|string
+     * @return string
      */
     public function getTranstext()
     {

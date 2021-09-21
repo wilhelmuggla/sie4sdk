@@ -90,7 +90,7 @@ class AccountDto implements DtoInterface
     private $kontoTyp = null;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $enhet = null;
 
@@ -140,7 +140,7 @@ class AccountDto implements DtoInterface
     /**
      * Return kontoNamn
      *
-     * @return null|string
+     * @return string
      */
     public function getKontoNamn()
     {
@@ -172,7 +172,7 @@ class AccountDto implements DtoInterface
     /**
      * Return kontoTyp
      *
-     * @return null|string
+     * @return string
      */
     public function getKontoTyp()
     {
@@ -210,7 +210,7 @@ class AccountDto implements DtoInterface
     /**
      * Return enhet
      *
-     * @return null|string
+     * @return string
      */
     public function getEnhet()
     {

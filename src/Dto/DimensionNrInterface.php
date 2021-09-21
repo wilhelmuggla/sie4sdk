@@ -25,44 +25,14 @@
  *            along with Sie4Sdk. If not, see <https://www.gnu.org/licenses/>.
  */
 declare( strict_types = 1 );
-namespace Kigkonsult\Sie4Sdk\Dto\Traits;
+namespace Kigkonsult\Sie4Sdk\Dto;
 
-trait ObjektNrTrait
+interface DimensionNrInterface extends DtoInterface
 {
     /**
-     * @var string
-     */
-    private $objektNr = null;
-
-    /**
-     * Return objektNr
+     * Return DimensionNr
      *
-     * @return string
+     * @return int
      */
-    public function getObjektNr() : string
-    {
-        return $this->objektNr;
-    }
-
-    /**
-     * Return bool true if objektNr is set
-     *
-     * @return bool
-     */
-    public function isObjektNrSet() : bool
-    {
-        return ( null !== $this->objektNr );
-    }
-
-    /**
-     * Set objektNr
-     *
-     * @param string $objektNr
-     * @return self
-     */
-    public function setObjektNr( string $objektNr ) : self
-    {
-        $this->objektNr = $objektNr;
-        return $this;
-    }
+    public function getDimensionNr() : int;
 }

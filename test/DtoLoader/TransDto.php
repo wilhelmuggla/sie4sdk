@@ -49,7 +49,7 @@ class TransDto
         $dto->setKontoNr( $kontoNr );
 
         static $DIMs    = [ 1, 2, 6, 7, 8, 9, 10 ];
-        static $OBJECTs = [ 1, 2, 3, 4, 5 ];
+        static $OBJECTs = [ '1', '2', '3', '4', '5' ];
         static $maxOpts = [ 0, 1, 2, 3 ];
         $max            = $faker->randomElement( $maxOpts );
         for( $x = 0; $x < $max; $x++ ) {
@@ -74,7 +74,7 @@ class TransDto
         switch( $faker->randomElement( $Arr123 )) {
             case 1 :
                 $dto->setTranstext(
-                    $faker->words( $faker->randomElement( $Arr123 ), true )
+                    (string) $faker->words( $faker->randomElement( $Arr123 ), true )
                 );
                 break;
             case 2 :

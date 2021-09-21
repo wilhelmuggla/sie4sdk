@@ -45,12 +45,12 @@ use function strcmp;
 class VerDto extends BaseId
 {
     /**
-     * @var null|int|string
+     * @var int|string
      */
     private $serie = null;
 
     /**
-     * @var null|int
+     * @var int
      */
     private $vernr = null;
 
@@ -142,7 +142,7 @@ class VerDto extends BaseId
     /**
      * Return serie
      *
-     * @return null|int|string
+     * @return int|string
      */
     public function getSerie()
     {
@@ -174,7 +174,7 @@ class VerDto extends BaseId
     /**
      * Return vernr
      *
-     * @return null|int
+     * @return int
      */
     public function getVernr()
     {
@@ -238,7 +238,7 @@ class VerDto extends BaseId
     /**
      * Return vertext
      *
-     * @return null|string
+     * @return string
      */
     public function getVertext()
     {
@@ -270,7 +270,7 @@ class VerDto extends BaseId
     /**
      * Return regdatum
      *
-     * @return null|DateTime
+     * @return DateTime
      */
     public function getRegdatum()
     {

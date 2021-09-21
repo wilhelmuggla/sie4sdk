@@ -37,9 +37,9 @@ trait KvantitetTrait
     /**
      * Return kvantitet
      *
-     * @return null|float
+     * @return float
      */
-    public function getKvantitet()
+    public function getKvantitet() : float
     {
         return $this->kvantitet;
     }

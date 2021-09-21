@@ -42,7 +42,7 @@ class DimObjektDto extends DimDto
     use ObjektNrTrait;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $objektNamn = null;
 
@@ -71,11 +71,11 @@ class DimObjektDto extends DimDto
      * Class factory method, set dimensionNr and objektNr, objektName opt
      *
      * @param int|string $dimensionsNr
-     * @param int|string $objektNr
+     * @param string $objektNr
      * @param null|string $objektNamn
      * @return self
      */
-    public static function factoryDimObject( $dimensionsNr, $objektNr, $objektNamn = null ) : self
+    public static function factoryDimObject( $dimensionsNr, string $objektNr, $objektNamn = null ) : self
     {
         $instance = new self();
         $instance->setDimensionNr( $dimensionsNr );
@@ -89,7 +89,7 @@ class DimObjektDto extends DimDto
     /**
      * Return objektNamn
      *
-     * @return null|string
+     * @return string
      */
     public function getObjektNamn()
     {

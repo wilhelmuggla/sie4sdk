@@ -42,7 +42,7 @@ class IdDto
 
         $dto = new Dto();
 
-        $dto->setProsa( $faker->words( 4, true ));
+        $dto->setProsa((string) $faker->words( 4, true ));
 
         static $FTYPS = [
             'AB' => 'Aktiebolag',

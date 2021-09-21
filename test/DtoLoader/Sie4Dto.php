@@ -100,13 +100,13 @@ class Sie4Dto
          * DimObjektDto[]   #OBJECT
          */
         static $OBJECTs = [
-            1 => 'objekt 1',
-            2 => 'objekt 2',
-            3 => 'objekt 3',
+            '1' => 'objekt 1',
+            '2' => 'objekt 2',
+            '3' => 'objekt 3',
         ];
         foreach( array_keys( $DIMs ) as $DimensionNr ) {
             foreach( $OBJECTs as $objektNr => $objektNamn ) {
-                $dto->addDimObjekt( $DimensionNr, $objektNr, $objektNamn );
+                $dto->addDimObjekt( $DimensionNr, (string) $objektNr, $objektNamn );
             } // end foreach
         } // end foreach
 
@@ -130,7 +130,7 @@ class Sie4Dto
         foreach( $kontoNrs as $kontoNr ) {
             foreach( array_keys( $DIMs ) as $dimensionNr ) {
                 foreach( array_keys( $OBJECTs ) as $objektNr ) {
-                    $dto->addOibDto( BalansObjektDto::load((string) $kontoNr, $dimensionNr, (string) $objektNr ));
+                    $dto->addOibDto( BalansObjektDto::load((string) $kontoNr, (int) $dimensionNr, (string) $objektNr ));
                 } // end foreach
             } // end foreach
         } // end foreach
@@ -141,7 +141,7 @@ class Sie4Dto
         foreach( $kontoNrs as $kontoNr ) {
             foreach( array_keys( $DIMs ) as $DimensionNr ) {
                 foreach( array_keys( $OBJECTs ) as $objektNr ) {
-                    $dto->addOubDto( BalansObjektDto::load((string) $kontoNr, $DimensionNr, (string) $objektNr ));
+                    $dto->addOubDto( BalansObjektDto::load((string) $kontoNr, (int) $DimensionNr, (string) $objektNr ));
                 } // end foreach
             } // end foreach
         } // end foreach
@@ -159,7 +159,7 @@ class Sie4Dto
         foreach( $kontoNrs as $kontoNr ) {
             foreach( array_keys( $DIMs ) as $DimensionNr ) {
                 foreach( array_keys( $OBJECTs ) as $objektNr ) {
-                    $dto->addPsaldoDto( PeriodDto::load((string) $kontoNr, $DimensionNr, (string) $objektNr ));
+                    $dto->addPsaldoDto( PeriodDto::load((string) $kontoNr, (int) $DimensionNr, (string) $objektNr ));
                 } // end foreach
             } // end foreach
         } // end foreach
@@ -170,7 +170,7 @@ class Sie4Dto
         foreach( $kontoNrs as $kontoNr ) {
             foreach( array_keys( $DIMs ) as $DimensionNr ) {
                 foreach( array_keys( $OBJECTs ) as $objektNr ) {
-                    $dto->addPbudgetDto( PeriodDto::load((string) $kontoNr, $DimensionNr, (string) $objektNr ));
+                    $dto->addPbudgetDto( PeriodDto::load((string) $kontoNr, (int) $DimensionNr, (string) $objektNr ));
                 } // end foreach
             } // end foreach
         } // end foreach

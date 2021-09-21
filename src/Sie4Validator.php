@@ -495,7 +495,7 @@ class Sie4Validator implements Sie4Interface
      *
      * In each DimDto, dimensionNr and name are required
      *
-     * @param int $dx
+     * @param int    $dx
      * @param DimDto $dimDto
      * @return void
      * @throws InvalidArgumentException
@@ -541,7 +541,7 @@ class Sie4Validator implements Sie4Interface
     /**
      * Validate mandatory properties in DimObjektDto
      *
-     * In each DimDto, dimensionsnr and objektnr/name are required
+     * In each DimObjektDto, dimensionsnr and objektnr/name are required
      * // ?? If dimensionsnamn missing, dimDto MUST exist for dimensionsnr
      *
      * @param int          $dox
@@ -714,7 +714,7 @@ class Sie4Validator implements Sie4Interface
      * @throws InvalidArgumentException
      */
     public static function assertTransDto(
-                 $verNr,
+        $verNr,
         int      $vx,
         int      $tx,
         TransDto $transDto

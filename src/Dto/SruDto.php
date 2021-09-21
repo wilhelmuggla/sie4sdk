@@ -41,7 +41,7 @@ class SruDto implements DtoInterface
     use KontoNrTrait;
 
     /**
-     * @var null|int
+     * @var int
      */
     private $sruKod = null;
 
@@ -88,7 +88,7 @@ class SruDto implements DtoInterface
     /**
      * Return sruKod
      *
-     * @return null|int
+     * @return int
      */
     public function getSruKod()
     {

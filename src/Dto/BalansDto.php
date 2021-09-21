@@ -37,7 +37,7 @@ use function strcmp;
 /**
  * Class BalansDto
  */
-class BalansDto implements DtoInterface
+class BalansDto implements KontoNrInterface
 {
 
     use ArsnrTrait;
@@ -105,7 +105,7 @@ class BalansDto implements DtoInterface
     /**
      * Return saldo
      *
-     * @return null|float
+     * @return float
      */
     public function getSaldo()
     {

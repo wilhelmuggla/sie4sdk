@@ -71,12 +71,12 @@ class IdDto implements DtoInterface
     private $sieTyp = 4;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $prosa = null;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $ftyp = null;
 
@@ -86,7 +86,7 @@ class IdDto implements DtoInterface
     private $fnrId = null;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $orgnr = null;
 
@@ -96,7 +96,7 @@ class IdDto implements DtoInterface
     private $multiple = 1;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $bkod = null;
 
@@ -106,7 +106,7 @@ class IdDto implements DtoInterface
     private $adress = null;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $fnamn = null;
 
@@ -116,22 +116,22 @@ class IdDto implements DtoInterface
     private $rarDtos = [];
 
     /**
-     * @var null|int  ÅÅÅÅ
+     * @var int  ÅÅÅÅ
      */
     private $taxar = null;
 
     /**
-     * @var null|DateTime
+     * @var DateTime
      */
     private $omfattn = null;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $kptyp = null;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $valutakod = null;
 
@@ -248,7 +248,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getProsa()
     {
@@ -276,7 +276,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getFtyp()
     {
@@ -306,7 +306,7 @@ class IdDto implements DtoInterface
     /**
      * Return fnrId
      *
-     * @return null|string
+     * @return string
      */
     public function getFnrId()
     {
@@ -338,7 +338,7 @@ class IdDto implements DtoInterface
     /**
      * Return orgnr
      *
-     * @return null|string
+     * @return string
      */
     public function getOrgnr()
     {
@@ -390,7 +390,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getBkod()
     {
@@ -418,7 +418,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return null|AdressDto
+     * @return AdressDto
      */
     public function getAdress()
     {
@@ -448,7 +448,7 @@ class IdDto implements DtoInterface
     /**
      * Return fnamn
      *
-     * @return null|string
+     * @return string
      */
     public function getFnamn()
     {
@@ -521,7 +521,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return null|int
+     * @return int
      */
     public function getTaxar()
     {
@@ -551,7 +551,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return null|DateTime
+     * @return DateTime
      */
     public function getOmfattn()
     {
@@ -579,7 +579,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getKptyp()
     {
@@ -609,7 +609,7 @@ class IdDto implements DtoInterface
     /**
      * Return valutakod
      *
-     * @return null|string
+     * @return string
      */
     public function getValutakod()
     {

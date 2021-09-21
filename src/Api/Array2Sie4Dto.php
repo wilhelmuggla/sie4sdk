@@ -1114,10 +1114,10 @@ class Array2Sie4Dto extends ArrayBase
      * @return void
      */
     private function processTransData(
-        TransDto $transDto,
-        array $keyArr,
-        int $verX,
-        int $transX,
+        TransDto  $transDto,
+        array  $keyArr,
+        int    $verX,
+        int    $transX,
         string $label
     )
     {

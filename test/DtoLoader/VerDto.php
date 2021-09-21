@@ -62,7 +62,7 @@ class VerDto
             $dto->setRegdatum( $dateTime->modify( '-1 day' ));
         }
 
-        $dto->setVertext( $faker->words( 4, true ));
+        $dto->setVertext((string) $faker->words( 4, true ));
 
         $max         = $faker->numberBetween( 2, 7 );
         $kontoNrs2    = [];

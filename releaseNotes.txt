@@ -15,11 +15,16 @@
 1.4.4  #UNDERDIM included
 1.4.5  write quote bug
 
+# 1.48 release
 1.4.6  VerDto/TransDto new properties : (float) timestamp / (string, guid) correlationid
 1.4.7  new Util/GuidUtil class
 1.4.8  extended tests
 
+# 1.5 release
 1.4.9  Sie4validator updates
 1.4.10 TRANS 'Objektlista' may contain underdimension, #UNDERDIM
 1.4.11 Type hint updates
 1.4.12 Sie4Dto::getPbudgetForKontoNr type return error
+
+# 1.51 release
+1.51   More type hint updates

@@ -36,7 +36,7 @@ use Kigkonsult\Sie4Sdk\Sie4Validator;
 class PeriodDto extends BalansObjektDto
 {
     /**
-     * @var null|string  ÅÅÅÅMM
+     * @var string  ÅÅÅÅMM
      */
     private $period = null;
 
@@ -58,9 +58,9 @@ class PeriodDto extends BalansObjektDto
     }
 
     /**
-     * Return bool true is period is set
+     * Return period
      *
-     * @return null|string
+     * @return string
      */
     public function getPeriod()
     {

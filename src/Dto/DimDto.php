@@ -31,12 +31,12 @@ use Kigkonsult\Sie4Sdk\Dto\Traits\DimensionNrTrait;
 
 use function strcmp;
 
-class DimDto implements DtoInterface
+class DimDto implements DimensionNrInterface
 {
     use DimensionNrTrait;
 
     /**
-     * @var null|string
+     * @var string
      */
     protected $dimensionsNamn = null;
 
@@ -75,7 +75,7 @@ class DimDto implements DtoInterface
     /**
      * Return dimensionsNamn
      *
-     * @return null|string
+     * @return string
      */
     public function getDimensionsNamn()
     {

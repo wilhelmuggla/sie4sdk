@@ -189,7 +189,7 @@ class Sie4Dto extends BaseId
     /**
      * Return IdDto
      *
-     * @return null|IdDto
+     * @return IdDto
      */
     public function getIdDto()
     {
@@ -509,11 +509,11 @@ class Sie4Dto extends BaseId
      * Add single DimObjektDto using dimensionNr, objektNr and $objektNamn
      *
      * @param int|string $dimensionsNr
-     * @param int|string $objektNr
+     * @param string $objektNr
      * @param string $objektNamn
      * @return self
      */
-    public function addDimObjekt( $dimensionsNr, $objektNr, string $objektNamn ) : self
+    public function addDimObjekt( $dimensionsNr, string $objektNr, string $objektNamn ) : self
     {
         return $this->addDimObjektDto(
             DimObjektDto::factoryDimObject(

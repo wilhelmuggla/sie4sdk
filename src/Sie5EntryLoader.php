@@ -425,9 +425,9 @@ class Sie5EntryLoader implements Sie4Interface
      * @return void
      */
     private static function processSingleTransDto(
-        TransDto $transDto,
+        TransDto                $transDto,
         LedgerEntryTypeEntry $ledgerEntryTypeEntry,
-        string $verDatum
+        string               $verDatum
     )
     {
         $ledgerEntryTypeEntry->setAccountId( $transDto->getKontoNr());

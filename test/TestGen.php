@@ -34,9 +34,9 @@ use Kigkonsult\Sie4Sdk\Api\Sie4Dto2Array;
 use Kigkonsult\Sie4Sdk\Api\Sie4Dto2Json;
 use Kigkonsult\Sie4Sdk\Dto\IdDto;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
-use Kigkonsult\Sie4Sdk\Dto\TransDto;
+use Kigkonsult\Sie4Sdk\Dto\DimDto;
 use Kigkonsult\Sie4Sdk\Dto\VerDto;
-use Kigkonsult\Sie4Sdk\DtoLoader\Sie4Dto as Sie4Gen;
+use Kigkonsult\Sie4Sdk\DtoLoader\Sie4Dto as Sie4DtoLoader;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 use PHPUnit\Framework\TestCase;
 
@@ -57,7 +57,7 @@ class TestGen extends TestCase
             $dataArr[] =
                 [
                     $case++,
-                    Sie4Gen::load(),
+                    Sie4DtoLoader::load(),
                 ];
         } // end for
 
@@ -271,6 +271,7 @@ class TestGen extends TestCase
      * @param int     $case
      * @param Sie4Dto $expected
      * @param Sie4Dto $actual
+     * @return void
      */
     public function checkTimeStampGuid( int $case, Sie4Dto $expected, Sie4Dto $actual )
     {
@@ -336,10 +337,11 @@ class TestGen extends TestCase
                 $key = (string) $transDto->getTimestamp() . $transDto->getCorrelationId();
                 $this->assertFalse(
                     in_array( $key, $tsGuidArr ),
-                    sprintf( $ERR3, $case, $testT, 'E', TransDto::TRANS, $vx . '-' . $tx,  $key )
+                    sprintf( $ERR3, $case, $testT, 'E', DimDto::TRANS, $vx . '-' . $tx,  $key )
                 );
                 $tsGuidArr[] = $key;
             } // end foreach
         } // end foreach
     }
+
 }

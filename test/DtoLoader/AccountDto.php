@@ -43,7 +43,7 @@ class AccountDto
         $dto = new Dto();
 
         $dto->setKontoNr( $kontoNr );
-        $dto->setKontoNamn( $faker->words( 3, true ));
+        $dto->setKontoNamn((string) $faker->words( 3, true ));
 
         static $KTYPES = [ Dto::T, Dto::S, Dto::K, Dto::I ];
         $dto->setKontoTyp( $faker->randomElement( $KTYPES ));

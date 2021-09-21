@@ -37,12 +37,12 @@ class RarDto implements DtoInterface
     use ArsnrTrait;
 
     /**
-     * @var null|DateTime
+     * @var DateTime
      */
     private $start = null;
 
     /**
-     * @var null|DateTime
+     * @var DateTime
      */
     private $slut = null;
 
@@ -77,7 +77,7 @@ class RarDto implements DtoInterface
     }
 
     /**
-     * @return null|DateTime
+     * @return DateTime
      */
     public function getStart()
     {
@@ -103,7 +103,7 @@ class RarDto implements DtoInterface
     }
 
     /**
-     * @return null|DateTime
+     * @return DateTime
      */
     public function getSlut()
     {

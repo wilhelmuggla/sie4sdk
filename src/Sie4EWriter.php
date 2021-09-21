@@ -61,7 +61,6 @@ class Sie4EWriter extends Sie4WriterBase
         }
         $this->writeKsumma = ( $this->sie4Dto->isKsummaSet() || ( $writeKsumma ?? false ));
         $this->output      = new It();
-
         $this->output->append(
             sprintf( self::$SIEENTRYFMT1, self::FLAGGA, $this->sie4Dto->getFlagga())
         );
@@ -73,14 +72,12 @@ class Sie4EWriter extends Sie4WriterBase
         $this->writeGen();
         $this->writeSietyp();
         $this->writeProsa();
-
         $this->writeFtyp();
         $this->writeFnr();
         $this->writeOrgnr();
         $this->writeBkod();
         $this->writeAdress();
         $this->writeFnamn();
-
         $this->writeRar();
         $this->writeTaxar();
         $this->writeOmfattn();
@@ -92,7 +89,6 @@ class Sie4EWriter extends Sie4WriterBase
         $this->writeDim();
         $this->writeUnderDim();
         $this->writeObjekt();
-
         $this->writeIbUb();
         $this->writeOibOub();
         $this->writeRes();

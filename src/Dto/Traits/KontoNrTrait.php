@@ -39,11 +39,11 @@ trait KontoNrTrait
     protected $kontoNr = null;
 
     /**
-     * Set kontoNr
+     * Return kontoNr
      *
-     * @return null|string
+     * @return string
      */
-    public function getKontoNr()
+    public function getKontoNr() : string
     {
         return $this->kontoNr;
     }

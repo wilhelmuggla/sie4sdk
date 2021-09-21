@@ -66,12 +66,13 @@
             <file>src/Dto/AccountDto.php</file>
             <file>src/Dto/AdressDto.php</file>
             <file>src/Dto/BalansDto.php</file>
-            <file>src/Dto/BalansDtoInterface.php</file>
             <file>src/Dto/BalansObjektDto.php</file>
             <file>src/Dto/BaseId.php</file>
             <file>src/Dto/DimDto.php</file>
+            <file>src/Dto/DimensionNrInterface.php</file>
             <file>src/Dto/DimObjektDto.php</file>
             <file>src/Dto/IdDto.php</file>
+            <file>src/Dto/KontoNrInterface.php</file>
             <file>src/Dto/Period.php</file>
             <file>src/Dto/RarDto.php</file>
             <file>src/Dto/Sie4Dto.php</file>

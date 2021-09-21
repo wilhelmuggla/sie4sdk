@@ -41,9 +41,9 @@ trait DimensionNrTrait
     /**
      * Return dimensionNr
      *
-     * @return null|int
+     * @return int
      */
-    public function getDimensionNr()
+    public function getDimensionNr() : int
     {
         return $this->dimensionNr;
     }

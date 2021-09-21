@@ -33,12 +33,12 @@ use Kigkonsult\Sie4Sdk\Sie4Validator;
 trait ArsnrTrait
 {
     /**
-     * @var null|int
+     * @var int
      */
     protected $arsnr = null;
 
     /**
-     * @return null|int
+     * @return int
      */
     public function getArsnr()
     {
