@@ -28,31 +28,29 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
 use DateTime;
+use Kigkonsult\Sie4Sdk\Dto\Traits\SerieVernrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
 
+use Kigkonsult\Sie4Sdk\Util\Assert;
+use Kigkonsult\Sie4Sdk\Util\StringUtil;
 use function count;
 use function strcmp;
 
 /**
  * Class VerDto
  *
- * Inherit unique timestamp and guid properties from parent
+ * Inherit timestamp, guid, fnrId and orgnr(+multiple) properties from BaseId,
+ * fnrId and orgnr(+multiple), serie and vernr are populated down to each TransDto instance
+ * to uniquely identify instance
  *
  * Verdatum and trans required
- * In each trans, kontonr and belopp required,
- *   in trans objektlista, if exists, pairs of dimension and objektnr required
  */
 class VerDto extends BaseId
 {
     /**
-     * @var int|string
+     * Serie and vernr
      */
-    private $serie = null;
-
-    /**
-     * @var int
-     */
-    private $vernr = null;
+    use SerieVernrTrait;
 
     /**
      * @var DateTime
@@ -90,15 +88,17 @@ class VerDto extends BaseId
      */
     public static function verSorter( VerDto $a, VerDto $b ) : int
     {
-        $aSerie = $a->getSerie();
-        $bSerie = $b->getSerie();
-        if( $aSerie < $bSerie ) {
+        $aValue = $a->isSerieSet() ? $a->getSerie() : StringUtil::$SP0;
+        $bValue = $b->isSerieSet() ? $b->getSerie() : StringUtil::$SP0;
+        if( $aValue < $bValue ) {
             return -1;
         }
-        if( $aSerie > $bSerie ) {
+        if( $aValue > $bValue ) {
             return 1;
         }
-        return strcmp((string) $a->getVernr(), (string) $b->getVernr());
+        $aValue = $a->isVernrSet() ? (string) $a->getVernr() : StringUtil::$SP0;
+        $bValue = $b->isVernrSet() ? (string) $b->getVernr() : StringUtil::$SP0;
+        return strcmp( $aValue, $bValue );
     }
 
     /**
@@ -140,26 +140,6 @@ class VerDto extends BaseId
     }
 
     /**
-     * Return serie
-     *
-     * @return int|string
-     */
-    public function getSerie()
-    {
-        return $this->serie;
-    }
-
-    /**
-     * Return bool true if serie is set
-     *
-     * @return bool
-     */
-    public function isSerieSet() : bool
-    {
-        return ( null !== $this->serie );
-    }
-
-    /**
      * Set serie
      *
      * @param int|string $serie
@@ -167,28 +147,12 @@ class VerDto extends BaseId
      */
     public function setSerie( $serie ) : self
     {
+        Assert::isIntOrString( self::VERSERIE, $serie );
         $this->serie = (string) $serie;
+        foreach( $this->transDtos as $transDto ) {
+            $transDto->setSerie( $this->serie );
+        }
         return $this;
-    }
-
-    /**
-     * Return vernr
-     *
-     * @return int
-     */
-    public function getVernr()
-    {
-        return $this->vernr;
-    }
-
-    /**
-     * Return bool true if vernr is set
-     *
-     * @return bool
-     */
-    public function isVernrSet() : bool
-    {
-        return ( null !== $this->vernr );
     }
 
     /**
@@ -200,6 +164,9 @@ class VerDto extends BaseId
     public function setVernr( int $vernr ) : self
     {
         $this->vernr = $vernr;
+        foreach( $this->transDtos as $transDto ) {
+            $transDto->setvernr( $this->vernr );
+        }
         return $this;
     }
 
@@ -336,11 +303,30 @@ class VerDto extends BaseId
     /**
      * Add single transDto #TRANS (default) / #RTRANS / #BTRANS
      *
+     * Populates down fnrId, orgnr(+multiple), serie and vernr
+     * If missing, transdat is set from regdatum (if set)
+     *
      * @param TransDto $transDto
      * @return self
      */
     public function addTransDto( TransDto $transDto ) : self
     {
+        if( $this->isFnrIdSet()) {
+            $transDto->setFnrId( $this->getFnrId());
+        }
+        if( $this->isOrgnrSet()) {
+            $transDto->setOrgnr( $this->getOrgnr());
+            $transDto->setMultiple( $this->getMultiple());
+        }
+        if( $this->isSerieSet()) {
+            $transDto->setSerie( $this->getSerie());
+        }
+        if( $this->isVernrSet()) {
+            $transDto->setVernr( $this->getVernr());
+        }
+        if( ! $transDto->isTransdatSet() && $this->isRegdatumSet()) {
+            $transDto->setTransdat( clone $this->getRegdatum());
+        }
         $this->transDtos[] = $transDto;
         return $this;
     }
@@ -356,6 +342,53 @@ class VerDto extends BaseId
         $this->transDtos = [];
         foreach( $transDtos as $transDto ) {
             $this->addTransDto( $transDto );
+        }
+        return $this;
+    }
+
+    /**
+     * Set fnrId in each trandDto
+     *
+     * @override
+     * @param string $fnrId
+     * @return self
+     */
+    public function setFnrId( string $fnrId ) : self
+    {
+        $this->fnrId = $fnrId;
+        foreach( $this->transDtos as $transDto ) {
+            $transDto->setFnrId( $fnrId );
+        }
+        return $this;
+    }
+
+    /**
+     * Set orgnr in each trandDto
+     *
+     * @override
+     * @param string $orgnr
+     * @return self
+     */
+    public function setOrgnr( string $orgnr ) : self
+    {
+        $this->orgnr = $orgnr;
+        foreach( $this->transDtos as $transDto ) {
+            $transDto->setOrgnr( $orgnr );
+        }
+        return $this;
+    }
+
+    /**
+     * Set multiple in each trandDto
+     *
+     * @param int $multiple
+     * @return self
+     */
+    public function setMultiple( int $multiple ) : self
+    {
+        $this->multiple = $multiple;
+        foreach( $this->transDtos as $transDto ) {
+            $transDto->setMultiple( $multiple );
         }
         return $this;
     }

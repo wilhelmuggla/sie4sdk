@@ -31,6 +31,7 @@ use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
 use Kigkonsult\Sie4Sdk\Sie4Validator;
 
+use Kigkonsult\Sie4Sdk\Util\Assert;
 use function strcmp;
 
 /**
@@ -114,7 +115,7 @@ class SruDto implements DtoInterface
      */
     public function setSruKod( $sruKod ) : self
     {
-        Sie4Validator::assertIntegerish( self::SRU, $sruKod );
+        Assert::isIntegerish( self::SRU, $sruKod );
         $this->sruKod = (int) $sruKod;
         return $this;
     }

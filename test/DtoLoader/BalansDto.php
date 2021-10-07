@@ -39,14 +39,12 @@ class BalansDto
     public static function load( string $kontoNr )
     {
         $faker = Faker\Factory::create();
-
-        $dto = new Dto();
-
-        $dto->setArsnr( 0 );
-        $dto->setKontoNr( $kontoNr );
-        $dto->setSaldo( $faker->randomFloat( 2, 1, 999999 ));
-        $dto->setKvantitet( $faker->randomDigitNot( 0 ));
-
+        $dto = Dto::factory(
+            0,
+            $kontoNr,
+            $faker->randomFloat( 2, 1, 999999 ),
+            $faker->randomDigitNot( 0 )
+        );
         return $dto;
     }
 }

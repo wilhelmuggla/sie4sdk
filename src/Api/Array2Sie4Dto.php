@@ -349,7 +349,7 @@ class Array2Sie4Dto extends ArrayBase
          * ]
          */
         if( isset( $this->input[self::FNRID] )) {
-            $idDto->setFnrId( $this->input[self::FNRID] );
+            $this->sie4Dto->setFnrId( $this->input[self::FNRID] );
         }
         /**
          * Organisationsnummer för det företag som exporterats
@@ -367,10 +367,10 @@ class Array2Sie4Dto extends ArrayBase
          * ]
          */
         if( isset( $this->input[self::ORGNRORGNR] )) {
-            $idDto->setOrgnr( $this->input[self::ORGNRORGNR] );
+            $this->sie4Dto->setOrgnr( $this->input[self::ORGNRORGNR] );
         }
         if( isset( $this->input[self::ORGNRFORNVR] )) {
-            $idDto->setMultiple((int) $this->input[self::ORGNRFORNVR] );
+            $this->sie4Dto->setMultiple((int) $this->input[self::ORGNRFORNVR] );
         }
 
         /**

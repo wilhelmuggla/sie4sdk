@@ -32,8 +32,7 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          syntaxCheck="false"
-         bootstrap="autoload.php"
-        >
+         bootstrap="autoload.php">
     <testsuites>
         <testsuite name="Generated Sie4Dto Tests">
             <file>test/TestGen.php</file>
@@ -46,7 +45,6 @@
         <whitelist
                 addUncoveredFilesFromWhitelist='true'
                 processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
             <file>src/Sie4ELoader.php</file>
             <file>src/Sie4EWriter.php</file>
             <file>src/Sie4ILoader.php</file>
@@ -65,13 +63,12 @@
             <file>src/Dto/AccountDto.php</file>
             <file>src/Dto/AdressDto.php</file>
             <file>src/Dto/BalansDto.php</file>
+            <file>src/Dto/BalansDtoInterface.php</file>
             <file>src/Dto/BalansObjektDto.php</file>
             <file>src/Dto/BaseId.php</file>
             <file>src/Dto/DimDto.php</file>
-            <file>src/Dto/DimensionNrInterface.php</file>
             <file>src/Dto/DimObjektDto.php</file>
             <file>src/Dto/IdDto.php</file>
-            <file>src/Dto/KontoNrInterface.php</file>
             <file>src/Dto/Period.php</file>
             <file>src/Dto/RarDto.php</file>
             <file>src/Dto/Sie4Dto.php</file>
@@ -80,11 +77,15 @@
             <file>src/Dto/VerDto.php</file>
             <file>src/Dto/Traits/ArsnrTrait.php</file>
             <file>src/Dto/Traits/DimensionNrTrait.php</file>
+            <file>src/Dto/Traits/FnrIdOrgnrTrait.php</file>
+            <file>src/Dto/Traits/FnrIdOrgnr2Trait.php</file>
             <file>src/Dto/Traits/KontoNrTrait.php</file>
             <file>src/Dto/Traits/KvantitetTrait.php</file>
             <file>src/Dto/Traits/ObjektNrTrait.php</file>
+            <file>src/Dto/Traits/SerieVernrTrait.php</file>
             <file>src/Dto/Traits/SignTrait.php</file>
             <file>src/Util/ArrayUtil.php</file>
+            <file>src/Util/Assert.php</file>
             <file>src/Util/DateTimeUtil.php</file>
             <file>src/Util/GuidUtil.php</file>
             <file>src/Util/FileUtil.php</file>
@@ -117,4 +118,8 @@
       <!-- log type="testdox-text"
            target="testDocs/testdox.txt"/ -->
   </logging>
+    <php>
+    <!-- Set max TestGen:genTestProvider test sets -->
+        <var name="GENTESTMAX" value="20"/>
+    </php>
 </phpunit>

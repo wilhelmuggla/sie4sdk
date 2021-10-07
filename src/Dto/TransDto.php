@@ -29,10 +29,13 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use DateTime;
 use InvalidArgumentException;
+use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnr2Trait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KvantitetTrait;
+use Kigkonsult\Sie4Sdk\Dto\Traits\SerieVernrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
 
+use Kigkonsult\Sie4Sdk\Util\Assert;
 use function in_array;
 use function count;
 use function sprintf;
@@ -40,10 +43,13 @@ use function sprintf;
 /**
  * Class TransDto
  *
- * Inherit unique timestamp and guid properties from parent
+ * Inherit timestamp, guid, fnrId and orgnr(+multiple) properties from BaseId,
+ * to uniquely identify instance
+ * The properties and serie and vernr are populated down from 'parent' verDto
+ * trandsdat also (from verdtum), s missing
  *
  * kontonr and belopp required,
- *   in objektlista, pairs of dimension and objektnr required
+ *   in objektlista (if set), pairs of dimension and objektnr required
  */
 class TransDto extends BaseId implements KontoNrInterface
 {
@@ -51,6 +57,11 @@ class TransDto extends BaseId implements KontoNrInterface
      * @var string[]
      */
     private static $allowedTypes = [ self::TRANS, self::RTRANS, self::BTRANS ];
+
+    /**
+     * Serie and vernr
+     */
+    use SerieVernrTrait;
 
     /**
      * @var string  one of allowedTypes
@@ -82,6 +93,8 @@ class TransDto extends BaseId implements KontoNrInterface
     use KvantitetTrait;
 
     use SignTrait;
+
+    use FnrIdOrgnr2Trait;
 
     /**
      * Class factory method, kontoNr/belopp
@@ -125,7 +138,33 @@ class TransDto extends BaseId implements KontoNrInterface
     }
 
     /**
-     * Return int count DimObjektDtos in objektlista
+     * Set serie
+     *
+     * @param int|string $serie
+     * @return self
+     */
+    public function setSerie( $serie ) : self
+    {
+        Assert::isIntOrString( self::VERSERIE, $serie );
+        $this->serie = (string) $serie;
+        return $this;
+    }
+
+
+    /**
+     * Set vernr
+     *
+     * @param int $vernr
+     * @return self
+     */
+    public function setVernr( int $vernr ) : self
+    {
+        $this->vernr = $vernr;
+        return $this;
+    }
+
+    /**
+     * Return int count DimObjektDtos (pairs of dim/objekt) in objektlista
      *
      * @return int
      */
@@ -135,7 +174,7 @@ class TransDto extends BaseId implements KontoNrInterface
     }
 
     /**
-     * Return objektlista, array DimObjektDto[]
+     * Return objektlista, array DimObjektDto[], (pairs of dim/objekt)
      *
      * @return DimObjektDto[]
      */
@@ -159,7 +198,7 @@ class TransDto extends BaseId implements KontoNrInterface
     }
 
     /**
-     * Add objektlista element, DimObjektDto
+     * Add objektlista element, DimObjektDto, (pair of dim/objekt)
      *
      * @param DimObjektDto $dimObjektDto
      * @return self
@@ -171,7 +210,7 @@ class TransDto extends BaseId implements KontoNrInterface
     }
 
     /**
-     * Set objektlista, array DimObjektDto[]
+     * Set objektlista, array DimObjektDto[], (pairs of dim/objekt)
      *
      * @param DimObjektDto[] $dimObjektDtos
      * @return self

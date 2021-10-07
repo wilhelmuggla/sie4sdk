@@ -30,6 +30,7 @@ namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Sie4Interface;
 use Kigkonsult\Sie4Sdk\Sie4Validator;
+use Kigkonsult\Sie4Sdk\Util\Assert;
 
 trait KontoNrTrait
 {
@@ -67,7 +68,7 @@ trait KontoNrTrait
      */
     public function setKontoNr( $kontoNr ) : self
     {
-        Sie4Validator::assertIntegerish( Sie4Interface::KONTONR, $kontoNr );
+        Assert::isIntegerish( Sie4Interface::KONTONR, $kontoNr );
         $this->kontoNr = (string) $kontoNr;
         return $this;
     }

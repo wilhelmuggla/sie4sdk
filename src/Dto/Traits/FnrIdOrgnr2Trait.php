@@ -27,49 +27,44 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
-use InvalidArgumentException;
-use Kigkonsult\Sie4Sdk\Sie4Interface;
-use Kigkonsult\Sie4Sdk\Sie4Validator;
-use Kigkonsult\Sie4Sdk\Util\Assert;
-
-trait DimensionNrTrait
+/**
+ * Implements set-methods for properties fnrid, orgnr(+multiple), used in IdDto and TransDto
+ */
+trait FnrIdOrgnr2Trait
 {
     /**
-     * @var int
-     */
-    protected $dimensionNr = null;
-
-    /**
-     * Return dimensionNr
+     * Set fnrId
      *
-     * @return int
-     */
-    public function getDimensionNr() : int
-    {
-        return $this->dimensionNr;
-    }
-
-    /**
-     * Return bool true if dimensionNr is set
-     *
-     * @return bool
-     */
-    public function isDimensionsNrSet() : bool
-    {
-        return ( null !== $this->dimensionNr );
-    }
-
-    /**
-     * Set dimensionNr
-     *
-     * @param int|string $dimensionNr
+     * @param string $fnrId
      * @return self
-     * @throws InvalidArgumentException
      */
-    public function setDimensionNr( $dimensionNr ) : self
+    public function setFnrId( string $fnrId ) : self
     {
-        Assert::isIntegerish( Sie4Interface::DIMENSIONNR, $dimensionNr );
-        $this->dimensionNr = (int) $dimensionNr;
+        $this->fnrId = $fnrId;
+        return $this;
+    }
+
+    /**
+     * Set orgnr
+     *
+     * @param string $orgnr
+     * @return self
+     */
+    public function setOrgnr( string $orgnr ) : self
+    {
+        $this->orgnr = $orgnr;
+        return $this;
+    }
+
+    /**
+     * Set multiple
+     *
+     * @param int $multiple
+     * @return self
+     */
+    public function setMultiple( int $multiple ) : self
+    {
+        $this->multiple = $multiple;
         return $this;
     }
 }

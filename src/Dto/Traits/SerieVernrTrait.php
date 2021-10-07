@@ -27,49 +27,61 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
-use InvalidArgumentException;
-use Kigkonsult\Sie4Sdk\Sie4Interface;
-use Kigkonsult\Sie4Sdk\Sie4Validator;
-use Kigkonsult\Sie4Sdk\Util\Assert;
-
-trait DimensionNrTrait
+/**
+ * Properties serie and vernr, used in verDto and TransDto classes
+ *
+ * Also include get and is-set methods
+ * Set-methods implemented in used classes
+ */
+trait SerieVernrTrait
 {
+    /**
+     * @var string
+     */
+    protected $serie = null;
+
     /**
      * @var int
      */
-    protected $dimensionNr = null;
+    protected $vernr = null;
 
     /**
-     * Return dimensionNr
+     * Return serie
      *
-     * @return int
+     * @return string
      */
-    public function getDimensionNr() : int
+    public function getSerie() : string
     {
-        return $this->dimensionNr;
+        return $this->serie;
     }
 
     /**
-     * Return bool true if dimensionNr is set
+     * Return bool true if serie is set
      *
      * @return bool
      */
-    public function isDimensionsNrSet() : bool
+    public function isSerieSet() : bool
     {
-        return ( null !== $this->dimensionNr );
+        return ( null !== $this->serie );
     }
 
     /**
-     * Set dimensionNr
+     * Return vernr
      *
-     * @param int|string $dimensionNr
-     * @return self
-     * @throws InvalidArgumentException
+     * @return int
      */
-    public function setDimensionNr( $dimensionNr ) : self
+    public function getVernr() : int
     {
-        Assert::isIntegerish( Sie4Interface::DIMENSIONNR, $dimensionNr );
-        $this->dimensionNr = (int) $dimensionNr;
-        return $this;
+        return $this->vernr;
+    }
+
+    /**
+     * Return bool true if vernr is set
+     *
+     * @return bool
+     */
+    public function isVernrSet() : bool
+    {
+        return ( null !== $this->vernr );
     }
 }

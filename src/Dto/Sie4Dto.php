@@ -33,8 +33,9 @@ use function usort;
 
 /**
  * Class Sie5EntryLoader
-
- * Inherit unique timestamp and guid properties from parent
+ *
+ * Inherit timestamp, guid, fnrId and orgnr properties from BaseId
+ * to uniquely identify instance
  */
 class Sie4Dto extends BaseId
 {
@@ -209,11 +210,28 @@ class Sie4Dto extends BaseId
     /**
      * Set IdDto
      *
+     * Set this fnrId/orgnr/multiple into IdDto otherwise update this
+     * Update VerDtos (incl TransDtos)
+     *
      * @param IdDto $idDto
      * @return self
      */
     public function setIdDto( IdDto $idDto ) : self
     {
+        if( $this->isFnrIdSet()) {
+            $idDto->setFnrId( $this->getFnrId());
+        }
+        elseif( $idDto->isFnrIdSet()) {
+            $this->setFnrId( $idDto->getFnrId());
+        }
+        if( $this->isOrgnrSet()) {
+            $idDto->setOrgnr( $this->getOrgnr());
+            $idDto->setMultiple( $this->getMultiple());
+        }
+        elseif( $idDto->isOrgnrSet()) {
+            $this->setOrgnr( $idDto->getOrgnr());
+            $this->setMultiple( $idDto->getMultiple());
+        }
         $this->idDto = $idDto;
         return $this;
     }
@@ -1082,6 +1100,95 @@ class Sie4Dto extends BaseId
         $this->verDtos = [];
         foreach( $verDtos as $verDto ) {
             $this->addVerDto( $verDto );
+        }
+        return $this;
+    }
+    /**
+     * Set fnrId in idDto and each verDto
+     *
+     * @param string $fnrId
+     * @return self
+     */
+    public function setFnrId( string $fnrId ) : self
+    {
+        $this->fnrId = $fnrId;
+        if( $this->isIdDtoSet()) {
+            $this->idDto->setFnrId( $fnrId );
+        }
+        $this->setVerDtosFnrId( $fnrId );
+        return $this;
+    }
+
+    /**
+     * Set orgnr in idDto and each verDto
+     *
+     * @param string $orgnr
+     * @return self
+     */
+    public function setOrgnr( string $orgnr ) : self
+    {
+        $this->orgnr = $orgnr;
+        if( $this->isIdDtoSet()) {
+            $this->idDto->setOrgnr( $orgnr );
+        }
+        $this->setVerDtosOrgnr( $orgnr );
+        return $this;
+    }
+
+    /**
+     * Set orgnr multiple in idDto and each verDto
+     *
+     * @param int $multiple
+     * @return self
+     */
+    public function setMultiple( int $multiple ) : self
+    {
+        $this->multiple = $multiple;
+        if( $this->isIdDtoSet()) {
+            $this->idDto->setMultiple( $multiple );
+        }
+        $this->setVerDtosMultiple( $multiple );
+        return $this;
+    }
+
+    /**
+     * Update each verDto (incl transDtos) with fnrId
+     *
+     * @param string $fnrId
+     * @return $this
+     */
+    public function setVerDtosFnrId( string $fnrId ) : self
+    {
+        foreach( $this->verDtos as $verDto ) {
+            $verDto->setFnrId( $fnrId );
+        }
+        return $this;
+    }
+
+    /**
+     * Update each verDto (incl transDtos) with orgnr
+     *
+     * @param string $orgnr
+     * @return $this
+     */
+    public function setVerDtosOrgnr( string $orgnr ) : self
+    {
+        foreach( $this->verDtos as $verDto ) {
+            $verDto->setOrgnr( $orgnr );
+        }
+        return $this;
+    }
+
+    /**
+     * Update each verDto (incl transDtos) with orgnr multiple
+     *
+     * @param int $multiple
+     * @return $this
+     */
+    public function setVerDtosMultiple( int $multiple ) : self
+    {
+        foreach( $this->verDtos as $verDto ) {
+            $verDto->setMultiple( $multiple );
         }
         return $this;
     }

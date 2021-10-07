@@ -29,6 +29,7 @@ namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Sie4Validator;
+use Kigkonsult\Sie4Sdk\Util\Assert;
 
 trait ArsnrTrait
 {
@@ -61,7 +62,7 @@ trait ArsnrTrait
     public function setArsnr( $arsnr ) : self
     {
         static $ARSNR = 'ASRNR';
-        Sie4Validator::assertIntegerish( $ARSNR, $arsnr );
+        Assert::isNonPositiveInt( $ARSNR, $arsnr );
         $this->arsnr  = (int) $arsnr;
         return $this;
     }

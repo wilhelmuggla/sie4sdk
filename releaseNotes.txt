@@ -28,3 +28,9 @@
 
 # 1.51 release
 1.51   More type hint updates
+
+# 1.5x release
+1.52   Sie4Dto/VerDto/TransDto equipped with FnrId/Orgnr properties
+       Used with timestamp/guid to uniquely identify instance
+       New FnrIdOrgnrTrait
+1.53   More type hint updates and asserts

@@ -47,13 +47,18 @@ class RarDto implements DtoInterface
     private $slut = null;
 
     /**
+     * @var callable
+     */
+    public static $SORTER = [ RarDto::class, 'rarSorter' ];
+
+    /**
      * Sort RarDto[] on arsnr, descending
      *
      * @param RarDto $a
      * @param RarDto $b
      * @return int
      */
-    public static function sorter( RarDto $a, RarDto $b ) : int
+    public static function rarSorter( RarDto $a, RarDto $b ) : int
     {
         return strcmp((string) $b->getArsnr(), (string) $a->getArsnr());
     }

@@ -29,6 +29,7 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Sie4Validator;
+use Kigkonsult\Sie4Sdk\Util\Assert;
 
 /**
  * Class BalansDto
@@ -85,8 +86,8 @@ class PeriodDto extends BalansObjektDto
     public function setPeriod( $period ) : self
     {
         static $PERIOD = 'period';
-        Sie4Validator::assertIntegerish( $PERIOD, $period );
-        Sie4Validator::assertYYYYMMDate( $PERIOD, $period );
+        Assert::isIntegerish( $PERIOD, $period );
+        Assert::isYYYYMMDate( $PERIOD, $period );
         $this->period = (string) $period;
         return $this;
     }

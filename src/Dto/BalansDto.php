@@ -31,6 +31,7 @@ use Kigkonsult\Sie4Sdk\Dto\Traits\ArsnrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KvantitetTrait;
 
+use Kigkonsult\Sie4Sdk\Util\Assert;
 use function get_called_class;
 use function strcmp;
 
@@ -95,6 +96,7 @@ class BalansDto implements KontoNrInterface
         $class    = get_called_class();
         $instance = new $class();
         $instance->setArsnr( $arsnr );
+        Assert::isIntOrString( self::KONTONR, $kontoNr );
         $instance->setKontoNr( $kontoNr );
         $instance->setSaldo( $saldo );
         if( null !== $kvantitet ) {

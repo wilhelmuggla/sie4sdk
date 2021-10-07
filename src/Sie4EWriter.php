@@ -41,7 +41,7 @@ class Sie4EWriter extends Sie4WriterBase
     /**
      * Return Sie4E string (without input validation)
      *
-     * @param null|Sie4Dto $sie4Dto
+     * @param null|Sie4Dto $sie4Dto input
      * @param null|string  $outputfile
      * @param null|bool    $writeKsumma
      * @return string

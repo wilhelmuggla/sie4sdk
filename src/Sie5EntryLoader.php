@@ -55,6 +55,11 @@ use Kigkonsult\Sie5Sdk\Dto\SoftwareProductType;
  * Class Sie5EntryLoader
  *
  * Load SieEntry(5) instance using Sie4IDto instance
+ * SieEntry requirements
+ * FileInfoTypeEntry :
+ *   SoftwareProduct :  (name + version)
+ *   FileCreationType : (time + by)
+ *   CompanyTypeEntry :  (organizationId)
  */
 class Sie5EntryLoader implements Sie4Interface
 {
@@ -166,6 +171,7 @@ class Sie5EntryLoader implements Sie4Interface
             default :
                 break;
         } // end switch
+        // required
         $fileInfo->setSoftwareProduct(
             SoftwareProductType::factoryNameVersion(
                 $name,
@@ -173,6 +179,7 @@ class Sie5EntryLoader implements Sie4Interface
             )
         );
 
+        // required
         $genSign = $idDto->isSignSet()
             ? $idDto->getSign()
             : SieEntry::PRODUCTNAME;
@@ -183,6 +190,7 @@ class Sie5EntryLoader implements Sie4Interface
             )
         );
 
+        // required
         $company = $fileInfo->getCompany();
         if( $idDto->isFnrIdSet()) {
             $company->setClientId( $idDto->getFnrId() );

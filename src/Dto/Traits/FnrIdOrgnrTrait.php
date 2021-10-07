@@ -27,49 +27,76 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
-use InvalidArgumentException;
-use Kigkonsult\Sie4Sdk\Sie4Interface;
-use Kigkonsult\Sie4Sdk\Sie4Validator;
-use Kigkonsult\Sie4Sdk\Util\Assert;
-
-trait DimensionNrTrait
+/**
+ * Properties fnrid, orgnr(+multiple), used in BaseId (Sie4Dto, VerDto and TransDto) and IdDto
+ *
+ * Includes get and is-set methods
+ * Set-methods implemented in used classes or usage of FnrIdOrgnr2Trait
+ */
+trait FnrIdOrgnrTrait
 {
     /**
-     * @var int
+     * @var string
      */
-    protected $dimensionNr = null;
+    protected $fnrId = null;
 
     /**
-     * Return dimensionNr
-     *
-     * @return int
+     * @var string
      */
-    public function getDimensionNr() : int
+    protected $orgnr = null;
+
+    /**
+     * @var int  default 1
+     */
+    protected $multiple = 1;
+
+    /**
+     * Return fnrId
+     *
+     * @return string
+     */
+    public function getFnrId() : string
     {
-        return $this->dimensionNr;
+        return $this->fnrId;
     }
 
     /**
-     * Return bool true if dimensionNr is set
+     * Return bool true if fnr (company id) is set
      *
      * @return bool
      */
-    public function isDimensionsNrSet() : bool
+    public function isFnrIdSet() : bool
     {
-        return ( null !== $this->dimensionNr );
+        return ( null !== $this->fnrId );
     }
 
     /**
-     * Set dimensionNr
+     * Return orgnr
      *
-     * @param int|string $dimensionNr
-     * @return self
-     * @throws InvalidArgumentException
+     * @return string
      */
-    public function setDimensionNr( $dimensionNr ) : self
+    public function getOrgnr() : string
     {
-        Assert::isIntegerish( Sie4Interface::DIMENSIONNR, $dimensionNr );
-        $this->dimensionNr = (int) $dimensionNr;
-        return $this;
+        return $this->orgnr;
+    }
+
+    /**
+     * Return bool true if orgnr is set
+     *
+     * @return bool
+     */
+    public function isOrgnrSet() : bool
+    {
+        return ( null !== $this->orgnr );
+    }
+
+    /**
+     * Return multiple (default 1)
+     *
+     * @return int
+     */
+    public function getMultiple() : int
+    {
+        return $this->multiple;
     }
 }

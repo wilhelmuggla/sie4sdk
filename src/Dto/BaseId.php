@@ -27,13 +27,15 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
+use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnrTrait;
 use Kigkonsult\Sie4Sdk\Util\GuidUtil;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 use function microtime;
 
 /**
- * Baseclass for Sie4Dto and VerDto, provides unique timestamp and guid
+ * Baseclass for Sie4Dto, VerDto and TransDto, provides unique timestamp and guid
+ * as well as FnrId and orgnr, used with timstamp and guid to uniquely identify instance
  */
 abstract class BaseId implements DtoInterface
 {
@@ -53,6 +55,11 @@ abstract class BaseId implements DtoInterface
      * @var string
      */
     protected $correlationId = null;
+
+    /**
+     * FnrId and orgnr(+multiple), used with timstamp and guid to uniquely identify instance
+     */
+    use FnrIdOrgnrTrait;
 
     /**
      * Class constructor

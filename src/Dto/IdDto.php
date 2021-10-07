@@ -29,16 +29,19 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use DateTime;
 use InvalidArgumentException;
+use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnr2Trait;
+use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
 use Kigkonsult\Sie4Sdk\Sie4Validator;
 
+use Kigkonsult\Sie4Sdk\Util\Assert;
 use function count;
 use function usort;
 
 /**
  * Class IdDto
  *
- * CompanyId and organization number required
+ * Company name required fo Sie4I
  *
  * genDate  default 'now'
  * programnamn/version default set
@@ -81,19 +84,10 @@ class IdDto implements DtoInterface
     private $ftyp = null;
 
     /**
-     * @var string
+     * FnrId and orgnr
      */
-    private $fnrId = null;
-
-    /**
-     * @var string
-     */
-    private $orgnr = null;
-
-    /**
-     * @var int  default 1
-     */
-    private $multiple = 1;
+    use FnrIdOrgnrTrait;
+    use FnrIdOrgnr2Trait;
 
     /**
      * @var string
@@ -242,7 +236,7 @@ class IdDto implements DtoInterface
      */
     public function setSieTyp( $sieTyp ) : self
     {
-        Sie4Validator::assertIntegerish( self::SIETYP, $sieTyp );
+        Assert::isIntegerish( self::SIETYP, $sieTyp );
         $this->sieTyp = (int) $sieTyp;
         return $this;
     }
@@ -303,91 +297,6 @@ class IdDto implements DtoInterface
         return $this;
     }
 
-    /**
-     * Return fnrId
-     *
-     * @return string
-     */
-    public function getFnrId()
-    {
-        return $this->fnrId;
-    }
-
-    /**
-     * Return bool true if fnr (company id) is set
-     *
-     * @return bool
-     */
-    public function isFnrIdSet() : bool
-    {
-        return ( null !== $this->fnrId );
-    }
-
-    /**
-     * Set fnrId
-     *
-     * @param string $fnrId
-     * @return self
-     */
-    public function setFnrId( string $fnrId ) : self
-    {
-        $this->fnrId = $fnrId;
-        return $this;
-    }
-
-    /**
-     * Return orgnr
-     *
-     * @return string
-     */
-    public function getOrgnr()
-    {
-        return $this->orgnr;
-    }
-
-    /**
-     * Return bool true if orgnr is set
-     *
-     * @return bool
-     */
-    public function isOrgnrSet() : bool
-    {
-        return ( null !== $this->orgnr );
-    }
-
-    /**
-     * Set orgnr
-     *
-     * @param string $orgnr
-     * @return self
-     */
-    public function setOrgnr( string $orgnr ) : self
-    {
-        $this->orgnr = $orgnr;
-        return $this;
-    }
-
-    /**
-     * Return multiple (default 1)
-     *
-     * @return int
-     */
-    public function getMultiple() : int
-    {
-        return $this->multiple;
-    }
-
-    /**
-     * Set multiple
-     *
-     * @param int $multiple
-     * @return self
-     */
-    public function setMultiple( int $multiple ) : self
-    {
-        $this->multiple = $multiple;
-        return $this;
-    }
 
     /**
      * @return string
@@ -492,8 +401,7 @@ class IdDto implements DtoInterface
      */
     public function getRarDtos() : array
     {
-        static $SORTER = [ RarDto::class, 'sorter' ];
-        usort( $this->rarDtos, $SORTER );
+        usort( $this->rarDtos, RarDto::$SORTER );
         return $this->rarDtos;
     }
 
@@ -545,7 +453,7 @@ class IdDto implements DtoInterface
      */
     public function setTaxar( $taxar ) : self
     {
-        Sie4Validator::assertIntegerish( self::TAXAR, $taxar );
+        Assert::isIntegerish( self::TAXAR, $taxar );
         $this->taxar = (int) $taxar;
         return $this;
     }

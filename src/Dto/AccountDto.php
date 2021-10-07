@@ -29,6 +29,7 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
+use Kigkonsult\Sie4Sdk\Util\Assert;
 use Kigkonsult\Sie5Sdk\Dto\AccountTypeEntry;
 
 use function array_flip;

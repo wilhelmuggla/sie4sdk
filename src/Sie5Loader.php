@@ -66,6 +66,15 @@ use function trim;
  * Class Sie5Loader
  *
  * Load Sie(5) instance using Sie4EDto instance
+ * Sie requirements
+ * FileInfoTypeEntry :
+ *   SoftwareProduct :  (name + version)
+ *   FileCreationType : (time + by)
+ *   CompanyTypeEntry :  (organizationId + name)
+ * FiscalYearsType :  min one FiscalYearType
+ * AccountingCurrencyType : (currency)
+ * AccountsType : ( but AccountType minOccurs="0")
+ * SignatureType !!
  */
 class Sie5Loader implements Sie4Interface
 {
@@ -178,6 +187,7 @@ class Sie5Loader implements Sie4Interface
             default :
                 break;
         } // end switch
+        // required
         $fileInfo->setSoftwareProduct(
             SoftwareProductType::factoryNameVersion(
                 $name,
@@ -185,6 +195,7 @@ class Sie5Loader implements Sie4Interface
             )
         );
 
+        // required
         $genSign = $idDto->isSignSet()
             ? $idDto->getSign()
             : Sie::PRODUCTNAME;
@@ -195,6 +206,7 @@ class Sie5Loader implements Sie4Interface
             )
         );
 
+        // required
         $company = $fileInfo->getCompany();
         if( $idDto->isFnrIdSet()) {
             $company->setClientId( $idDto->getFnrId());
@@ -205,8 +217,10 @@ class Sie5Loader implements Sie4Interface
             $company->setMultiple( $idDto->getMultiple());
         }
 
+        // required
         $company->setName( $idDto->getFnamn());
 
+        // required (min 1)
         if( 0 < $idDto->countRarDtos()) {
             $fiscalYearsType = $fileInfo->getFiscalYears();
             foreach( $idDto->getRarDtos() as $rarDto ) {

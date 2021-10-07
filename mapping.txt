@@ -37,16 +37,16 @@ Sie4  label           comment     Sie4Dto property           array element key
 
                       microtime   timestamp                  TIMESTAMP
                         (true)
-
                       unique      correlationId              GUID
                         string
-
 #FLAGGA
       x                           flagga (default 0)         FLAGGA
-
 #KSUMMA
       x                           KSUMMA                     KSUMMA
-                      default 0, ingen KSUMMA
+                      default 0, no KSUMMA
+                                  fnrId
+                                  orgnr
+                                  multiple
 
 ===============================================================================
 Sie4  label           comment     Sie4Dto::idDto             array element key
@@ -56,60 +56,44 @@ Sie4  label           comment     Sie4Dto::idDto             array element key
 #PROGRAM
       programnamn                 programnamn                PROGRAMNAMN
       version                     version                    PROGRAMVERSION
-
 #FORMAT
       PC8             skipped, default 'PC8'
-
 #GEN
       datum                       getDate                    GENDATUM
       sign                        genSign                    GENSIGN
-
 #SIETYP
       typnr           skipped, default '4'
-
 #PROSA
       text                        prosa                      PROSATEXT
-
 #FTYP
       Företagstyp                 ftyp                       FORETAGSTYP
-
 #FNR
       företagsid                  fnrId                      FNRID
-
 #ORGNR
       orgnr                       orgnr                      ORGNRORGNR
       förvnr                      multiple                   ORGNRFORNVR
       verknr          skipped
-
 #BKOD
       SNI-kod                     bkod                       SNIKOD
-
 #ADRESS                           adress (AdressDto)
       kontakt                     kontakt                    ADRKONTAKT
       utdelningsadr               utdelningsadr              UTDELNINGSADR
       postadr                     postadr                    POSTADR
       tel                         tel                        TEL
-
 #FNAMN
       företagsnamn                fnamn                      FNAMN
-
 #RAR                              rarDtos (RarDto[])
       årsnr                       arsnr                      RARASRNR
       start                       start                      RARSTART
       slut                        slut                       RARSLUT
-
 #TAXAR
       år                          taxar                      TAXYEAR
-
 #OMFATTN
       datum                       omfattn                    OMFATTNDATUM
-
 #KPTYP
       typ                         kptyp                      KPTYPE
-
 #VALUTA
       valutakod                   valutakod                  VALUTAKOD
-
 
 ===============================================================================
 Sie4  label           comment     Sie4Dto::accountDtos[]     array element key
@@ -119,14 +103,11 @@ Sie4  label           comment     Sie4Dto::accountDtos[]     array element key
 #KONTO
       kontonr                     kontoNr                    KONTONR
       kontoNamn                   kontoNamn                  KONTONAMN
-
 #KTYP kontonr
       kontoTyp                    kontoTyp                   KONTOTYP
-
 #ENHET
       kontonr
       enhet                       enhet                      KONTOENHET
-
 
 ===============================================================================
 Sie4
@@ -137,7 +118,6 @@ Sie4
 #SRU
       konto                       kontoNr                    SRUKONTO
       SRU-kod                     sruKod                     SRUKOD
-
 
 ===============================================================================
 Sie4
@@ -276,9 +256,11 @@ Sie4
 #VER
                       microtime   timestamp                  VERTIMESTAMP
                         (true)
-
                       unique      correlationId              VERGUID
                         string
+                                  fnrId
+                                  orgnr
+                                  multiple
       serie                       serie                      VERSERIE
       vernr                       vernr                      VERNR
       verdatum                    verdatum                   VERDATUM
@@ -300,6 +282,11 @@ Sie4
 
                       unique      correlationId              TRANSGUID
                         string
+                                  fnrId
+                                  orgnr
+                                  multiple
+                                  serie
+                                  vernr
                                   transType (auto #TRANS)
       kontonr                     kontoNr                    TRANSKONTONR
       objektlista                 objektlista
@@ -314,10 +301,14 @@ Sie4
 #RTRANS
                       microtime   timestamp                  RTRANSTIMESTAMP
                         (true)
-
                       unique      correlationId              RTRANSGUID
                         string
-                                  transType (fix #RTRANS)
+                                  fnrId
+                                  orgnr
+                                  multiple
+                                  serie
+                                  vernr
+                                  transType (#RTRANS)
       kontonr                     kontoNr                    RTRANSKONTONR
       objektlista                 objektlista
                       array of DimObjektDto, above           RTRANSDIMENSIONNR
@@ -331,10 +322,14 @@ Sie4
 #BTRANS
                       microtime   timestamp                  BTRANSTIMESTAMP
                         (true)
-
                       unique      correlationId              BTRANSGUID
                         string
-                                  transType (fix #BTRANS)
+                                  fnrId
+                                  orgnr
+                                  multiple
+                                  serie
+                                  vernr
+                                  transType (#BTRANS)
       kontonr                     kontoNr                    BTRANSKONTONR
       objektlista                 objektlista
                       array of DimObjektDto, above           BTRANSDIMENSIONNR

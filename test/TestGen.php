@@ -45,12 +45,14 @@ class TestGen extends TestCase
     /**
      * genTest dataProvider
      *
+     * Using phpunit php/var dirctive to set number of test sets, now 20
+     *
      * @return mixed[]
      */
     public function genTestProvider() : array
     {
         $dataArr  = [];
-        $max      = 10;
+        $max      = $GLOBALS['GENTESTMAX'];
         $case     = 0;
 
         for( $x = 0; $x < $max; ++$x ) {
@@ -77,6 +79,14 @@ class TestGen extends TestCase
         static $ERR1 = '#%d-%d Sie4%sDto assert error, %s%s%s';
         static $ERR2 = '#%d-%d Sie4%sDto string compare error';
 
+        if( empty( $case )) {
+            // first only, save and read from file
+            $tmpFilename = tempnam( sys_get_temp_dir(), __FUNCTION__ );
+            Sie4EWriter::factory( $sie4Dto )->process( null, $tmpFilename, ( $sie4Dto->isKsummaSet() ? 1 : 0 ));
+            $sie4Dto     = Sie4Parser::factory( $tmpFilename )->process();
+            unlink( $tmpFilename );
+        }
+
         // create utf8 sie4String
         $sie4String1 = StringUtil::cp437toUtf8(
             Sie4EWriter::factory()->process( $sie4Dto )
@@ -96,8 +106,8 @@ class TestGen extends TestCase
                 $sie4Dto->countPsaldoDtos()    . ' pSaldoDtos'    . PHP_EOL .
                 $sie4Dto->countPbudgetDtos()   . ' pBudgetDtos'   . PHP_EOL .
                 $sie4Dto->countVerDtos()       . ' VerDtos with ' .
-                $sie4Dto->countVerTransDtos()  . ' transDtos'     . PHP_EOL; // test ###
-            echo 'sie4String1' . PHP_EOL . StringUtil::cp437toUtf8( $sie4String1 ) . PHP_EOL; // test ###
+                $sie4Dto->countVerTransDtos()  . ' transDtos'     . PHP_EOL . PHP_EOL; // test ###
+            echo 'sie4String1' . PHP_EOL . StringUtil::cp437toUtf8( $sie4String1 ) . PHP_EOL . PHP_EOL; // test ###
         }
 
         // assert as Sie4E
@@ -130,9 +140,17 @@ class TestGen extends TestCase
         // echo $jsonString . PHP_EOL;
         $sie4Dto3    = Json2Sie4Dto::process( $jsonString );
 
-        // test timestamp+guid, uniqueness in SieDto
-        // check timestamps and guids - same in sie4Dto and sie4Dto3
-        $this->checkTimeStampGuid( $case, $sie4Dto, $sie4Dto3 );
+        if( empty( $case )) {
+            // first only, test timestamp+guid, uniqueness in SieDto
+            // also same in sie4Dto and sie4Dto3
+            $this->checkTimeStampGuid( $case, $sie4Dto, $sie4Dto3 );
+            // check set fnrId, same in SieDto, IdDto, verDto and TransDto
+            $this->checkFnrId( $case, $sie4Dto );
+            // check set orgnr, same in SieDto, IdDto, verDto and TransDto
+            $this->checkOrgnr( $case, $sie4Dto );
+            // check serie/vernr, populatd down from VerDto to each TransDto
+            $this->checkSerieVernr( $case, $sie4Dto );
+        }
 
         // check $sie4Dto/$sie4Dto3 strings
         $sie4String3 = Sie4EWriter::factory()->process( $sie4Dto3 );
@@ -275,7 +293,7 @@ class TestGen extends TestCase
      */
     public function checkTimeStampGuid( int $case, Sie4Dto $expected, Sie4Dto $actual )
     {
-        static $ERR3 = '#%d-%d Sie4%sDto %s error, %s - %s';
+        static $ERR3 = '#%s-%d Sie4%sDto %s error, %s - %s';
         $tsGuidArr = [ (string) $actual->getTimestamp() . $actual->getCorrelationId() ];
         $exp       = $expected->getTimestamp();
         $value     = $actual->getTimestamp();
@@ -344,4 +362,195 @@ class TestGen extends TestCase
         } // end foreach
     }
 
+    /**
+     * test setting fnrId in SieDto, must exist in each verDto and TransDto
+     *
+     * @param int     $case
+     * @param Sie4Dto $sie4Dto
+     * @return void
+     */
+    public function checkFnrId( int $case, Sie4Dto $sie4Dto )
+    {
+        static $ERR4  = '#%s-%d Sie4Dto %s %s fnrId error, %s - %s';
+        static $FNRID = 'ABC';
+        $case        .= '-FnrIdOrgnr-';
+        $sie4Dto = clone $sie4Dto;
+        $sie4Dto->setFnrId( $FNRID );
+        $sie4Dto->setOrgnr( $FNRID ); // test ###
+
+        $this->assertEquals(
+            $FNRID,
+            $sie4Dto->getFnrId(),
+            sprintf(
+                $ERR4,
+                $case,
+                1,
+                '',
+                '',
+                $FNRID,
+                $sie4Dto->getFnrId()
+            )
+        );
+        $this->assertEquals(
+            $FNRID,
+            $sie4Dto->getIdDto()->getFnrId(),
+            sprintf(
+                $ERR4,
+                $case,
+                2,
+                '',
+                'IdDto',
+                $FNRID,
+                $sie4Dto->getIdDto()->getFnrId()
+            )
+        );
+
+        foreach( $sie4Dto->getVerDtos() as $vx => $verDto ) {
+            $this->assertEquals(
+                $FNRID,
+                $verDto->getFnrId(),
+                sprintf(
+                    $ERR4,
+                    $case,
+                    3,
+                    $vx,
+                    'VerDto',
+                    $FNRID,
+                    $sie4Dto->getIdDto()->getFnrId()
+                )
+            );
+            foreach( $verDto->getTransDtos() as $tx => $transDto ) {
+                $this->assertEquals(
+                    $FNRID,
+                    $transDto->getFnrId(),
+                    sprintf(
+                        $ERR4,
+                        $case,
+                        4,
+                        $vx . '-' . $tx,
+                        'TransDto',
+                        $FNRID,
+                        $sie4Dto->getIdDto()->getFnrId()
+                    )
+                );
+
+                if( empty( $vx ) && empty( $tx )) {
+                    echo var_export( $verDto, true ) . PHP_EOL; // test ###
+                }
+            } // end foreach
+        } // end foreach
+    }
+
+    /**
+     * test setting orgnr in SieDto, must exist in each verDto and TransDto
+     *
+     * @param int     $case
+     * @param Sie4Dto $sie4Dto
+     * @return void
+     */
+    public function checkOrgnr( int $case, Sie4Dto $sie4Dto )
+    {
+        static $ERR4  = '#%s%d Sie4Dto %s %s orgnr error, %s - %s';
+        static $ORGNR = 'ABCorgnr';
+        static $MULTI = 2;
+        $case        .= '-FnrIdOrgnr-';
+        $sie4Dto = clone $sie4Dto;
+        $sie4Dto->setOrgnr( $ORGNR );
+        $sie4Dto->setMultiple( $MULTI );
+
+        $orgnrM = $sie4Dto->getOrgnr() . $sie4Dto->getMultiple();
+        $this->assertEquals(
+            $ORGNR . $MULTI,
+            $orgnrM,
+            sprintf(
+                $ERR4,
+                $case,
+                1,
+                '',
+                '',
+                $ORGNR . $MULTI,
+                $orgnrM
+            )
+        );
+        $orgnrM = $sie4Dto->getIdDto()->getOrgnr() . $sie4Dto->getIdDto()->getMultiple();
+        $this->assertEquals(
+            $ORGNR . $MULTI,
+            $orgnrM,
+            sprintf(
+                $ERR4,
+                $case,
+                2,
+                '',
+                'IdDto',
+                $ORGNR . $MULTI,
+                $orgnrM
+            )
+        );
+
+        foreach( $sie4Dto->getVerDtos() as $vx => $verDto ) {
+            $orgnrM = $verDto->getOrgnr() . $verDto->getMultiple();
+            $this->assertEquals(
+                $ORGNR . $MULTI,
+                $orgnrM,
+                sprintf(
+                    $ERR4,
+                    $case,
+                    3,
+                    $vx,
+                    'VerDto',
+                    $ORGNR . $MULTI,
+                    $orgnrM
+                )
+            );
+            foreach( $verDto->getTransDtos() as $tx => $transDto ) {
+                $orgnrM = $transDto->getOrgnr() . $transDto->getMultiple();
+                $this->assertEquals(
+                    $ORGNR . $MULTI,
+                    $orgnrM,
+                    sprintf(
+                        $ERR4,
+                        $case,
+                        4,
+                        $vx . '-' . $tx,
+                        'TransDto',
+                        $ORGNR . $MULTI,
+                        $orgnrM
+                    )
+                );
+            } // end foreach
+        } // end foreach
+    }
+
+    /**
+     * test setting orgnr in SieDto, must exist in each verDto and TransDto
+     *
+     * @param int     $case
+     * @param Sie4Dto $sie4Dto
+     * @return void
+     */
+    public function checkSerieVernr( int $case, Sie4Dto $sie4Dto )
+    {
+        static $ERR5 = '#%s Sie4Dto %s %s serie/vernr error, %s - %s';
+        $case       .= '-serieVernr';
+        foreach( $sie4Dto->getVerDtos() as $vx => $verDto ) {
+            $serie   = $verDto->isSerieSet() ? $verDto->getSerie() : StringUtil::$SP0;
+            $vernr   = $verDto->isVernrSet() ? $verDto->getVernr() : StringUtil::$SP0;
+            $exp     = $serie . $vernr;
+            foreach( $verDto->getTransDtos() as $tx => $transDto ) {
+                $actual = $transDto->getSerie() . $transDto->getVernr();
+                $this->assertEquals(
+                    $exp,
+                    $actual,
+                    sprintf(
+                        $ERR5,
+                        $case,
+                        $vx . '-' . $tx,
+                        'TransDto',
+                        $exp,
+                        $actual
+                    )
+                );
+            } // end foreach
+        } // end foreach
+    }
 }

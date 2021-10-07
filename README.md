@@ -94,9 +94,13 @@ __*Sie4Sdk*__
 - uses kigkonsult\\[Sie5Sdk] for Sie5 Sie/SieEntry conversion and parse/write XML parts.
 - the _Sie4_ input/output string/file is in PHP CP437 encding, IBM PC 8-bitars extended ASCII (Codepage 437),
 all other PHP inbounding encoding (UTF-8)
+- Each class properties corresponds to Sie4 label subfields, all with get-/is-set/set-methods,<br> 
+  array properties also with add-/count-methods
 - _Sie4Dto_, _VerDto_ and _TransDto_ are equipped with<br>
   unique time/guid properties - _timestamp_ (float) / _correlationId_ (string)<br>
-   auto populated at instance create
+  auto populated at instance create
+- _VerDto_ and _TransDto_ 'inherit' _fnr_/_orgnr_ property values from _Sie4Dto_
+- _TransDto_ 'inherit' _serie_/_vernr_ property values from _VerDto_, opt _transdat_ from regdatum 
 - usefull constants are found in the Sie4Interface
 - review mapping.txt for
   - Dto class and property structure
@@ -117,6 +121,9 @@ Note för VER
 * if _verdatum_ is missing, date 'now' is used
 * if _regdatum_ is missing, _verdatum_ is used
 * if _sign_ is missing, GEN _sign_ is used
+
+Note för TRANS
+* skipped if _transdat_ is missing or equal with _verdatum_
 
 Sie4 dates has format _YYYYmmdd_, Sie/SieEntry _YYYY-MM-DDThh:mm:ssZ_
 
@@ -184,7 +191,7 @@ For invoice, please [e-mail]</a>.
 
 For __*Sie4Sdk*__ support, please use [Github]/issues.
 
-For Sie5 ([XSD]) issues, go to [Sie] homepage.
+For Sie4/Sie5 ([XSD]) issues, go to [Sie] homepage.
 
 
 #### License
