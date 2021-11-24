@@ -48,7 +48,7 @@ trait FnrIdOrgnr2Trait
      * Set orgnr
      *
      * @param string $orgnr
-     * @return self
+     * @return static
      */
     public function setOrgnr( string $orgnr ) : self
     {
@@ -60,7 +60,7 @@ trait FnrIdOrgnr2Trait
      * Set multiple
      *
      * @param int $multiple
-     * @return self
+     * @return static
      */
     public function setMultiple( int $multiple ) : self
     {

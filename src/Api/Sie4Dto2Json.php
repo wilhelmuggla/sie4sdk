@@ -27,6 +27,7 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Api;
 
+use Exception;
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 
@@ -44,8 +45,15 @@ class Sie4Dto2Json
     public static function process( Sie4Dto $sie4IDto ) : string
     {
         static $ERR1 = 'array to json string error, ';
-        if( false === ( $string = json_encode( Sie4Dto2Array::process( $sie4IDto )))) {
-            throw new InvalidArgumentException( $ERR1 . json_last_error_msg(), 7001 );
+        static $FLAGS = JSON_THROW_ON_ERROR;
+        try {
+            $string = json_encode( Sie4Dto2Array::process( $sie4IDto ), $FLAGS );
+        }
+        catch( Exception $e ) {
+            throw new InvalidArgumentException( $ERR1 . $e->getMessage(), 7001 );
+        }
+        if( false === $string ) {
+            throw new InvalidArgumentException( $ERR1 . json_last_error_msg(), 7002 );
         }
         return $string;
     }

@@ -47,7 +47,7 @@ class TestGen extends TestCase
      *
      * Using phpunit php/var dirctive to set number of test sets, now 20
      *
-     * @return mixed[]
+     * @return array
      */
     public function genTestProvider() : array
     {
@@ -73,8 +73,9 @@ class TestGen extends TestCase
      * @param int $case
      * @param Sie4Dto $sie4Dto
      * @return void
+     * @throws Exception
      */
-    public function genTest( int $case, Sie4Dto $sie4Dto )
+    public function genTest( int $case, Sie4Dto $sie4Dto ) : void
     {
         static $ERR1 = '#%d-%d Sie4%sDto assert error, %s%s%s';
         static $ERR2 = '#%d-%d Sie4%sDto string compare error';
@@ -82,7 +83,7 @@ class TestGen extends TestCase
         if( empty( $case )) {
             // first only, save and read from file
             $tmpFilename = tempnam( sys_get_temp_dir(), __FUNCTION__ );
-            Sie4EWriter::factory( $sie4Dto )->process( null, $tmpFilename, ( $sie4Dto->isKsummaSet() ? 1 : 0 ));
+            Sie4EWriter::factory( $sie4Dto )->process( null, $tmpFilename, $sie4Dto->isKsummaSet() );
             $sie4Dto     = Sie4Parser::factory( $tmpFilename )->process();
             unlink( $tmpFilename );
         }
@@ -237,7 +238,7 @@ class TestGen extends TestCase
         // validate SieEntry
         $this->assertTrue(
             $sieEntry->isValid( $expected ),
-            sprintf( $ERR1, $case, 10, 'I', '', PHP_EOL, var_export( $expected, true ), PHP_EOL )
+            sprintf( $ERR1, $case, 10, 'I', '', PHP_EOL, var_export( $expected, true ) . PHP_EOL )
         );
 
         // parse SieEntry into Sie4
@@ -291,10 +292,10 @@ class TestGen extends TestCase
      * @param Sie4Dto $actual
      * @return void
      */
-    public function checkTimeStampGuid( int $case, Sie4Dto $expected, Sie4Dto $actual )
+    public function checkTimeStampGuid( int $case, Sie4Dto $expected, Sie4Dto $actual ) : void
     {
         static $ERR3 = '#%s-%d Sie4%sDto %s error, %s - %s';
-        $tsGuidArr = [ (string) $actual->getTimestamp() . $actual->getCorrelationId() ];
+        $tsGuidArr = [ $actual->getTimestamp() . $actual->getCorrelationId() ];
         $exp       = $expected->getTimestamp();
         $value     = $actual->getTimestamp();
         $this->assertEquals(
@@ -327,10 +328,9 @@ class TestGen extends TestCase
                 sprintf( $ERR3, $case, $testV, 'E', Sie4Dto::VERGUID, $exp, $value )
             );
 
-            $key   = (string) $verDto->getTimestamp() . $verDto->getCorrelationId();
-            $this->assertFalse(
-                in_array( $key, $tsGuidArr ),
-                sprintf( $ERR3, $case, $testV, 'E', VerDto::VER, $vx, $key )
+            $key   = $verDto->getTimestamp() . $verDto->getCorrelationId();
+            $this->assertNotContains(
+                $key, $tsGuidArr, sprintf( $ERR3, $case, $testV, 'E', VerDto::VER, $vx, $key )
             );
             $tsGuidArr[] = $key;
 
@@ -352,10 +352,9 @@ class TestGen extends TestCase
                     sprintf( $ERR3, $case, $testT, 'E', Sie4Dto::TRANSGUID, $exp, $value )
                 );
 
-                $key = (string) $transDto->getTimestamp() . $transDto->getCorrelationId();
-                $this->assertFalse(
-                    in_array( $key, $tsGuidArr ),
-                    sprintf( $ERR3, $case, $testT, 'E', DimDto::TRANS, $vx . '-' . $tx,  $key )
+                $key = $transDto->getTimestamp() . $transDto->getCorrelationId();
+                $this->assertNotContains(
+                    $key, $tsGuidArr, sprintf( $ERR3, $case, $testT, 'E', DimDto::TRANS, $vx . '-' . $tx, $key )
                 );
                 $tsGuidArr[] = $key;
             } // end foreach
@@ -369,7 +368,7 @@ class TestGen extends TestCase
      * @param Sie4Dto $sie4Dto
      * @return void
      */
-    public function checkFnrId( int $case, Sie4Dto $sie4Dto )
+    public function checkFnrId( int $case, Sie4Dto $sie4Dto ) : void
     {
         static $ERR4  = '#%s-%d Sie4Dto %s %s fnrId error, %s - %s';
         static $FNRID = 'ABC';
@@ -448,7 +447,7 @@ class TestGen extends TestCase
      * @param Sie4Dto $sie4Dto
      * @return void
      */
-    public function checkOrgnr( int $case, Sie4Dto $sie4Dto )
+    public function checkOrgnr( int $case, Sie4Dto $sie4Dto ) : void
     {
         static $ERR4  = '#%s%d Sie4Dto %s %s orgnr error, %s - %s';
         static $ORGNR = 'ABCorgnr';
@@ -528,7 +527,7 @@ class TestGen extends TestCase
      * @param Sie4Dto $sie4Dto
      * @return void
      */
-    public function checkSerieVernr( int $case, Sie4Dto $sie4Dto )
+    public function checkSerieVernr( int $case, Sie4Dto $sie4Dto ) : void
     {
         static $ERR5 = '#%s Sie4Dto %s %s serie/vernr error, %s - %s';
         $case       .= '-serieVernr';

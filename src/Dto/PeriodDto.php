@@ -28,7 +28,6 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
 use InvalidArgumentException;
-use Kigkonsult\Sie4Sdk\Sie4Validator;
 use Kigkonsult\Sie4Sdk\Util\Assert;
 
 /**
@@ -37,9 +36,9 @@ use Kigkonsult\Sie4Sdk\Util\Assert;
 class PeriodDto extends BalansObjektDto
 {
     /**
-     * @var string  ÅÅÅÅMM
+     * @var string|null  ÅÅÅÅMM
      */
-    private $period = null;
+    private ?string $period = null;
 
     /**
      * @var callable
@@ -63,7 +62,7 @@ class PeriodDto extends BalansObjektDto
      *
      * @return string
      */
-    public function getPeriod()
+    public function getPeriod() : ?string
     {
         return $this->period;
     }

@@ -34,7 +34,7 @@ abstract class ArrayBase implements Sie4Interface
     /**
      * @var string[][]
      */
-    protected static $TRANSKEYS = [
+    protected static array $TRANSKEYS = [
         self::TRANS => [
             self::TRANSTIMESTAMP   => self::TRANSTIMESTAMP,
             self::TRANSGUID        => self::TRANSGUID,

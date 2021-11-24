@@ -199,20 +199,20 @@ use function number_format;
 class Sie4Dto2Array extends ArrayBase
 {
     /**
-     * @var Sie4Dto
+     * @var Sie4Dto|null
      */
-    private $sie4Dto = null;
+    private ?Sie4Dto $sie4Dto = null;
 
     /**
-     * @var mixed[]
+     * @var array
      */
-    private $output = [];
+    private array $output = [];
 
     /**
      * Transform Sie4Dto to array, factory method
      *
      * @param Sie4Dto $sie4Dto
-     * @return mixed[]
+     * @return array
      */
     public static function process( Sie4Dto $sie4Dto ) : array
     {
@@ -253,7 +253,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processIdDto()
+    private function processIdDto() : void
     {
         if( ! $this->sie4Dto->isIdDtoSet()) {
             return;
@@ -317,7 +317,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processAccountDtos()
+    private function processAccountDtos() : void
     {
         static $KEYS = [
             self::KONTONR,
@@ -350,7 +350,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processSruDtos()
+    private function processSruDtos() : void
     {
         static $KEYS = [
             self::SRUKONTO,
@@ -378,7 +378,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processDimDtos()
+    private function processDimDtos() : void
     {
         static $KEYS = [
             self::DIMENSIONNR,
@@ -403,7 +403,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processUnderDimDtos()
+    private function processUnderDimDtos() : void
     {
         static $KEYS = [
             self::UNDERDIMNR,
@@ -432,7 +432,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processDimObjektDtos()
+    private function processDimObjektDtos() : void
     {
         static $KEYS = [
             self::OBJEKTDIMENSIONNR,
@@ -463,7 +463,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processIbDtos()
+    private function processIbDtos() : void
     {
         static $KEYS = [
             self::IBARSNR,
@@ -496,7 +496,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processUbDtos()
+    private function processUbDtos() : void
     {
         static $KEYS = [
             self::UBARSNR,
@@ -529,7 +529,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processOibDtos()
+    private function processOibDtos() : void
     {
         static $KEYS = [
             self::OIBARSNR,
@@ -570,7 +570,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processOubDtos()
+    private function processOubDtos() : void
     {
         static $KEYS = [
             self::OUBARSNR,
@@ -611,7 +611,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processResDtos()
+    private function processResDtos() : void
     {
         static $KEYS = [
             self::RESARSNR,
@@ -644,7 +644,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processPsaldoDtos()
+    private function processPsaldoDtos() : void
     {
         static $KEYS = [
             self::PSALDOARSNR,
@@ -689,7 +689,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processPbudgetDtos()
+    private function processPbudgetDtos() : void
     {
         static $KEYS = [
             self::PBUDGETARSNR,
@@ -734,7 +734,7 @@ class Sie4Dto2Array extends ArrayBase
      *
      * @return void
      */
-    private function processVerDtos()
+    private function processVerDtos() : void
     {
         static $KEYS = [
             self::VERTIMESTAMP,
@@ -808,7 +808,7 @@ class Sie4Dto2Array extends ArrayBase
                 $this->output[self::VERSIGN][$verX] = $verDto->getSign();
             }
             foreach( $verDto->getTransDtos() as $transX =>$transDto ) {
-                self::processSingleTransDto( $verX, $transX, $transDto );
+                $this->processSingleTransDto( $verX, $transX, $transDto );
             }
         } // end foreach
     }
@@ -823,7 +823,7 @@ class Sie4Dto2Array extends ArrayBase
         int $verX,
         int $transX,
         TransDto $transDto
-    )
+    ) : void
     {
         $label    = $transDto->getTransType();
         $keyArr   = self::$TRANSKEYS[$label];
@@ -875,7 +875,7 @@ class Sie4Dto2Array extends ArrayBase
     }
 
     /**
-     * @return mixed[]
+     * @return array
      */
     public function getOutput() : array
     {

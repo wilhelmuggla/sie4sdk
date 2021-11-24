@@ -36,26 +36,26 @@ namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 trait FnrIdOrgnrTrait
 {
     /**
-     * @var string
+     * @var string|null
      */
-    protected $fnrId = null;
+    protected ?string $fnrId = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $orgnr = null;
+    protected ?string $orgnr = null;
 
     /**
      * @var int  default 1
      */
-    protected $multiple = 1;
+    protected int $multiple = 1;
 
     /**
      * Return fnrId
      *
-     * @return string
+     * @return null|string
      */
-    public function getFnrId() : string
+    public function getFnrId() : ? string
     {
         return $this->fnrId;
     }
@@ -73,9 +73,9 @@ trait FnrIdOrgnrTrait
     /**
      * Return orgnr
      *
-     * @return string
+     * @return null|string
      */
-    public function getOrgnr() : string
+    public function getOrgnr() : ? string
     {
         return $this->orgnr;
     }

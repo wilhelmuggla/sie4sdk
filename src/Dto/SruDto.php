@@ -29,7 +29,6 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
-use Kigkonsult\Sie4Sdk\Sie4Validator;
 
 use Kigkonsult\Sie4Sdk\Util\Assert;
 use function strcmp;
@@ -42,9 +41,9 @@ class SruDto implements DtoInterface
     use KontoNrTrait;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private $sruKod = null;
+    private ?int $sruKod = null;
 
     /**
      * @var callable
@@ -91,7 +90,7 @@ class SruDto implements DtoInterface
      *
      * @return int
      */
-    public function getSruKod()
+    public function getSruKod() : ?int
     {
         return $this->sruKod;
     }

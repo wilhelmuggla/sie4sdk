@@ -36,9 +36,9 @@ class DimDto implements DimensionNrInterface
     use DimensionNrTrait;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $dimensionsNamn = null;
+    protected ?string $dimensionsNamn = null;
 
     /**
      * @var callable
@@ -77,7 +77,7 @@ class DimDto implements DimensionNrInterface
      *
      * @return string
      */
-    public function getDimensionsNamn()
+    public function getDimensionsNamn() : ?string
     {
         return $this->dimensionsNamn;
     }

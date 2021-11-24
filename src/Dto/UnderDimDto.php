@@ -30,9 +30,9 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 class UnderDimDto extends DimDto
 {
     /**
-     * @var int
+     * @var int|null
      */
-    protected $superDimNr = null;
+    protected ?int $superDimNr = null;
 
     /**
      * @var callable
@@ -76,9 +76,9 @@ class UnderDimDto extends DimDto
     }
 
     /**
-     * @return int
+     * @return null|int
      */
-    public function getSuperDimNr() : int
+    public function getSuperDimNr() : ? int
     {
         return $this->superDimNr;
     }

@@ -32,7 +32,6 @@ use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnr2Trait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
-use Kigkonsult\Sie4Sdk\Sie4Validator;
 
 use Kigkonsult\Sie4Sdk\Util\Assert;
 use function count;
@@ -51,17 +50,17 @@ class IdDto implements DtoInterface
     /**
      * @var string
      */
-    private $programnamn;
+    private string $programnamn;
 
     /**
      * @var string
      */
-    private $version;
+    private string $version;
 
     /**
      * @var DateTime
      */
-    private $genDate;
+    private DateTime $genDate;
 
     /**
      * sign used as genSign
@@ -71,17 +70,17 @@ class IdDto implements DtoInterface
     /**
      * @var int
      */
-    private $sieTyp = 4;
+    private int $sieTyp = 4;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $prosa = null;
+    private ?string $prosa = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $ftyp = null;
+    private ?string $ftyp = null;
 
     /**
      * FnrId and orgnr
@@ -90,44 +89,44 @@ class IdDto implements DtoInterface
     use FnrIdOrgnr2Trait;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $bkod = null;
+    private ?string $bkod = null;
 
     /**
-     * @var AdressDto
+     * @var AdressDto|null
      */
-    private $adress = null;
+    private ?AdressDto $adress = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $fnamn = null;
+    private ?string $fnamn = null;
 
     /**
      * @var RarDto[]
      */
-    private $rarDtos = [];
+    private array $rarDtos = [];
 
     /**
-     * @var int  ÅÅÅÅ
+     * @var int|null  ÅÅÅÅ
      */
-    private $taxar = null;
+    private ?int $taxar = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $omfattn = null;
+    private ?DateTime $omfattn = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $kptyp = null;
+    private ?string $kptyp = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $valutakod = null;
+    private ?string $valutakod = null;
 
     /**
      * IdDto constructor
@@ -244,7 +243,7 @@ class IdDto implements DtoInterface
     /**
      * @return string
      */
-    public function getProsa()
+    public function getProsa() : ?string
     {
         return $this->prosa;
     }
@@ -272,7 +271,7 @@ class IdDto implements DtoInterface
     /**
      * @return string
      */
-    public function getFtyp()
+    public function getFtyp() : ?string
     {
         return $this->ftyp;
     }
@@ -301,7 +300,7 @@ class IdDto implements DtoInterface
     /**
      * @return string
      */
-    public function getBkod()
+    public function getBkod() : ?string
     {
         return $this->bkod;
     }
@@ -329,7 +328,7 @@ class IdDto implements DtoInterface
     /**
      * @return AdressDto
      */
-    public function getAdress()
+    public function getAdress() : ?AdressDto
     {
         return $this->adress;
     }
@@ -359,7 +358,7 @@ class IdDto implements DtoInterface
      *
      * @return string
      */
-    public function getFnamn()
+    public function getFnamn() : ?string
     {
         return $this->fnamn;
     }
@@ -431,7 +430,7 @@ class IdDto implements DtoInterface
     /**
      * @return int
      */
-    public function getTaxar()
+    public function getTaxar() : ?int
     {
         return $this->taxar;
     }
@@ -461,7 +460,7 @@ class IdDto implements DtoInterface
     /**
      * @return DateTime
      */
-    public function getOmfattn()
+    public function getOmfattn() : ?DateTime
     {
         return $this->omfattn;
     }
@@ -489,7 +488,7 @@ class IdDto implements DtoInterface
     /**
      * @return string
      */
-    public function getKptyp()
+    public function getKptyp() : ?string
     {
         return $this->kptyp;
     }
@@ -519,7 +518,7 @@ class IdDto implements DtoInterface
      *
      * @return string
      */
-    public function getValutakod()
+    public function getValutakod() : ?string
     {
         return $this->valutakod;
     }

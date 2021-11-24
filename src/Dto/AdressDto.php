@@ -30,24 +30,24 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 class AdressDto implements DtoInterface
 {
     /**
-     * @var string
+     * @var string|null
      */
-    private $kontakt = null;
+    private ?string $kontakt = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $utdelningsadr = null;
+    private ?string $utdelningsadr = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $postadr = null;
+    private ?string $postadr = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $tel = null;
+    private ?string $tel = null;
 
     /**
      * Class factory kontakt, utdelningsadr, postadr, tel
@@ -73,9 +73,9 @@ class AdressDto implements DtoInterface
         return $instance;
     }
     /**
-     * @return string
+     * @return null|string
      */
-    public function getKontakt() : string
+    public function getKontakt() : ? string
     {
         return $this->kontakt;
     }
@@ -101,9 +101,9 @@ class AdressDto implements DtoInterface
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getUtdelningsadr() : string
+    public function getUtdelningsadr() : ? string
     {
         return $this->utdelningsadr;
     }
@@ -129,9 +129,9 @@ class AdressDto implements DtoInterface
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getPostadr() : string
+    public function getPostadr() : ? string
     {
         return $this->postadr;
     }
@@ -157,9 +157,9 @@ class AdressDto implements DtoInterface
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getTel() : string
+    public function getTel() : ? string
     {
         return $this->tel;
     }

@@ -41,16 +41,16 @@ class Sie4EWriter extends Sie4WriterBase
     /**
      * Return Sie4E string (without input validation)
      *
-     * @param null|Sie4Dto $sie4Dto input
-     * @param null|string  $outputfile
-     * @param null|bool    $writeKsumma
+     * @param Sie4Dto|null $sie4Dto input
+     * @param string|null $outputfile
+     * @param bool|null $writeKsumma
      * @return string
      * @throws InvalidArgumentException
      */
     public function process(
-        $sie4Dto = null,
-        $outputfile = null,
-        $writeKsumma = null
+        ? Sie4Dto $sie4Dto = null,
+        ? string  $outputfile = null,
+        ? bool $writeKsumma = null
     ) : string
     {
         if( ! empty( $sie4Dto )) {

@@ -36,21 +36,21 @@ namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 trait SerieVernrTrait
 {
     /**
-     * @var string
+     * @var string|null
      */
-    protected $serie = null;
+    protected ?string $serie = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $vernr = null;
+    protected ?int $vernr = null;
 
     /**
      * Return serie
      *
-     * @return string
+     * @return null|string
      */
-    public function getSerie() : string
+    public function getSerie() : ? string
     {
         return $this->serie;
     }
@@ -68,9 +68,9 @@ trait SerieVernrTrait
     /**
      * Return vernr
      *
-     * @return int
+     * @return null|int
      */
-    public function getVernr() : int
+    public function getVernr() : ? int
     {
         return $this->vernr;
     }

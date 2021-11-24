@@ -65,7 +65,6 @@
             <file>src/Dto/AccountDto.php</file>
             <file>src/Dto/AdressDto.php</file>
             <file>src/Dto/BalansDto.php</file>
-            <file>src/Dto/BalansDtoInterface.php</file>
             <file>src/Dto/BalansObjektDto.php</file>
             <file>src/Dto/BaseId.php</file>
             <file>src/Dto/DimDto.php</file>
@@ -89,8 +88,8 @@
             <file>src/Util/Assert.php</file>
             <file>src/Util/ArrayUtil.php</file>
             <file>src/Util/DateTimeUtil.php</file>
-            <file>src/Util/GuidUtil.php</file>
             <file>src/Util/FileUtil.php</file>
+            <file>src/Util/GuidUtil.php</file>
             <file>src/Util/StringUtil.php</file>
         </include>
         <!-- Require the PHP Xdebug (2.7.0 or later) and tokenizer extensions-->

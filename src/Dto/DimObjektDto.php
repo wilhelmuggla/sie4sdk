@@ -42,9 +42,9 @@ class DimObjektDto extends DimDto
     use ObjektNrTrait;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $objektNamn = null;
+    private ?string $objektNamn = null;
 
     /**
      * @var callable
@@ -62,7 +62,7 @@ class DimObjektDto extends DimDto
     public static function dimObjektSorter( DimObjektDto $a, DimObjektDto $b ) : int
     {
         if( 0 === ( $dimCmp = parent::dimSorter( $a, $b ))) {
-            return strcmp((string) $a->getObjektNr(), (string) $b->getObjektNr());
+            return strcmp( $a->getObjektNr(), $b->getObjektNr());
         }
         return $dimCmp;
     }
@@ -72,14 +72,14 @@ class DimObjektDto extends DimDto
      *
      * @param int|string $dimensionsNr
      * @param string $objektNr
-     * @param null|string $objektNamn
+     * @param string|null $objektNamn
      * @return self
      */
-    public static function factoryDimObject( $dimensionsNr, string $objektNr, $objektNamn = null ) : self
+    public static function factoryDimObject( $dimensionsNr, string $objektNr, string $objektNamn = null ) : self
     {
         $instance = new self();
         $instance->setDimensionNr( $dimensionsNr );
-        $instance->setObjektNr((string) $objektNr );
+        $instance->setObjektNr( $objektNr );
         if( ! empty( $objektNamn )) {
             $instance->setObjektNamn( $objektNamn );
         }
@@ -91,7 +91,7 @@ class DimObjektDto extends DimDto
      *
      * @return string
      */
-    public function getObjektNamn()
+    public function getObjektNamn() : ?string
     {
         return $this->objektNamn;
     }

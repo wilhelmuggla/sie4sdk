@@ -40,7 +40,7 @@ class TransDto
      * @param DateTime $dateTime
      * @return Dto
      */
-    public static function load( string $kontoNr, DateTime $dateTime )
+    public static function load( string $kontoNr, DateTime $dateTime ) : Dto
     {
         $faker = Faker\Factory::create();
 
@@ -64,7 +64,7 @@ class TransDto
         $dto->setBelopp( $faker->randomFloat( 2, 1, 999999 ));
 
         static $theDaybefore = '-1 day';
-        if( 1 == $faker->randomElement( [ 1, 2 ] )) {
+        if( 1 === $faker->randomElement( [ 1, 2 ] )) {
             $transDat = clone $dateTime;
             $dto->setTransdat( $transDat->modify( $theDaybefore ));
         }
@@ -81,7 +81,7 @@ class TransDto
                 $dto->setTranstext(
                     str_pad(
                         StringUtil::$SP0,
-                        ( $faker->randomElement( $Arr012 )),
+                        (int) ( $faker->randomElement( $Arr012 )),
                         StringUtil::$SP1
                     )
                 );
@@ -90,7 +90,7 @@ class TransDto
                 break;
         }
 
-        if( 1 == $faker->randomElement( $Arr123 )) {
+        if( 1 === $faker->randomElement( $Arr123 )) {
             $dto->setKvantitet( $faker->randomDigitNot( 0 ));
         }
 

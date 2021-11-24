@@ -35,14 +35,14 @@ class ArrayUtil
     /**
      * Assure array has keyed (array) elements
      *
-     * @param mixed[]  $array
+     * @param array $array
      * @param string|string[] $key
      * @return void
      */
-    public static function assureIsArray( array & $array, $key )
+    public static function assureIsArray( array & $array, $key ) : void
     {
         foreach((array) $key as $k ) {
-            if( ! isset( $array[$k] ) ) {
+            if( ! isset( $array[$k] )) {
                 $array[$k] = [];
             }
         }
@@ -55,7 +55,7 @@ class ArrayUtil
      * @param int       $length
      * @return void
      */
-    public static function assureArrayLength( array & $array, int $length )
+    public static function assureArrayLength( array & $array, int $length ) : void
     {
         if( $length > count( $array )) {
             $array = array_pad( $array, $length, null );

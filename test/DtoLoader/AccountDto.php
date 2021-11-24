@@ -36,7 +36,7 @@ class AccountDto
      * @param string $kontoNr
      * @return Dto
      */
-    public static function load( string $kontoNr )
+    public static function load( string $kontoNr ) : Dto
     {
         $faker = Faker\Factory::create();
 

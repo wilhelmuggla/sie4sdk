@@ -32,7 +32,7 @@ interface DimensionNrInterface extends DtoInterface
     /**
      * Return DimensionNr
      *
-     * @return int
+     * @return null|int
      */
-    public function getDimensionNr() : int;
+    public function getDimensionNr() : ?int;
 }

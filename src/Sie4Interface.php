@@ -32,11 +32,11 @@ Interface Sie4Interface
     /**
      * Product constants
      */
-    const PRODUCTNAME              = 'Kigkonsult\Sie4Sdk';
-    const PRODUCTVERSION           = '1.4.8';
+    public const PRODUCTNAME              = 'Kigkonsult\Sie4Sdk';
+    public const PRODUCTVERSION           = '1.6';
 
-    const TIMESTAMP                = 'TIMESTAMP';
-    const GUID                     = 'GUID';
+    public const TIMESTAMP                = 'TIMESTAMP';
+    public const GUID                     = 'GUID';
 
     /**
      * Flaggpost
@@ -46,8 +46,8 @@ Interface Sie4Interface
      * Flaggpost som anger om filen tagits emot av mottagaren
      * obligatorisk i Sie4
      */
-    const FLAGGA                   = '#FLAGGA';
-    const FLAGGPOST                = 'FLAGGA';
+    public const FLAGGA                   = '#FLAGGA';
+    public const FLAGGPOST                = 'FLAGGA';
 
     /**
      * Constants for Sie4 labels and sub-labels values
@@ -66,9 +66,9 @@ Interface Sie4Interface
       * #PROGRAM programnamn version
       * obligatorisk
       */
-    const PROGRAM                  = '#PROGRAM';
-    const PROGRAMNAMN              = 'PROGRAMNAMN';
-    const PROGRAMVERSION           = 'PROGRAMVERSION';
+    public const PROGRAM                  = '#PROGRAM';
+    public const PROGRAMNAMN              = 'PROGRAMNAMN';
+    public const PROGRAMVERSION           = 'PROGRAMVERSION';
 
      /**
       * Vilken teckenuppsättning som använts
@@ -77,44 +77,44 @@ Interface Sie4Interface
       * https://en.wikipedia.org/wiki/Code_page_437
       * obligatorisk i Sie4, auto
       */
-    const FORMAT                   = '#FORMAT';
+    public const FORMAT                   = '#FORMAT';
 
      /**
       * När och av vem som filen genererats
       * #GEN datum sign
       * Obligatorisk (sign opt) Sie4, båda obl. Sie5 SieEntry
       */
-    const GEN                      = '#GEN';
-    const GENDATUM                 = 'GENDATUM';
-    const GENSIGN                  = 'GENSIGN';
+    public const GEN                      = '#GEN';
+    public const GENDATUM                 = 'GENDATUM';
+    public const GENSIGN                  = 'GENSIGN';
 
      /**
       * Vilken typ av SIE-formatet filen följer
       * obligatorisk, auto i Sie4 : 4
       */
-    const SIETYP                   = '#SIETYP';
+    public const SIETYP                   = '#SIETYP';
 
      /**
       * Fri kommentartext kring filens innehåll
       * valfri
       */
-    const PROSA                    = '#PROSA';
-    const PROSATEXT                = 'PROSATEXT';
+    public const PROSA                    = '#PROSA';
+    public const PROSATEXT                = 'PROSATEXT';
 
      /**
       * Företagstyp
       * valfri
       */
-    const FTYP                     = '#FTYP';
-    const FORETAGSTYP              = 'FORETAGSTYP';
+    public const FTYP                     = '#FTYP';
+    public const FORETAGSTYP              = 'FORETAGSTYP';
 
      /**
       * Redovisningsprogrammets internkod för exporterat företag
       * #FNR företagsid
       * valfri
       */
-    const FNR                      = '#FNR';
-    const FNRID                    = 'FNRID';
+    public const FNR                      = '#FNR';
+    public const FNRID                    = 'FNRID';
 
      /**
       * Organisationsnummer för det företag som exporterats
@@ -123,72 +123,72 @@ Interface Sie4Interface
       * verknr : anv ej
       * valfri i sieDto, obl (orgnr) i SirEntry
       */
-    const ORGNR                    = '#ORGNR';
-    const ORGNRORGNR               = 'ORGNRORGNR';
-    const ORGNRFORNVR              = 'ORGNRFORNVR';
+    public const ORGNR                    = '#ORGNR';
+    public const ORGNRORGNR               = 'ORGNRORGNR';
+    public const ORGNRFORNVR              = 'ORGNRFORNVR';
 
     /**
      * Branschtillhörighet för det exporterade företaget, Sie4E only
      * valfri
      */
-    const BKOD                     = '#BKOD';
-    const SNIKOD                   = 'SNIKOD';
+    public const BKOD                     = '#BKOD';
+    public const SNIKOD                   = 'SNIKOD';
 
     /**
      * Adressuppgifter för det aktuella företaget
      * valfri
      */
-    const ADRESS                   = '#ADRESS';
-    const ADRKONTAKT               = 'ADRKONTAKT';
-    const UTDELNINGSADR            = 'UTDELNINGSADR';
-    const POSTADR                  = 'POSTADR';
-    const TEL                      = 'TEL';
+    public const ADRESS                   = '#ADRESS';
+    public const ADRKONTAKT               = 'ADRKONTAKT';
+    public const UTDELNINGSADR            = 'UTDELNINGSADR';
+    public const POSTADR                  = 'POSTADR';
+    public const TEL                      = 'TEL';
 
      /**
       * Fullständigt namn för det företag som exporterats
       * #FNAMN företagsnamn
       * Obligatorisk i Sie4, valfri i SieEntry
       */
-    const FNAMN                    = '#FNAMN';
-    const FTGNAMN                  = 'FNAMN';
+    public const FNAMN                    = '#FNAMN';
+    public const FTGNAMN                  = 'FNAMN';
 
      /**
       * Räkenskapsår från vilket exporterade data hämtats
       * valfri
       */
-    const RAR                      = '#RAR';
-    const RARARSNR                 = 'RARASRNR';
-    const RARSTART                 = 'RARSTART';
-    const RARSLUT                  = 'RARSLUT';
+    public const RAR                      = '#RAR';
+    public const RARARSNR                 = 'RARASRNR';
+    public const RARSTART                 = 'RARSTART';
+    public const RARSLUT                  = 'RARSLUT';
 
      /**
       * Taxeringsår för deklarations- information (SRU-koder)
       * valfri
       */
-    const TAXAR                    = '#TAXAR';
-    const TAXYEAR                  = 'TAXYEAR';
+    public const TAXAR                    = '#TAXAR';
+    public const TAXYEAR                  = 'TAXYEAR';
 
     /**
      * Datum för periodsaldons omfattning
      * #OMFATTN datum
      */
-    const OMFATTN                  = '#OMFATTN';
-    const OMFATTNDATUM             = 'OMFATTNDATUM';
+    public const OMFATTN                  = '#OMFATTN';
+    public const OMFATTNDATUM             = 'OMFATTNDATUM';
 
      /**
       * Kontoplanstyp
       * valfri
       */
-    const KPTYP                    = '#KPTYP';
-    const KPTYPE                   = 'KPTYPE';
+    public const KPTYP                    = '#KPTYP';
+    public const KPTYPE                   = 'KPTYPE';
 
      /**
       * Redovisningsvaluta
       * #VALUTA valutakod
       * valfri
       */
-    const VALUTA                   = '#VALUTA';
-    const VALUTAKOD                = 'VALUTAKOD';
+    public const VALUTA                   = '#VALUTA';
+    public const VALUTAKOD                = 'VALUTAKOD';
 
 
     /**
@@ -200,118 +200,118 @@ Interface Sie4Interface
       * #KONTO kontonr kontonamn
       * valfri
       */
-    const KONTO                    = '#KONTO';
-    const KONTONR                  = 'KONTONR';
-    const KONTONAMN                = 'KONTONAMN';
+    public const KONTO                    = '#KONTO';
+    public const KONTONR                  = 'KONTONR';
+    public const KONTONAMN                = 'KONTONAMN';
 
      /**
       * Kontotyp
       * #KTYP kontonr  kontoTyp
       * valfri
       */
-    const KTYP                     = '#KTYP';
-    const KONTOTYP                 = 'KONTOTYP';
+    public const KTYP                     = '#KTYP';
+    public const KONTOTYP                 = 'KONTOTYP';
 
      /**
       * Enhet vid kvantitetsredovisning
       * #ENHET kontonr enhet
       * valfri
       */
-    const ENHET                    = '#ENHET';
-    const KONTOENHET               = 'KONTOENHET';
+    public const ENHET                    = '#ENHET';
+    public const KONTOENHET               = 'KONTOENHET';
 
      /**
       * RSV-kod för standardiserat räkenskapsutdrag
       * valfri
       */
-    const SRU                      = '#SRU';
-    const SRUKONTO                 = 'SRUKONTO';
-    const SRUKOD                   = 'SRUKOD';
+    public const SRU                      = '#SRU';
+    public const SRUKONTO                 = 'SRUKONTO';
+    public const SRUKOD                   = 'SRUKOD';
 
      /**
       * Dimension
       * #DIM dimensionsnr namn
       * valfri
       */
-    const DIM                      = '#DIM';
-    const DIMENSIONNR              = 'DIMENSIONNR';
-    const DIMENSIONNAMN            = 'DIMENSIONNAMN';
+    public const DIM                      = '#DIM';
+    public const DIMENSIONNR              = 'DIMENSIONNR';
+    public const DIMENSIONNAMN            = 'DIMENSIONNAMN';
 
      /**
       * Underdimension
       * valfri
       */
-    const UNDERDIM                 = '#UNDERDIM';
-    const UNDERDIMNR               = 'UNDERDIMNR';
-    const UNDERDIMNAMN             = 'UNDERDIMNAMN';
-    const UNDERDIMSUPER            = 'UNDERDIMSUPER';
+    public const UNDERDIM                 = '#UNDERDIM';
+    public const UNDERDIMNR               = 'UNDERDIMNR';
+    public const UNDERDIMNAMN             = 'UNDERDIMNAMN';
+    public const UNDERDIMSUPER            = 'UNDERDIMSUPER';
 
      /**
       * Objekt
       * #OBJEKT dimensionsnr objektnr objektnamn
       * valfri
       */
-    const OBJEKT                   = '#OBJEKT';
-    const OBJEKTDIMENSIONNR        = 'OBJEKTDIMENSIONNR';
-    const OBJEKTNR                 = 'OBJEKTNR';
-    const OBJEKTNAMN               = 'OBJEKTNAMN';
+    public const OBJEKT                   = '#OBJEKT';
+    public const OBJEKTDIMENSIONNR        = 'OBJEKTDIMENSIONNR';
+    public const OBJEKTNR                 = 'OBJEKTNR';
+    public const OBJEKTNAMN               = 'OBJEKTNAMN';
 
     /**
      * Saldoposter
      */
-    const IB                       = '#IB';
-    const IBARSNR                  = 'IBARSNR';
-    const IBKONTONR                = 'IBKONTONR';
-    const IBSALDO                  = 'IBSALDO';
-    const IBKVANTITET              = 'IBKVANTITET';
+    public const IB                       = '#IB';
+    public const IBARSNR                  = 'IBARSNR';
+    public const IBKONTONR                = 'IBKONTONR';
+    public const IBSALDO                  = 'IBSALDO';
+    public const IBKVANTITET              = 'IBKVANTITET';
 
-    const UB                       = '#UB';
+    public const UB                       = '#UB';
     // årsnr konto saldo kvantitet(opt)
-    const UBARSNR                  = 'UBARSNR';
-    const UBKONTONR                = 'UBKONTONR';
-    const UBSALDO                  = 'UBSALDO';
-    const UBKVANTITET              = 'UBKVANTITET';
+    public const UBARSNR                  = 'UBARSNR';
+    public const UBKONTONR                = 'UBKONTONR';
+    public const UBSALDO                  = 'UBSALDO';
+    public const UBKVANTITET              = 'UBKVANTITET';
 
-    const OIB                      = '#OIB';
+    public const OIB                      = '#OIB';
     // årsnr konto {dimensionsnr objektnr} saldo kvantitet(opt)
-    const OIBARSNR                 = 'OIBARSNR';
-    const OIBKONTONR               = 'OIBKONTONR';
-    const OIBDIMENSIONNR           = 'OIBDIMENSIONNR';
-    const OIBOBJEKTNR              = 'OIBOBJEKTNR';
-    const OIBSALDO                 = 'OIBSALDO';
-    const OIBKVANTITET             = 'OIBKVANTITET';
+    public const OIBARSNR                 = 'OIBARSNR';
+    public const OIBKONTONR               = 'OIBKONTONR';
+    public const OIBDIMENSIONNR           = 'OIBDIMENSIONNR';
+    public const OIBOBJEKTNR              = 'OIBOBJEKTNR';
+    public const OIBSALDO                 = 'OIBSALDO';
+    public const OIBKVANTITET             = 'OIBKVANTITET';
 
-    const OUB                      = '#OUB';
-    const OUBARSNR                 = 'OUBARSNR';
-    const OUBKONTONR               = 'OUBKONTONR';
-    const OUBDIMENSIONNR           = 'OUBDIMENSIONNR';
-    const OUBOBJEKTNR              = 'OUBOBJEKTNR';
-    const OUBSALDO                 = 'OUBSALDO';
-    const OUBKVANTITET             = 'OUBKVANTITET';
+    public const OUB                      = '#OUB';
+    public const OUBARSNR                 = 'OUBARSNR';
+    public const OUBKONTONR               = 'OUBKONTONR';
+    public const OUBDIMENSIONNR           = 'OUBDIMENSIONNR';
+    public const OUBOBJEKTNR              = 'OUBOBJEKTNR';
+    public const OUBSALDO                 = 'OUBSALDO';
+    public const OUBKVANTITET             = 'OUBKVANTITET';
 
-    const RES                      = '#RES';
-    const RESARSNR                 = 'RESARSNR';
-    const RESKONTONR               = 'RESKONTONR';
-    const RESSALDO                 = 'RESSALDO';
-    const RESKVANTITET             = 'RESKVANTITET';
+    public const RES                      = '#RES';
+    public const RESARSNR                 = 'RESARSNR';
+    public const RESKONTONR               = 'RESKONTONR';
+    public const RESSALDO                 = 'RESSALDO';
+    public const RESKVANTITET             = 'RESKVANTITET';
 
-    const PSALDO                   = '#PSALDO';
-    const PSALDOARSNR              = 'PSALDOARSNR';
-    const PSALDOPERIOD             = 'PSALDOPERIOD';
-    const PSALDOKONTONR            = 'PSALDOKONTONR';
-    const PSALDODIMENSIONNR        = 'PSALDODIMENSIONNR';
-    const PSALDOOBJEKTNR           = 'PSALDOOBJEKTNR';
-    const PSALDOSALDO              = 'PSALDOSALDO';
-    const PSALDOKVANTITET          = 'PSALDOKVANTITET';
+    public const PSALDO                   = '#PSALDO';
+    public const PSALDOARSNR              = 'PSALDOARSNR';
+    public const PSALDOPERIOD             = 'PSALDOPERIOD';
+    public const PSALDOKONTONR            = 'PSALDOKONTONR';
+    public const PSALDODIMENSIONNR        = 'PSALDODIMENSIONNR';
+    public const PSALDOOBJEKTNR           = 'PSALDOOBJEKTNR';
+    public const PSALDOSALDO              = 'PSALDOSALDO';
+    public const PSALDOKVANTITET          = 'PSALDOKVANTITET';
 
-    const PBUDGET                  = '#PBUDGET';
-    const PBUDGETARSNR             = 'PBUDGETARSNR';
-    const PBUDGETPERIOD            = 'PBUDGETPERIOD';
-    const PBUDGETKONTONR           = 'PBUDGETKONTONR';
-    const PBUDGETDIMENSIONNR       = 'PBUDGETDIMENSIONNR';
-    const PBUDGETOBJEKTNR          = 'PBUDGETOBJEKTNR';
-    const PBUDGETSALDO             = 'PBUDGETSALDO';
-    const PBUDGETKVANTITET         = 'PBUDGETKVANTITET';
+    public const PBUDGET                  = '#PBUDGET';
+    public const PBUDGETARSNR             = 'PBUDGETARSNR';
+    public const PBUDGETPERIOD            = 'PBUDGETPERIOD';
+    public const PBUDGETKONTONR           = 'PBUDGETKONTONR';
+    public const PBUDGETDIMENSIONNR       = 'PBUDGETDIMENSIONNR';
+    public const PBUDGETOBJEKTNR          = 'PBUDGETOBJEKTNR';
+    public const PBUDGETSALDO             = 'PBUDGETSALDO';
+    public const PBUDGETKVANTITET         = 'PBUDGETKVANTITET';
 
      /**
       * Verifikationspost
@@ -319,15 +319,15 @@ Interface Sie4Interface
       * Obligatorisk
       * Enbart verdatum obligatoriskt, auto-gen (now) om det saknas i Sie4
       */
-    const VER                      = '#VER';
-    const VERTIMESTAMP             = 'VERTIMESTAMP';
-    const VERGUID                  = 'VERGUID';
-    const VERSERIE                 = 'VERSERIE';
-    const VERNR                    = 'VERNR';
-    const VERDATUM                 = 'VERDATUM';
-    const VERTEXT                  = 'VERTEXT';
-    const REGDATUM                 = 'REGDATUM';
-    const VERSIGN                  = 'VERSIGN';
+    public const VER                      = '#VER';
+    public const VERTIMESTAMP             = 'VERTIMESTAMP';
+    public const VERGUID                  = 'VERGUID';
+    public const VERSERIE                 = 'VERSERIE';
+    public const VERNR                    = 'VERNR';
+    public const VERDATUM                 = 'VERDATUM';
+    public const VERTEXT                  = 'VERTEXT';
+    public const REGDATUM                 = 'REGDATUM';
+    public const VERSIGN                  = 'VERSIGN';
 
      /**
       * Transaktionspost #TRANS
@@ -338,39 +338,39 @@ Interface Sie4Interface
       * #RTRANS
       * Obligatoriskt : kontonr/belopp
       */
-    const TRANS                    = '#TRANS';
-    const TRANSTIMESTAMP           = 'TRANSTIMESTAMP';
-    const TRANSGUID                = 'TRANSGUID';
-    const TRANSKONTONR             = 'TRANSKONTONR';
-    const TRANSDIMENSIONNR         = 'TRANSDIMENSIONNR';
-    const TRANSOBJEKTNR            = 'TRANSOBJEKTNR';
-    const TRANSBELOPP              = 'TRANSBELOPP';
-    const TRANSDAT                 = 'TRANSDAT';
-    const TRANSTEXT                = 'TRANSTEXT';
-    const TRANSKVANTITET           = 'TRANSKVANTITET';
-    const TRANSSIGN                = 'TRANSSIGN';
-    const RTRANS                   = '#RTRANS';
-    const RTRANSTIMESTAMP          = 'RTRANSTIMESTAMP';
-    const RTRANSGUID               = 'RTRANSGUID';
-    const RTRANSKONTONR            = 'RTRANSKONTONR';
-    const RTRANSDIMENSIONNR        = 'RTRANSDIMENSIONNR';
-    const RTRANSOBJEKTNR           = 'RTRANSOBJEKTNR';
-    const RTRANSBELOPP             = 'RTRANSBELOPP';
-    const RTRANSDAT                = 'RTRANSDAT';
-    const RTRANSTEXT               = 'RTRANSTEXT';
-    const RTRANSKVANTITET          = 'RTRANSKVANTITET';
-    const RTRANSSIGN               = 'RTRANSSIGN';
-    const BTRANS                   = '#BTRANS';
-    const BTRANSTIMESTAMP          = 'BTRANSTIMESTAMP';
-    const BTRANSGUID               = 'BTRANSGUID';
-    const BTRANSKONTONR            = 'BTRANSKONTONR';
-    const BTRANSDIMENSIONNR        = 'BTRANSDIMENSIONNR';
-    const BTRANSOBJEKTNR           = 'BTRANSOBJEKTNR';
-    const BTRANSBELOPP             = 'BTRANSBELOPP';
-    const BTRANSDAT                = 'BTRANSDAT';
-    const BTRANSTEXT               = 'BTRANSTEXT';
-    const BTRANSKVANTITET          = 'BTRANSKVANTITET';
-    const BTRANSSIGN               = 'BTRANSSIGN';
+    public const TRANS                    = '#TRANS';
+    public const TRANSTIMESTAMP           = 'TRANSTIMESTAMP';
+    public const TRANSGUID                = 'TRANSGUID';
+    public const TRANSKONTONR             = 'TRANSKONTONR';
+    public const TRANSDIMENSIONNR         = 'TRANSDIMENSIONNR';
+    public const TRANSOBJEKTNR            = 'TRANSOBJEKTNR';
+    public const TRANSBELOPP              = 'TRANSBELOPP';
+    public const TRANSDAT                 = 'TRANSDAT';
+    public const TRANSTEXT                = 'TRANSTEXT';
+    public const TRANSKVANTITET           = 'TRANSKVANTITET';
+    public const TRANSSIGN                = 'TRANSSIGN';
+    public const RTRANS                   = '#RTRANS';
+    public const RTRANSTIMESTAMP          = 'RTRANSTIMESTAMP';
+    public const RTRANSGUID               = 'RTRANSGUID';
+    public const RTRANSKONTONR            = 'RTRANSKONTONR';
+    public const RTRANSDIMENSIONNR        = 'RTRANSDIMENSIONNR';
+    public const RTRANSOBJEKTNR           = 'RTRANSOBJEKTNR';
+    public const RTRANSBELOPP             = 'RTRANSBELOPP';
+    public const RTRANSDAT                = 'RTRANSDAT';
+    public const RTRANSTEXT               = 'RTRANSTEXT';
+    public const RTRANSKVANTITET          = 'RTRANSKVANTITET';
+    public const RTRANSSIGN               = 'RTRANSSIGN';
+    public const BTRANS                   = '#BTRANS';
+    public const BTRANSTIMESTAMP          = 'BTRANSTIMESTAMP';
+    public const BTRANSGUID               = 'BTRANSGUID';
+    public const BTRANSKONTONR            = 'BTRANSKONTONR';
+    public const BTRANSDIMENSIONNR        = 'BTRANSDIMENSIONNR';
+    public const BTRANSOBJEKTNR           = 'BTRANSOBJEKTNR';
+    public const BTRANSBELOPP             = 'BTRANSBELOPP';
+    public const BTRANSDAT                = 'BTRANSDAT';
+    public const BTRANSTEXT               = 'BTRANSTEXT';
+    public const BTRANSKVANTITET          = 'BTRANSKVANTITET';
+    public const BTRANSSIGN               = 'BTRANSSIGN';
 
     /**
      * Kontrollsummeposter
@@ -380,11 +380,11 @@ Interface Sie4Interface
       * Start av kontrollsummering/-summa
       * valfri
       */
-    const KSUMMA                   = '#KSUMMA';
-    const KSUMMAPOST               = 'KSUMMA';
+    public const KSUMMA                   = '#KSUMMA';
+    public const KSUMMAPOST               = 'KSUMMA';
 
     /**
      * Sie4 date format
      */
-    const SIE4YYYYMMDD             = 'Ymd';
+    public const SIE4YYYYMMDD             = 'Ymd';
 }

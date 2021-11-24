@@ -30,7 +30,6 @@ namespace Kigkonsult\Sie4Sdk\Util;
 use InvalidArgumentException;
 
 use function gettype;
-use function intval;
 use function is_int;
 use function is_scalar;
 use function is_string;
@@ -49,7 +48,7 @@ class Assert
      * @param int|string $value
      * @return void
      */
-    public static function isIntOrString( string $label, $value )
+    public static function isIntOrString( string $label, $value ) : void
     {
         static $ERR = '%s expects int or string, got %s';
         if( ! is_int( $value ) && ! is_string( $value )) {
@@ -68,11 +67,11 @@ class Assert
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function isNonPositiveInt( string $label, $value )
+    public static function isNonPositiveInt( string $label, $value ) : void
     {
         static $ERR = '%s integer <= 0 förväntas, nu %s';
         self::isIntegerish( $label, $value );
-        if( 0 < intval( $value )) {
+        if( 0 < (int)$value ) {
             throw new InvalidArgumentException(
                 sprintf( $ERR, $label, (int) $value ),
                 3721
@@ -88,12 +87,12 @@ class Assert
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function isIntegerish( string $label, $value )
+    public static function isIntegerish( string $label, $value ) : void
     {
         static $ERR = '%s integer förväntas, nu %s';
-        if( ! is_scalar( $value ) || ( $value != intval( $value )) ) {
+        if( ! is_scalar( $value ) || ( $value != (int)$value )) {
             throw new InvalidArgumentException(
-                sprintf( $ERR, $label, var_export( $value, true ) ),
+                sprintf( $ERR, $label, var_export( $value, true )),
                 3731
             );
         }
@@ -107,17 +106,18 @@ class Assert
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function isYYYYMMDate( string $label, $value )
+    public static function isYYYYMMDate( string $label, $value ) : void
     {
         static $ONE = '01';
         static $ERR = '%s (#%d) YYYYMM-datum förväntas, nu %s';
         $value = trim( (string)$value );
-        if( (6 != strlen( $value )) ||
-            (19 > substr( $value, 0, 2 )) ||
-            (20 < substr( $value, 0, 2 )) ||
-            (12 < substr( $value, 4, 2 )) ) {
+        $yyxx  = (int) substr( $value, 0, 2 );
+        if( (6 !== strlen( $value )) ||
+            (19 > $yyxx ) ||
+            (20 < $yyxx ) ||
+            (12 < (int) substr( $value, 4, 2 ))) {
             throw new InvalidArgumentException(
-                sprintf( $ERR, $label, 1, var_export( $value, true ) ),
+                sprintf( $ERR, $label, 1, var_export( $value, true )),
                 3741
             );
         }
@@ -125,7 +125,7 @@ class Assert
             DateTimeUtil::getDateTime( $value . $ONE, $label, 3742 );
         } catch( InvalidArgumentException $e ) {
             throw new InvalidArgumentException(
-                sprintf( $ERR, $label, 3, var_export( $value, true ) ),
+                sprintf( $ERR, $label, 3, var_export( $value, true )),
                 3743,
                 $e
             );

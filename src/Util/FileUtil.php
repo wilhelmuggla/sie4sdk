@@ -48,7 +48,7 @@ class FileUtil
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertReadFile( string $fileName, int $errCode )
+    public static function assertReadFile( string $fileName, int $errCode ) : void
     {
         static $FMT1 = ' do NO exists';
         static $FMT2 = ' is NO file';
@@ -97,7 +97,7 @@ class FileUtil
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertWriteFile( string $fileName, int $errCode )
+    public static function assertWriteFile( string $fileName, int $errCode ) : void
     {
         static $FMT1 = 'Can\'t create ';
         static $FMT2 = ' is NOT writeable ';
@@ -119,7 +119,7 @@ class FileUtil
      * @return void
      * @throws RunTimeException
      */
-    public static function writeFile( string $fileName, $output, int $errCode )
+    public static function writeFile( string $fileName, $output, int $errCode ) : void
     {
         static $FMT3 = 'Can\'t write to ';
         $errCode *= 10;

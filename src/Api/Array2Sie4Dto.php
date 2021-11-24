@@ -210,19 +210,19 @@ use function ksort;
 class Array2Sie4Dto extends ArrayBase
 {
     /**
-     * @var mixed[]
+     * @var array
      */
-    private $input = [];
+    private array $input = [];
 
     /**
-     * @var Sie4Dto
+     * @var Sie4Dto|null
      */
-    private $sie4Dto = null;
+    private ?Sie4Dto $sie4Dto = null;
 
     /**
      * Transform Sie4 array to SieDto, factory method
      *
-     * @param mixed[] $input
+     * @param array $input
      * @return Sie4Dto
      */
     public static function process( array $input ) : Sie4Dto
@@ -269,7 +269,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readIdData()
+    private function readIdData() : void
     {
         $idDto = new IdDto();
         $this->sie4Dto->setIdDto( $idDto );
@@ -528,7 +528,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readAccountData()
+    private function readAccountData() : void
     {
         if( isset( $this->input[self::KONTONR] )) {
             foreach( array_keys( $this->input[self::KONTONR] ) as $x ) {
@@ -561,7 +561,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readSruData()
+    private function readSruData() : void
     {
         if( isset( $this->input[self::SRUKONTO] )) {
             foreach( array_keys( $this->input[self::SRUKONTO] ) as $x ) {
@@ -588,7 +588,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readDimData()
+    private function readDimData() : void
     {
         if( isset( $this->input[self::DIMENSIONNR] )) {
             foreach( array_keys( $this->input[self::DIMENSIONNR] ) as $x ) {
@@ -616,7 +616,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readUnderDimData()
+    private function readUnderDimData() : void
     {
         if( isset( $this->input[self::UNDERDIMNR] )) {
             foreach( array_keys( $this->input[self::UNDERDIMNR] ) as $x ) {
@@ -647,7 +647,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readDimObjektData()
+    private function readDimObjektData() : void
     {
         if( isset( $this->input[self::OBJEKTDIMENSIONNR] )) {
             foreach( array_keys( $this->input[self::OBJEKTDIMENSIONNR] ) as $x ) {
@@ -680,7 +680,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readIbData()
+    private function readIbData() : void
     {
         if( isset( $this->input[self::IBARSNR] )) {
             foreach( array_keys( $this->input[self::IBARSNR] ) as $x ) {
@@ -716,7 +716,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readUbData()
+    private function readUbData() : void
     {
         if( isset( $this->input[self::UBARSNR] )) {
             foreach( array_keys( $this->input[self::UBARSNR] ) as $x ) {
@@ -754,7 +754,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readOibData()
+    private function readOibData() : void
     {
         if( isset( $this->input[self::OIBARSNR] )) {
             foreach( array_keys( $this->input[self::OIBARSNR] ) as $x ) {
@@ -798,7 +798,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readOubData()
+    private function readOubData() : void
     {
         if( isset( $this->input[self::OUBARSNR] )) {
             foreach( array_keys( $this->input[self::OUBARSNR] ) as $x ) {
@@ -840,7 +840,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readResData()
+    private function readResData() : void
     {
         if( isset( $this->input[self::RESARSNR] )) {
             foreach( array_keys( $this->input[self::RESARSNR] ) as $x ) {
@@ -879,7 +879,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readPsaldoData()
+    private function readPsaldoData() : void
     {
         if( isset( $this->input[self::PSALDOARSNR] )) {
             foreach( array_keys( $this->input[self::PSALDOARSNR] ) as $x ) {
@@ -927,7 +927,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readPbudgetData()
+    private function readPbudgetData() : void
     {
         if( isset( $this->input[self::PBUDGETARSNR] )) {
             foreach( array_keys( $this->input[self::PBUDGETARSNR] ) as $x ) {
@@ -976,7 +976,7 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @return void
      */
-    private function readVerTransData()
+    private function readVerTransData() : void
     {
         if( ! isset( $this->input[self::VERDATUM] )) {
             return;
@@ -1053,13 +1053,13 @@ class Array2Sie4Dto extends ArrayBase
      * @param VerDto $verDto
      * @return void
      */
-    private function readTransData( int $verX, VerDto $verDto )
+    private function readTransData( int $verX, VerDto $verDto ) : void
     {
         static $leadKeys = [ self::TRANSKONTONR, self::RTRANSKONTONR, self::BTRANSKONTONR ];
         $labels = [];
         // preserve order of #TRANS, #RTRANS and #BTRANS
         foreach( array_keys( $this->input ) as $transKey ) {
-            if( ! in_array( $transKey, $leadKeys )) {
+            if( ! in_array( $transKey, $leadKeys, true )) {
                 continue;
             }
             $found = null;
@@ -1088,7 +1088,7 @@ class Array2Sie4Dto extends ArrayBase
             $keyArr     = self::$TRANSKEYS[$label];
             $keyKontoNr = $keyArr[self::TRANSKONTONR];
             foreach( array_keys( $this->input[$keyKontoNr][$verX] ) as $transX ) {
-                if( $lx != $transX ) {
+                if( $lx !== $transX ) {
                     continue;
                 }
                 $transDto = new TransDto();
@@ -1107,7 +1107,7 @@ class Array2Sie4Dto extends ArrayBase
      * Process single #TRANS/#RTRANS/#BTRANS
      *
      * @param TransDto $transDto
-     * @param mixed[]  $keyArr
+     * @param array $keyArr
      * @param int      $verX
      * @param int      $transX
      * @param string   $label
@@ -1119,7 +1119,7 @@ class Array2Sie4Dto extends ArrayBase
         int    $verX,
         int    $transX,
         string $label
-    )
+    ) : void
     {
         $keyTimestamp = $keyArr[self::TRANSTIMESTAMP];
         if( isset( $this->input[$keyTimestamp][$verX][$transX] )) {

@@ -47,31 +47,25 @@ use Kigkonsult\Sie4Sdk\Util\DateTimeUtil;
 use Kigkonsult\Sie4Sdk\Util\GuidUtil;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
-use function intval;
-use function is_scalar;
 use function number_format;
 use function sprintf;
-use function strlen;
-use function substr;
-use function trim;
-use function var_export;
 
 class Sie4Validator implements Sie4Interface
 {
     /**
      * @var string
      */
-    private static $FOUR = '4';
+    private static string $FOUR = '4';
 
     /**
      * @var string
      */
-    private static $ERRARSNR1 = '#%d, %s, årsnr saknas';
+    private static string $ERRARSNR1 = '#%d, %s, årsnr saknas';
 
     /**
      * @var string
      */
-    private static $ERRARSNR2 = '#%d, %s, årsnr ska vara lika med eller mindre än 0';
+    private static string $ERRARSNR2 = '#%d, %s, årsnr ska vara lika med eller mindre än 0';
 
     /**
      * Validate #FLAGGA, #SIETYP == 4 and at least one #VER must exist (in order)
@@ -80,7 +74,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertSie4Input( It $sie4Input )
+    public static function assertSie4Input( It $sie4Input ) : void
     {
         static $FMT1 = 'Input saknar poster';
         static $FMT2 = 'Ogiltig 1:a post';
@@ -104,7 +98,7 @@ class Sie4Validator implements Sie4Interface
                     $flaggaExist = true;
                     break;
                 case StringUtil::startsWith( $post, self::KSUMMA ) :
-                    $ksummaCnt += 1;
+                    ++$ksummaCnt;
                     break;
                 case ( $flaggaExist &&
                     StringUtil::startsWith( $post, self::SIETYP ) &&
@@ -155,7 +149,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertBase( Sie4Dto $sie4Dto )
+    public static function assertBase( Sie4Dto $sie4Dto ) : void
     {
         static $FMT5 = 'Ogiltig flagga (0,1 förväntas) : ';
         static $FMT7 = 'Sie4 idDto saknas';
@@ -177,7 +171,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertSie4IDto( Sie4Dto $sie4IDto )
+    public static function assertSie4IDto( Sie4Dto $sie4IDto ) : void
     {
         static $FMT6 = '%s får inte förekomma i Sie4';
         static $FMT9 = 'verifikationer saknas';
@@ -246,7 +240,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertSie4EDto( Sie4Dto $sie4EDto )
+    public static function assertSie4EDto( Sie4Dto $sie4EDto ) : void
     {
         static $FMT3 = 'Konton saknas';
         static $FMT4 = 'Ingående balanser saknas';
@@ -347,7 +341,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertIdDto( IdDto $idDto, bool $isSie4Export )
+    public static function assertIdDto( IdDto $idDto, bool $isSie4Export ) : void
     {
         static $FMT2 = 'PROGRAM saknas';
         static $FMT5 = 'SIETYP saknas eller inte 4';
@@ -359,8 +353,8 @@ class Sie4Validator implements Sie4Interface
         if( empty( $programNamn )) {
             throw new InvalidArgumentException( $FMT2, 3511 );
         }
-        $sieType = $idDto->getSieTyp();
-        if( self::$FOUR != $sieType ) {
+        $sieType = (string) $idDto->getSieTyp();
+        if( self::$FOUR !== $sieType ) {
             throw new InvalidArgumentException( $FMT5 . $sieType, 3515 );
         }
         if( ! $isSie4Export && $idDto->isBkodSet()) {
@@ -394,7 +388,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertAdressDto( AdressDto $adressDto )
+    public static function assertAdressDto( AdressDto $adressDto ) : void
     {
         static $FMT1 = '%s, kontakt saknas';
         static $FMT2 = '%s, utdelningsadr saknas';
@@ -424,7 +418,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertAccountDto( int $x, AccountDto $accountDto )
+    public static function assertAccountDto( int $x, AccountDto $accountDto ) : void
     {
         static $FMT1 = '#%d KontoNr/namn/typ förväntas';
         if( ! $accountDto->isKontoNrSet() ||
@@ -444,7 +438,7 @@ class Sie4Validator implements Sie4Interface
      * @param string    $label
      * @return void
      */
-    public static function assertBalansDto( int $x, BalansDto $balansDto, string $label )
+    public static function assertBalansDto( int $x, BalansDto $balansDto, string $label ) : void
     {
         static $FMT3 = '#%d, %s konto saknas';
         if( ! $balansDto->isArsnrSet()) {
@@ -472,7 +466,7 @@ class Sie4Validator implements Sie4Interface
         int $x,
         BalansObjektDto $balansObjektDto,
         string $label
-    )
+    ) : void
     {
         static $FMT3 = '#%d, %s konto saknas';
         static $FMT4 = '#%d, %s objektLista (dimensionNr/objektNr) saknas eller ofullständig';
@@ -500,7 +494,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertDimDto( int $dx, DimDto $dimDto )
+    public static function assertDimDto( int $dx, DimDto $dimDto ) : void
     {
         static $FMT1 = 'dimensionNr (#%d) förväntas';
         static $FMT2 = 'dimensionsNamn (#%d) förväntas';
@@ -522,7 +516,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertUnderDimDto( int $dx, UnderDimDto $underDimDto )
+    public static function assertUnderDimDto( int $dx, UnderDimDto $underDimDto ) : void
     {
         static $FMT1 = 'underDimensionNr (#%d) förväntas';
         static $FMT2 = 'underDimensionsNamn (#%d) förväntas';
@@ -549,7 +543,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertDimObjektDto( int $dox, DimObjektDto $dimObjektDto )
+    public static function assertDimObjektDto( int $dox, DimObjektDto $dimObjektDto ) : void
     {
         static $FMT1 = '#%d, dimensionNr förväntas';
         static $FMT2 = '#%d, objektNr förväntas';
@@ -576,7 +570,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertPeriodDto( int $x, PeriodDto $periodDto, string $label )
+    public static function assertPeriodDto( int $x, PeriodDto $periodDto, string $label ) : void
     {
         static $FMT2 = '#%d, %s period saknas';
         static $FMT3 = '#%d, %s konto saknas';
@@ -614,7 +608,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertRarDto( int $x, RarDto $rarDto )
+    public static function assertRarDto( int $x, RarDto $rarDto ) : void
     {
         static $FMT4 = '#%d, start saknas';
         static $FMT5 = '#%d, slut saknas';
@@ -642,7 +636,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertSruDto( int $x, SruDto $sruDto )
+    public static function assertSruDto( int $x, SruDto $sruDto ) : void
     {
         static $FMT1 = '#%d, konto saknas';
         static $FMT2 = '#%d, sru-kod saknas';
@@ -664,7 +658,7 @@ class Sie4Validator implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertVerDto( int $x, VerDto $verDto )
+    public static function assertVerDto( int $x, VerDto $verDto ) : void
     {
         static $FMT1 = 'ver %s (#%d), datum saknas';
         static $FMT2 = 'ver %s (#%d), konteringsrader saknas';
@@ -672,7 +666,7 @@ class Sie4Validator implements Sie4Interface
         static $SP0  = '';
         DateTimeUtil::assertTimestamp( $verDto->getTimestamp(), 3701 );
         GuidUtil::assertGuid( $verDto->getCorrelationId(), 3703 );
-        $verNr = $verDto->getVernr() ?? StringUtil::$SP0;
+        $verNr = $verDto->isVernrSet() ? (string) $verDto ->getVernr() : StringUtil::$SP0;
         if( ! $verDto->isVerdatumSet()) {
             throw new InvalidArgumentException(
                 sprintf( $FMT1, $verNr, $x ),
@@ -687,7 +681,7 @@ class Sie4Validator implements Sie4Interface
         }
         $balans = 0.00;
         foreach( $verDto->getTransDtos() as $kx => $transDto ) {
-            if( self::TRANS == $transDto->getTransType()) {
+            if( self::TRANS === $transDto->getTransType()) {
                 $balans += $transDto->getBelopp() ?? 0.00;
             }
             self::assertTransDto( $verNr, $x, $kx, $transDto );
@@ -718,7 +712,7 @@ class Sie4Validator implements Sie4Interface
         int      $vx,
         int      $tx,
         TransDto $transDto
-    )
+    ) : void
     {
         static $FMT0 = '%s (#%d) %s (#%d)';
         static $FMT3 = 'ver %s, kontoNr saknas';
@@ -736,14 +730,14 @@ class Sie4Validator implements Sie4Interface
         if( 0 < $transDto->countObjektlista()) {
             foreach( $transDto->getObjektlista() as $x => $dimObjekt ) {
                 if( ! $dimObjekt->isDimensionsNrSet() ||
-                    ! $dimObjekt->isObjektNrSet() ) {
+                    ! $dimObjekt->isObjektNrSet()) {
                     throw new InvalidArgumentException(
                         sprintf(
                             $FMT6,
                             $errKey,
                             $x,
-                            ( $dimObjekt->getDimensionNr() ?? StringUtil::$SP1),
-                            ( $dimObjekt->getObjektNr() ?? StringUtil::$SP1)
+                            ( $dimObjekt->isDimensionsNrSet() ? (string) $dimObjekt->getDimensionNr() : StringUtil::$SP1 ),
+                            ( $dimObjekt->getObjektNr() ?? StringUtil::$SP1 )
                         ),
                         3713
                     );

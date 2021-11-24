@@ -64,14 +64,14 @@ use Kigkonsult\Sie5Sdk\Dto\SoftwareProductType;
 class Sie5EntryLoader implements Sie4Interface
 {
     /**
-     * @var Sie4Dto
+     * @var Sie4Dto|null
      */
-    private $sie4IDto = null;
+    private ?Sie4Dto $sie4IDto = null;
 
     /**
-     * @var SieEntry
+     * @var SieEntry|null
      */
-    private $sieEntry = null;
+    private ?SieEntry $sieEntry;
 
     /**
      * Sie5EntryLoader constructor
@@ -82,11 +82,11 @@ class Sie5EntryLoader implements Sie4Interface
     }
 
     /**
-     * @param null|Sie4Dto $sie4IDto
+     * @param Sie4Dto|null $sie4IDto
      * @return self
      * @throws InvalidArgumentException
      */
-    public static function factory( $sie4IDto = null ): self
+    public static function factory( ? Sie4Dto $sie4IDto = null ): self
     {
         $instance = new self();
         if( ! empty( $sie4IDto )) {
@@ -126,11 +126,11 @@ class Sie5EntryLoader implements Sie4Interface
     }
 
     /**
-     * @param null|Sie4Dto $sie4IDto
+     * @param Sie4Dto|null $sie4IDto
      * @return SieEntry
      * @throws InvalidArgumentException
      */
-    public function getSieEntry( $sie4IDto = null ) : SieEntry
+    public function getSieEntry( ? Sie4Dto $sie4IDto = null ) : SieEntry
     {
         if( ! empty( $sie4IDto )) {
             $this->sieEntry = self::newSieEntry();
@@ -153,14 +153,14 @@ class Sie5EntryLoader implements Sie4Interface
      *
      * @return void
      */
-    private function processIdDto()
+    private function processIdDto() : void
     {
         $idDto    = $this->sie4IDto->getIdDto();
         $fileInfo = $this->sieEntry->getFileInfo();
         $name     = $idDto->getProgramnamn();
         $version  = $idDto->getVersion();
         switch( true ) {
-            case ( empty( $name ) || ( self::PRODUCTNAME == $name )) :
+            case ( empty( $name ) || ( self::PRODUCTNAME === $name )) :
                 $name    = SoftwareProductType::PRODUCTNAME;
                 $version = SoftwareProductType::PRODUCTVERSION;
                 break;
@@ -193,12 +193,12 @@ class Sie5EntryLoader implements Sie4Interface
         // required
         $company = $fileInfo->getCompany();
         if( $idDto->isFnrIdSet()) {
-            $company->setClientId( $idDto->getFnrId() );
+            $company->setClientId( $idDto->getFnrId());
         }
 
         if( $idDto->isOrgnrSet()) {
-            $company->setOrganizationId( $idDto->getOrgnr() );
-            $company->setMultiple( $idDto->getMultiple() );
+            $company->setOrganizationId( $idDto->getOrgnr());
+            $company->setMultiple( $idDto->getMultiple());
         }
 
         $company->setName( $idDto->getFnamn());
@@ -215,7 +215,7 @@ class Sie5EntryLoader implements Sie4Interface
      *
      * @return void
      */
-    private function processAccountDtos()
+    private function processAccountDtos() : void
     {
         if( empty( $this->sie4IDto->countAccountDtos())) {
             return;
@@ -244,7 +244,7 @@ class Sie5EntryLoader implements Sie4Interface
      *
      * @return void
      */
-    private function processDimDtos()
+    private function processDimDtos() : void
     {
         if( empty( $this->sie4IDto->countDimDtos())) {
             return;
@@ -268,7 +268,7 @@ class Sie5EntryLoader implements Sie4Interface
      *
      * @return void
      */
-    private function processDimObjektDtos()
+    private function processDimObjektDtos() : void
     {
         $dimObjektDtos = $this->sie4IDto->getDimObjektDtos();
         if( empty( $dimObjektDtos )) {
@@ -284,7 +284,7 @@ class Sie5EntryLoader implements Sie4Interface
             // find or create DimensionTypeEntry
             $found = false;
             foreach((array) $dimensions->getDimension() as $dimensionTypeEntry ) {
-                if( $dimensionNr == $dimensionTypeEntry->getId()) {
+                if( $dimensionNr === $dimensionTypeEntry->getId()) {
                     $found = true;
                     break;
                 }
@@ -297,7 +297,7 @@ class Sie5EntryLoader implements Sie4Interface
                 elseif( ! empty( $this->sie4IDto->countDimDtos())) {
                     foreach( $this->sie4IDto->getDimDtos() as $dimData ) {
                         // checked in dimDtos in validator, MUST exist
-                        if( $dimensionNr == $dimData->getDimensionNr()) {
+                        if( $dimensionNr === $dimData->getDimensionNr()) {
                             $dimensionsNamn = $dimData->getDimensionsNamn();
                             break;
                         }
@@ -323,7 +323,7 @@ class Sie5EntryLoader implements Sie4Interface
      *
      * @return void
      */
-    private function processVerDtos()
+    private function processVerDtos() : void
     {
         if( empty( $this->sie4IDto->countVerDtos())) {
             return;
@@ -332,7 +332,7 @@ class Sie5EntryLoader implements Sie4Interface
             ? $this->sie4IDto->getIdDto()->getSign()
             : SieEntry::PRODUCTNAME;
         foreach( $this->sie4IDto->getVerDtos() as $verDto ) {
-            $serie = $verDto->isSerieSet() ? (string) $verDto->getSerie() : StringUtil::$SP0;
+            $serie = $verDto->isSerieSet() ? $verDto->getSerie() : StringUtil::$SP0;
             $journalTypeEntry      = $this->getJournalTypeEntry( $serie );
             $journalEntryTypeEntry = JournalEntryTypeEntry::factory();
             $journalTypeEntry->addJournalEntry( $journalEntryTypeEntry );
@@ -376,7 +376,7 @@ class Sie5EntryLoader implements Sie4Interface
     /**
      * @var string
      */
-    private static $YYYYMMDD = 'Ymd';
+    private static string $YYYYMMDD = 'Ymd';
 
     /**
      * Process single VerDto
@@ -392,7 +392,7 @@ class Sie5EntryLoader implements Sie4Interface
         VerDto $verDto,
         JournalEntryTypeEntry $journalEntryTypeEntry,
         string $genSign
-    )
+    ) : void
     {
         if( $verDto->isVernrSet()) {
             $journalEntryTypeEntry->setId( $verDto->getVernr());
@@ -412,7 +412,7 @@ class Sie5EntryLoader implements Sie4Interface
             )
         );
         foreach( $verDto->getTransDtos() as $transDto ) {
-            if( self::TRANS != $transDto->getTransType()) {
+            if( self::TRANS !== $transDto->getTransType()) {
                 // skip RTRANS,BTRANS
                 continue;
             }
@@ -436,7 +436,7 @@ class Sie5EntryLoader implements Sie4Interface
         TransDto                $transDto,
         LedgerEntryTypeEntry $ledgerEntryTypeEntry,
         string               $verDatum
-    )
+    ) : void
     {
         $ledgerEntryTypeEntry->setAccountId( $transDto->getKontoNr());
         if( 0 < $transDto->countObjektlista()) {
@@ -454,8 +454,8 @@ class Sie5EntryLoader implements Sie4Interface
         if( $transDto->isTransdatSet()) {
             // skipped if equal to verDatum
             $transDat = $transDto->getTransdat();
-            if( $verDatum != $transDat->format( self::$YYYYMMDD )) {
-                $ledgerEntryTypeEntry->setLedgerDate( $transDto->getTransdat() );
+            if( $verDatum !== $transDat->format( self::$YYYYMMDD )) {
+                $ledgerEntryTypeEntry->setLedgerDate( $transDto->getTransdat());
             }
         }
         if( $transDto->isTranstextSet()) {

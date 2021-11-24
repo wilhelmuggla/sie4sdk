@@ -55,14 +55,14 @@ use function reset;
 class Sie4ELoader implements Sie4Interface
 {
     /**
-     * @var Sie4Dto
+     * @var Sie4Dto|null
      */
-    private $sie4EDto = null;
+    private ?Sie4Dto $sie4EDto;
 
     /**
-     * @var Sie
+     * @var Sie|null
      */
-    private $sie = null;
+    private ?Sie $sie = null;
 
     /**
      * Sie4ILoader constructor
@@ -73,10 +73,10 @@ class Sie4ELoader implements Sie4Interface
     }
 
     /**
-     * @param null|Sie $sie
+     * @param Sie|null $sie
      * @return self
      */
-    public static function factory( $sie = null ) : self
+    public static function factory( ? Sie $sie = null ) : self
     {
         $instance = new self();
         if( ! empty( $sie )) {
@@ -88,13 +88,13 @@ class Sie4ELoader implements Sie4Interface
     /**
      * Return converted Sie into Sie4Dto
      *
-     * @param null|Sie $sie
+     * @param Sie|null $sie
      * @return Sie4Dto
      * @throws Exception
      * @throws InvalidArgumentException;
      * @throws RuntimeException;
      */
-    public function getSie4EDto( $sie = null ) : Sie4Dto
+    public function getSie4EDto( ? Sie $sie = null ) : Sie4Dto
     {
         static $FMT1 = 'Sie saknas';
         if( ! empty( $sie )) {
@@ -120,7 +120,7 @@ class Sie4ELoader implements Sie4Interface
      * @throws RuntimeException
      * @throws Exception
      */
-    private function processIdData()
+    private function processIdData() : void
     {
         $idDto = new IdDto();
         $fileInfo = $this->sie->getFileInfo();
@@ -174,13 +174,13 @@ class Sie4ELoader implements Sie4Interface
                     DateTimeUtil::gYearMonthToDateTime( $fiscalYearType->getEnd(), true )
                 )
             );
-            $arsNr -= 1;
+            --$arsNr;
         } // end foreach
 
         $accountingCurrency = $fileInfo->getAccountingCurrency();
         if( ! empty( $accountingCurrency )) {
             $value = $accountingCurrency->getCurrency();
-            if( ! empty( $value ) ) {
+            if( ! empty( $value )) {
                 $idDto->setValutakod( $value );
             }
         }
@@ -193,7 +193,7 @@ class Sie4ELoader implements Sie4Interface
      *
      * @return void
      */
-    private function processAccountData()
+    private function processAccountData() : void
     {
         $accounts = $this->sie->getAccounts();
         if( empty( $accounts )) {
@@ -242,7 +242,7 @@ class Sie4ELoader implements Sie4Interface
         $period->setKontoNr( $kontoNr );
         $period->setSaldo( $baseBalanceType->getAmount());
         $kvantitet = $baseBalanceType->getQuantity();
-        if( null != $kvantitet ) {
+        if( null !== $kvantitet ) {
             $period->setKvantitet( $kvantitet );
         }
         foreach( $baseBalanceType->getBaseBalanceTypes() as $baseBalanceTypeSet ) {
@@ -275,7 +275,7 @@ class Sie4ELoader implements Sie4Interface
         $period->setKontoNr( $kontoNr );
         $period->setSaldo( $budgetType->getAmount());
         $kvantitet = $budgetType->getQuantity();
-        if( null != $kvantitet ) {
+        if( null !== $kvantitet ) {
             $period->setKvantitet( $kvantitet );
         }
         foreach( $budgetType->getObjectReference() as $objectReference ) {
@@ -291,7 +291,7 @@ class Sie4ELoader implements Sie4Interface
      *
      * @return void
      */
-    private function processDimData()
+    private function processDimData() : void
     {
         $dimensions = $this->sie->getDimensions();
         if( empty( $dimensions )) {
@@ -323,10 +323,10 @@ class Sie4ELoader implements Sie4Interface
      *
      * @return void
      */
-    private function processVerData()
+    private function processVerData() : void
     {
         $journals = $this->sie->getJournal();
-        if( empty( $journals ) ) {
+        if( empty( $journals )) {
             return; // ??
         }
         foreach( $journals as $journalTypeEntry ) {
@@ -369,7 +369,7 @@ class Sie4ELoader implements Sie4Interface
         }
         $originalEntryInfo = $journalEntryType->getOriginalEntryInfo();
         $regdatum = $originalEntryInfo->getDate();
-        if( $verDatumYmd !=
+        if( $verDatumYmd !==
             $regdatum->format( self::SIE4YYYYMMDD )) {
             $verDto->setRegdatum( $regdatum );
         }
@@ -410,7 +410,7 @@ class Sie4ELoader implements Sie4Interface
         $transDto->setBelopp( $LedgerEntryType->getAmount() ?? 0.0 );
         $transDate = $LedgerEntryType->getLedgerDate();
         if( ! empty( $transDate ) &&
-            ( $verDatumYmd != $transDate->format( self::SIE4YYYYMMDD ))) {
+            ( $verDatumYmd !== $transDate->format( self::SIE4YYYYMMDD ))) {
             $transDto->setTransdat( $transDate );
         }
         $transtext = $LedgerEntryType->getText();

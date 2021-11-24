@@ -34,3 +34,6 @@
        Used with timestamp/guid to uniquely identify instance
        New FnrIdOrgnrTrait
 1.53   More type hint updates and asserts
+
+1.6    PHP7.4
+       alter test from fzaninotto/faker to fakerphp/faker

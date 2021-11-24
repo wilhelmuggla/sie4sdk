@@ -46,14 +46,14 @@ use Kigkonsult\Sie5Sdk\Dto\SieEntry;
 class Sie4ILoader implements Sie4Interface
 {
     /**
-     * @var Sie4Dto
+     * @var Sie4Dto|null
      */
-    private $sie4IDto = null;
+    private ?Sie4Dto $sie4IDto;
 
     /**
-     * @var SieEntry
+     * @var SieEntry|null
      */
-    private $sieEntry = null;
+    private ?SieEntry $sieEntry = null;
 
     /**
      * Sie4ILoader constructor
@@ -64,10 +64,10 @@ class Sie4ILoader implements Sie4Interface
     }
 
     /**
-     * @param null|SieEntry $sieEntry
+     * @param SieEntry|null $sieEntry
      * @return self
      */
-    public static function factory( $sieEntry = null ) : self
+    public static function factory( ? SieEntry $sieEntry = null ) : self
     {
         $instance = new self();
         if( ! empty( $sieEntry )) {
@@ -79,12 +79,12 @@ class Sie4ILoader implements Sie4Interface
     /**
      * Return converted SieEntry into Sie4Dto
      *
-     * @param null|SieEntry $sieEntry
+     * @param SieEntry|null $sieEntry
      * @return Sie4Dto
      * @throws Exception
      * @throws InvalidArgumentException;
      */
-    public function getSie4IDto( $sieEntry = null ) : Sie4Dto
+    public function getSie4IDto( ? SieEntry $sieEntry = null ) : Sie4Dto
     {
         static $FMT1 = 'SieEntry saknas';
         if( ! empty( $sieEntry )) {
@@ -108,7 +108,7 @@ class Sie4ILoader implements Sie4Interface
      *
      * @return void
      */
-    private function processIdData()
+    private function processIdData() : void
     {
         $idDto = new IdDto();
         $fileInfo = $this->sieEntry->getFileInfo();
@@ -144,7 +144,7 @@ class Sie4ILoader implements Sie4Interface
             $idDto->setOrgnr( $value );
             $value = $company->getMultiple();
             if( ! empty( $value )) {
-                $idDto->setMultiple( $company->getMultiple() );
+                $idDto->setMultiple( $company->getMultiple());
             }
         }
 
@@ -156,7 +156,7 @@ class Sie4ILoader implements Sie4Interface
         $accountingCurrency = $fileInfo->getAccountingCurrency();
         if( ! empty( $accountingCurrency )) {
             $value = $accountingCurrency->getCurrency();
-            if( ! empty( $value ) ) {
+            if( ! empty( $value )) {
                 $idDto->setValutakod( $value );
             }
         }
@@ -169,7 +169,7 @@ class Sie4ILoader implements Sie4Interface
      *
      * @return void
      */
-    private function processAccountData()
+    private function processAccountData() : void
     {
         $accounts = $this->sieEntry->getAccounts();
         if( empty( $accounts )) {
@@ -190,7 +190,7 @@ class Sie4ILoader implements Sie4Interface
      *
      * @return void
      */
-    private function processDimData()
+    private function processDimData() : void
     {
         $dimensions = $this->sieEntry->getDimensions();
         if( empty( $dimensions )) {
@@ -222,10 +222,10 @@ class Sie4ILoader implements Sie4Interface
      *
      * @return void
      */
-    private function processVerData()
+    private function processVerData() : void
     {
         $journals = $this->sieEntry->getJournal();
-        if( empty( $journals ) ) {
+        if( empty( $journals )) {
             return; // ??
         }
         foreach( $journals as $journalTypeEntry ) {
@@ -268,7 +268,7 @@ class Sie4ILoader implements Sie4Interface
         }
         $originalEntryInfo = $journalEntryTypeEntry->getOriginalEntryInfo();
         $regdatum = $originalEntryInfo->getDate();
-        if( $verDatumYmd !=
+        if( $verDatumYmd !==
             $regdatum->format( self::SIE4YYYYMMDD )) {
             $verDto->setRegdatum( $regdatum );
         }
@@ -309,7 +309,7 @@ class Sie4ILoader implements Sie4Interface
         $transDto->setBelopp( $ledgerEntryTypeEntry->getAmount() ?? 0.0 );
         $transDate = $ledgerEntryTypeEntry->getLedgerDate();
         if( ! empty( $transDate ) &&
-            ( $verDatumYmd != $transDate->format( self::SIE4YYYYMMDD ))) {
+            ( $verDatumYmd !== $transDate->format( self::SIE4YYYYMMDD ))) {
             $transDto->setTransdat( $transDate );
         }
         $transtext = $ledgerEntryTypeEntry->getText();

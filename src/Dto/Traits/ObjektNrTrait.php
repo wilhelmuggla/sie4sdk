@@ -30,16 +30,16 @@ namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 trait ObjektNrTrait
 {
     /**
-     * @var string
+     * @var string|null
      */
-    private $objektNr = null;
+    private ?string $objektNr = null;
 
     /**
      * Return objektNr
      *
-     * @return string
+     * @return null|string
      */
-    public function getObjektNr() : string
+    public function getObjektNr() : ? string
     {
         return $this->objektNr;
     }
@@ -58,7 +58,7 @@ trait ObjektNrTrait
      * Set objektNr
      *
      * @param string $objektNr
-     * @return self
+     * @return static
      */
     public function setObjektNr( string $objektNr ) : self
     {

@@ -77,7 +77,7 @@ class Sie4Parser implements Sie4Interface
      *
      * @var string[]  may NOT occur in order in Sie4
      */
-    protected static $IDLABELS = [
+    protected static array $IDLABELS = [
         self::PROGRAM,
         self::FORMAT,
         self::GEN,
@@ -101,7 +101,7 @@ class Sie4Parser implements Sie4Interface
      *
      * @var string[]  may NOT occur in order in Sie4
      */
-    protected static $ACCOUNTLABELS = [
+    protected static array $ACCOUNTLABELS = [
         self::KONTO,
         self::KTYP,
         self::ENHET,
@@ -116,7 +116,7 @@ class Sie4Parser implements Sie4Interface
      *
      * @var string[]  may NOT occur in order in Sie4
      */
-    protected static $SUMMARYLABELS = [
+    protected static array $SUMMARYLABELS = [
         self::IB,
         self::UB,
         self::OIB,
@@ -131,7 +131,7 @@ class Sie4Parser implements Sie4Interface
      *
      * @var string[]  may NOT occur in order in Sie4
      */
-    protected static $LEDGERENTRYLABELS = [
+    protected static array $LEDGERENTRYLABELS = [
         self::VER,
         self::TRANS,
         self::RTRANS,
@@ -141,26 +141,26 @@ class Sie4Parser implements Sie4Interface
     /**
      * Input file rows, managed by Asit\It
      *
-     * @var It
+     * @var It|null
      */
-    private $input = null;
+    private ?It $input = null;
 
     /**
-     * @var Sie4Dto
+     * @var Sie4Dto|null
      */
-    private $sie4Dto = null;
+    private ?Sie4Dto $sie4Dto = null;
 
     /**
      * Current VerDto, 'parent' for TransDto's
      *
-     * @var VerDto
+     * @var VerDto|null
      */
-    private $currentVerDto = null;
+    private ?VerDto $currentVerDto = null;
 
     /**
-     * @var mixed[]
+     * @var array
      */
-    private $postGroupActions = [];
+    private array $postGroupActions = [];
 
     /**
      * Return instance
@@ -260,23 +260,23 @@ class Sie4Parser implements Sie4Interface
                 continue;
             }
             $row = StringUtil::cp437toUtf8( $row );
-            list( $label, $rowData ) = StringUtil::splitPost( $row );
+            [ $label, $rowData ] = StringUtil::splitPost( $row );
             switch( true ) {
-                case (( 0 === $currentGroup ) && ( self::FLAGGA == $label )) :
+                case (( 0 === $currentGroup ) && ( self::FLAGGA === $label )) :
                     ArrayUtil::assureArrayLength( $rowData, 1 );
                     $this->sie4Dto->setFlagga((int) $rowData[0] );
                     $currentGroup = 1;
                     break;
-                case (( 0 < $currentGroup ) && ( self::KSUMMA == $label )) :
-                    $kSummaCounter += 1;
-                    if( 2 == $kSummaCounter ) {
+                case (( 0 < $currentGroup ) && ( self::KSUMMA === $label )) :
+                    ++$kSummaCounter;
+                    if( 2 === $kSummaCounter ) {
                         ArrayUtil::assureArrayLength( $rowData, 1 );
                         $this->sie4Dto->setKsumma((int) $rowData[0] );
                     }
                     break;
 
-                case ( in_array( $currentGroup, $GROUP12 )
-                    && in_array( $label, self::$IDLABELS )) :
+                case ( in_array( $currentGroup, $GROUP12, true )
+                    && in_array( $label, self::$IDLABELS, true )) :
                     $currentGroup = 2;
                     $this->readIdData( $label, $rowData );
                     break;
@@ -285,9 +285,9 @@ class Sie4Parser implements Sie4Interface
                     $this->readIdData( $prevLabel, $rowData );
                     break;
 
-                case ( in_array( $currentGroup, $GROUP23 )
-                    && in_array( $label, self::$ACCOUNTLABELS )) :
-                    if( 2 == $currentGroup ) {
+                case ( in_array( $currentGroup, $GROUP23, true )
+                    && in_array( $label, self::$ACCOUNTLABELS, true )) :
+                    if( 2 === $currentGroup ) {
                         // finish off opt group 2 actions
                         $this->postReadGroupAction();
                         $currentGroup = 3;
@@ -299,9 +299,9 @@ class Sie4Parser implements Sie4Interface
                     $this->readAccountData( $prevLabel, $rowData );
                     break;
 
-                case ( in_array( $currentGroup, $GROUP234 )
-                    && in_array( $label, self::$SUMMARYLABELS )) :
-                    if( in_array( $currentGroup, $GROUP23 )) {
+                case ( in_array( $currentGroup, $GROUP234, true )
+                    && in_array( $label, self::$SUMMARYLABELS, true )) :
+                    if( in_array( $currentGroup, $GROUP23, true )) {
                         // finish off opt group (2-)3 actions
                         $this->postReadGroupAction();
                         $currentGroup = 4;
@@ -309,9 +309,9 @@ class Sie4Parser implements Sie4Interface
                     $this->readSummaryData( $label, $rowData );
                     break;
 
-                case ( in_array( $currentGroup, $GROUP2345 )
-                    && in_array( $label, self::$LEDGERENTRYLABELS )) :
-                    if( in_array( $currentGroup, $GROUP234 )) {
+                case ( in_array( $currentGroup, $GROUP2345, true )
+                    && in_array( $label, self::$LEDGERENTRYLABELS, true )) :
+                    if( in_array( $currentGroup, $GROUP234, true )) {
                         // finish off opt group (2-3-)4 actions
                         $this->postReadGroupAction();
                         $currentGroup = 5;
@@ -349,7 +349,7 @@ class Sie4Parser implements Sie4Interface
      * @return void
      * @throws RuntimeException
      */
-    private function readIdData( string $label, array $rowData )
+    private function readIdData( string $label, array $rowData ) : void
     {
         if( ! $this->sie4Dto->isIdDtoSet()) {
             $this->sie4Dto->setIdDto( new IdDto());
@@ -426,7 +426,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processProgram( array $rowData, IdDto $idDto )
+    private static function processProgram( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
         $version    = current( array_slice( $rowData, -1, 1 ));
@@ -446,7 +446,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processGen( array $rowData, IdDto $idDto )
+    private static function processGen( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
         $idDto->setGenDate(
@@ -456,7 +456,7 @@ class Sie4Parser implements Sie4Interface
                 1511
             )
         );
-        if( ! empty( $rowData[1] ) ) {
+        if( ! empty( $rowData[1] )) {
             $idDto->setSign( $rowData[1] );
         }
     }
@@ -472,7 +472,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto $idDto
      * @return void
      */
-    private static function processSieTyp( array $rowData, IdDto $idDto )
+    private static function processSieTyp( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 1 );
         $idDto->setSieTyp( $rowData[0] );
@@ -488,7 +488,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processProsa( array $rowData, IdDto $idDto )
+    private static function processProsa( array $rowData, IdDto $idDto ) : void
     {
         $idDto->setProsa( trim( implode( StringUtil::$SP1, $rowData )));
     }
@@ -503,7 +503,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto $idDto
      * @return void
      */
-    private static function processFtyp( array $rowData, IdDto $idDto )
+    private static function processFtyp( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 1 );
         $idDto->setFtyp( $rowData[0] );
@@ -519,7 +519,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processFnr( array $rowData, IdDto $idDto )
+    private static function processFnr( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 1 );
         $idDto->setFnrId( $rowData[0] );
@@ -537,12 +537,12 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processOrgnr( array $rowData, IdDto $idDto )
+    private static function processOrgnr( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
         $idDto->setOrgnr( $rowData[0] );
         $idDto->setMultiple(
-            ( ! empty( $rowData[1] ) )
+            ( ! empty( $rowData[1] ))
                 ? (int)$rowData[1] :
                 1
         );
@@ -557,7 +557,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processBkod( array $rowData, IdDto $idDto )
+    private static function processBkod( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 1 );
         $idDto->setBkod( $rowData[0] );
@@ -573,7 +573,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processAdress( array $rowData, IdDto $idDto )
+    private static function processAdress( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 4 );
         $idDto->setAdress(
@@ -596,9 +596,9 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processFnamn( array $rowData, IdDto $idDto )
+    private static function processFnamn( array $rowData, IdDto $idDto ) : void
     {
-        $idDto->setFnamn( trim( implode( StringUtil::$SP1, $rowData )) );
+        $idDto->setFnamn( trim( implode( StringUtil::$SP1, $rowData )));
     }
 
     /**
@@ -611,7 +611,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processRar( array $rowData, IdDto $idDto )
+    private static function processRar( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 3 );
         $idDto->addRarDto(
@@ -641,7 +641,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processTaxar( array $rowData, IdDto $idDto )
+    private static function processTaxar( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 1 );
         $idDto->setTaxar( $rowData[0] );
@@ -657,7 +657,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processOmfattn( array $rowData, IdDto $idDto )
+    private static function processOmfattn( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 1 );
         $idDto->setOmfattn(
@@ -679,7 +679,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processKtyp( array $rowData, IdDto $idDto )
+    private static function processKtyp( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 1 );
         $idDto->setKptyp( $rowData[0] );
@@ -695,7 +695,7 @@ class Sie4Parser implements Sie4Interface
      * @param IdDto    $idDto
      * @return void
      */
-    private static function processValuta( array $rowData, IdDto $idDto )
+    private static function processValuta( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 1 );
         $idDto->setValutakod( $rowData[0] );
@@ -711,7 +711,7 @@ class Sie4Parser implements Sie4Interface
      * @param string[] $rowData
      * @return void
      */
-    private function readAccountData( string $label, array $rowData )
+    private function readAccountData( string $label, array $rowData ) : void
     {
         switch( $label ) {
             case self::KONTO :
@@ -747,14 +747,14 @@ class Sie4Parser implements Sie4Interface
      * @param string[] $rowData
      * @return void
      */
-    private function processKonto( array $rowData )
+    private function processKonto( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
         ArrayUtil::assureIsArray(
             $this->postGroupActions,
             self::KONTO
         );
-        list( $kontonr, $kontonamn ) = $rowData;
+        [ $kontonr, $kontonamn ] = $rowData;
         ArrayUtil::assureIsArray(
             $this->postGroupActions[self::KONTO],
             $kontonr
@@ -771,14 +771,14 @@ class Sie4Parser implements Sie4Interface
      * @param string[] $rowData
      * @return void
      */
-    private function processKontotyp( array $rowData )
+    private function processKontotyp( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
         ArrayUtil::assureIsArray(
             $this->postGroupActions,
             self::KONTO
         );
-        list( $kontonr, $kontotyp ) = $rowData;
+        [ $kontonr, $kontotyp ] = $rowData;
         ArrayUtil::assureIsArray(
             $this->postGroupActions[self::KONTO],
             $kontonr
@@ -795,14 +795,14 @@ class Sie4Parser implements Sie4Interface
      * @param string[] $rowData
      * @return void
      */
-    private function processEnhet( array $rowData )
+    private function processEnhet( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
         ArrayUtil::assureIsArray(
             $this->postGroupActions,
             self::KONTO
         );
-        list( $kontonr, $enhet ) = $rowData;
+        [ $kontonr, $enhet ] = $rowData;
         ArrayUtil::assureIsArray(
             $this->postGroupActions[self::KONTO],
             $kontonr
@@ -819,7 +819,7 @@ class Sie4Parser implements Sie4Interface
      * @param string[] $rowData
      * @return void
      */
-    private function processSru( array $rowData )
+    private function processSru( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
         $this->sie4Dto->addSru( $rowData[0], $rowData[1] );
@@ -834,14 +834,14 @@ class Sie4Parser implements Sie4Interface
      * @param string[] $rowData
      * @return void
      */
-    private function processDim( array $rowData )
+    private function processDim( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
         ArrayUtil::assureIsArray(
             $this->postGroupActions,
             self::DIM
         );
-        list( $dimensionsnr, $namn ) = $rowData;
+        [ $dimensionsnr, $namn ] = $rowData;
         ArrayUtil::assureIsArray(
             $this->postGroupActions[self::DIM],
             $dimensionsnr
@@ -858,14 +858,14 @@ class Sie4Parser implements Sie4Interface
      * @param string[] $rowData
      * @return void
      */
-    private function processUnderDim( array $rowData )
+    private function processUnderDim( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 3 );
         ArrayUtil::assureIsArray(
             $this->postGroupActions,
             self::DIM
         );
-        list( $dimensionsnr, $namn, $superDimNr ) = $rowData;
+        [ $dimensionsnr, $namn, $superDimNr ] = $rowData;
         ArrayUtil::assureIsArray(
             $this->postGroupActions[self::DIM],
             $superDimNr
@@ -886,14 +886,14 @@ class Sie4Parser implements Sie4Interface
      * @param string[] $rowData
      * @return void
      */
-    private function processObject( array $rowData )
+    private function processObject( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 3 );
         ArrayUtil::assureIsArray(
             $this->postGroupActions,
             self::DIM
         );
-        list( $dimensionsnr, $objektnr, $objeknamn ) = $rowData;
+        [ $dimensionsnr, $objektnr, $objeknamn ] = $rowData;
         ArrayUtil::assureIsArray(
             $this->postGroupActions[self::DIM],
             $dimensionsnr
@@ -914,7 +914,7 @@ class Sie4Parser implements Sie4Interface
      * @return void
      * @throws RuntimeException
      */
-    private function readSummaryData( string $label, array $rowData )
+    private function readSummaryData( string $label, array $rowData ) : void
     {
         switch( $label ) {
             /**
@@ -1021,7 +1021,7 @@ class Sie4Parser implements Sie4Interface
         $balansObjektDto->setArsnr( $rowData[0] );
         $balansObjektDto->setKontoNr( $rowData[1] );
         $balansObjektDto->setSaldo( $rowData[3] );
-        list( $dimensionNr, $objektNr ) = explode( StringUtil::$SP1, $rowData[2], 2 );
+        [ $dimensionNr, $objektNr ] = explode( StringUtil::$SP1, $rowData[2], 2 );
         $balansObjektDto->setDimensionNr( $dimensionNr );
         $balansObjektDto->setObjektNr( $objektNr );
         if( null !== $rowData[4] ) {
@@ -1047,7 +1047,7 @@ class Sie4Parser implements Sie4Interface
         $periodDto->setSaldo( $rowData[4] );
         $periodDto->setPeriod( $rowData[1] );
         if( ! empty( $rowData[3] )) {
-            list( $dimensionNr, $objektNr ) = explode( StringUtil::$SP1, $rowData[3], 2 );
+            [ $dimensionNr, $objektNr ] = explode( StringUtil::$SP1, $rowData[3], 2 );
             $periodDto->setDimensionNr( $dimensionNr );
             $periodDto->setObjektNr( $objektNr );
         }
@@ -1070,7 +1070,7 @@ class Sie4Parser implements Sie4Interface
      * @return void
      * @throws RuntimeException
      */
-    private function readVerTransData( string $label, array $rowData )
+    private function readVerTransData( string $label, array $rowData ) : void
     {
         if( in_array( $rowData[0], StringUtil::$CURLYBRACKETS )) {
             return;
@@ -1120,10 +1120,10 @@ class Sie4Parser implements Sie4Interface
      * @param string[] $rowData
      * @return void
      */
-    private function readVerData( array $rowData )
+    private function readVerData( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 6 );
-        list( $serie, $vernr, $verdatum, $vertext, $regdatum, $sign ) = $rowData;
+        [ $serie, $vernr, $verdatum, $vertext, $regdatum, $sign ] = $rowData;
         // save for later #TRANS use
         $this->currentVerDto = new VerDto();
         $this->sie4Dto->addVerDto( $this->currentVerDto );
@@ -1160,10 +1160,10 @@ class Sie4Parser implements Sie4Interface
      * @param string $label
      * @return void
      */
-    private function readTransData( array $rowData, string $label )
+    private function readTransData( array $rowData, string $label ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 7 );
-        list(
+        [
             $kontonr,
             $objektlista,
             $belopp,
@@ -1171,7 +1171,7 @@ class Sie4Parser implements Sie4Interface
             $transtext,
             $kvantitet,
             $sign
-        )  = $rowData;
+        ] = $rowData;
 
         $transDto = new TransDto();
         $transDto->setTransType( $label );
@@ -1204,7 +1204,7 @@ class Sie4Parser implements Sie4Interface
      * @param string   $objektlista
      * @return void
      */
-    private static function updObjektlista( TransDto $transDto, string $objektlista )
+    private static function updObjektlista( TransDto $transDto, string $objektlista ) : void
     {
         if( empty( $objektlista )) {
             return;
@@ -1227,7 +1227,7 @@ class Sie4Parser implements Sie4Interface
      * @throws RuntimeException
      * @return void
      */
-    private function postReadGroupAction()
+    private function postReadGroupAction() : void
     {
         if( empty( $this->postGroupActions )) {
             return;
@@ -1249,10 +1249,10 @@ class Sie4Parser implements Sie4Interface
     /**
      * Create DimDto/DimObjektDto for all DIM/OBJECT
      *
-     * @param mixed[] $dimValues
+     * @param array $dimValues
      * @return void
      */
-    private function postDimActions( array $dimValues )
+    private function postDimActions( array $dimValues ) : void
     {
         // $dimensionData[0] = namn
         // $dimensionData[self::UNDERDIM][underDimNr] = underDimNamn
@@ -1296,7 +1296,7 @@ class Sie4Parser implements Sie4Interface
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    private function postKontoActions( array $kontoValues )
+    private function postKontoActions( array $kontoValues ) : void
     {
         // kontoNr[0] = kontoNamn
         // kontoNr[1] = kontoTyp, Ska vara någon av typerna T, S, K, I

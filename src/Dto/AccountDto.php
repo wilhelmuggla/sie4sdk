@@ -29,7 +29,6 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
-use Kigkonsult\Sie4Sdk\Util\Assert;
 use Kigkonsult\Sie5Sdk\Dto\AccountTypeEntry;
 
 use function array_flip;
@@ -46,10 +45,10 @@ class AccountDto implements DtoInterface
     /**
      * Sie4 konto types
      */
-    const T = 'T';
-    const S = 'S';
-    const K = 'K';
-    const I = 'I';
+    public const T = 'T';
+    public const S = 'S';
+    public const K = 'K';
+    public const I = 'I';
 
     /**
      * Return Sie5 kontoTyp for Sie4 kontoTyp and v.v., false if not found
@@ -61,10 +60,10 @@ class AccountDto implements DtoInterface
     public static function getKontoType( string $type, bool $forSie4 )
     {
         static $KONTOTYPER = [
-            AccountDto::T => AccountTypeEntry::ASSET,     // Tillgång
-            AccountDto::S => AccountTypeEntry::LIABILITY, // Skuld
-            AccountDto::K => AccountTypeEntry::COST,      // kostnad
-            AccountDto::I => AccountTypeEntry::INCOME,    // Intäkt
+            self::T => AccountTypeEntry::ASSET,     // Tillgång
+            self::S => AccountTypeEntry::LIABILITY, // Skuld
+            self::K => AccountTypeEntry::COST,      // kostnad
+            self::I => AccountTypeEntry::INCOME,    // Intäkt
         ];
         static $KONTOTYPER2 = [];
         if( $forSie4 ) {
@@ -73,27 +72,25 @@ class AccountDto implements DtoInterface
             }
             return $KONTOTYPER2[$type] ?? false;
         }
-        else {
-            return $KONTOTYPER[$type] ?? false;
-        }
+        return $KONTOTYPER[$type] ?? false;
     }
 
     use KontoNrTrait;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $kontoNamn = null;
+    private ?string $kontoNamn = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $kontoTyp = null;
+    private ?string $kontoTyp = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $enhet = null;
+    private ?string $enhet = null;
 
     /**
      * @var callable
@@ -109,7 +106,7 @@ class AccountDto implements DtoInterface
      */
     public static function accountSorter( AccountDto $a, AccountDto $b ) : int
     {
-        return strcmp((string) $a->getKontoNr(), (string) $b->getKontoNr());
+        return strcmp( $a->getKontoNr(), $b->getKontoNr());
     }
 
     /**
@@ -118,14 +115,14 @@ class AccountDto implements DtoInterface
      * @param int|string $kontoNr
      * @param string $kontoNamn
      * @param string $kontoTyp
-     * @param null|string $enhet
+     * @param string|null $enhet
      * @return self
      */
     public static function factory(
         $kontoNr,
         string $kontoNamn,
         string $kontoTyp,
-        $enhet = null
+        string $enhet = null
     ) : self
     {
         $instance = new self();
@@ -143,7 +140,7 @@ class AccountDto implements DtoInterface
      *
      * @return string
      */
-    public function getKontoNamn()
+    public function getKontoNamn() : ?string
     {
         return $this->kontoNamn;
     }
@@ -175,7 +172,7 @@ class AccountDto implements DtoInterface
      *
      * @return string
      */
-    public function getKontoTyp()
+    public function getKontoTyp() : ?string
     {
         return $this->kontoTyp;
     }
@@ -213,7 +210,7 @@ class AccountDto implements DtoInterface
      *
      * @return string
      */
-    public function getEnhet()
+    public function getEnhet() : ?string
     {
         return $this->enhet;
     }

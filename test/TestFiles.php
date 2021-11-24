@@ -44,14 +44,14 @@ include 'PHPDiff/PHPDiff.php';
  */
 class TestFiles extends TestCase
 {
-    private static $FMT0 = '%s START (#%s) %s on \'%s\'%s';
+    private static string $FMT0 = '%s START (#%s) %s on \'%s\'%s';
 
     /**
      * Return array of Sie4I file names
      *
      * testSie4IFile dataProvider
      *
-     * @return mixed[]
+     * @return array
      */
     public function sie4IFileProvider() : array
     {
@@ -90,7 +90,7 @@ class TestFiles extends TestCase
      * @throws RuntimeException
      * @throws Exception
      */
-    public function testSie4IFile( int $case, string $fileName )
+    public function testSie4IFile( int $case, string $fileName ) : void
     {
         static $FMT1 = '%s (#%s) not valid%s%s%s';
 
@@ -163,9 +163,8 @@ class TestFiles extends TestCase
             $sieEntry3->isValid( $expected ),
             sprintf( $FMT1, __FUNCTION__, $case + 3, PHP_EOL, var_export( $expected, true ), PHP_EOL )
         );
-        $this->assertTrue(
-            ( $isKsummaSet1 == $isKsummaSet2 ),
-            'KSUMMA diff' .
+        $this->assertSame(
+            $isKsummaSet1, $isKsummaSet2, 'KSUMMA diff' .
             ', isKsummaSet1 : ' . var_export( $isKsummaSet1, true ) .
             ', isKsummaSet2 : ' . var_export( $isKsummaSet2, true )
         );
@@ -227,7 +226,7 @@ class TestFiles extends TestCase
      *
      * testSie4EFile dataProvider
      *
-     * @return mixed[]
+     * @return array
      */
     public function sie4EFileProvider() : array
     {
@@ -267,7 +266,7 @@ class TestFiles extends TestCase
      * @throws RuntimeException
      * @throws Exception
      */
-    public function testSie4EFile( int $case, string $fileName )
+    public function testSie4EFile( int $case, string $fileName ) : void
     {
         static $FMT1 = '%s (#%s) not valid%s%s%s';
 
@@ -364,9 +363,8 @@ class TestFiles extends TestCase
             sprintf( $FMT1, __FUNCTION__, $case + 3, PHP_EOL, var_export( $expected, true ), PHP_EOL )
         );
         */
-        $this->assertTrue(
-            ( $isKsummaSet1 == $isKsummaSet2 ),
-            'KSUMMA diff' .
+        $this->assertSame(
+            $isKsummaSet1, $isKsummaSet2, 'KSUMMA diff' .
             ', isKsummaSet1 : ' . var_export( $isKsummaSet1, true ) .
             ', isKsummaSet2 : ' . var_export( $isKsummaSet2, true )
         );
@@ -427,7 +425,7 @@ class TestFiles extends TestCase
 
     /**
      * testSie5IFile dataProvider
-     * @return mixed[]
+     * @return array
      */
     public function sie5FileProvider() : array
     {
@@ -466,7 +464,7 @@ class TestFiles extends TestCase
      * @throws RuntimeException
      * @throws Exception
      */
-    public function testSie5File( int $case, string $fileName )
+    public function testSie5File( int $case, string $fileName ) : void
     {
         echo sprintf( self::$FMT0, PHP_EOL, __FUNCTION__, $case, basename( $fileName ), PHP_EOL );
 

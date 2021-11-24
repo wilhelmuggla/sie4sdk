@@ -34,8 +34,8 @@ use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KvantitetTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SerieVernrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
-
 use Kigkonsult\Sie4Sdk\Util\Assert;
+
 use function in_array;
 use function count;
 use function sprintf;
@@ -56,7 +56,7 @@ class TransDto extends BaseId implements KontoNrInterface
     /**
      * @var string[]
      */
-    private static $allowedTypes = [ self::TRANS, self::RTRANS, self::BTRANS ];
+    private static array $allowedTypes = [ self::TRANS, self::RTRANS, self::BTRANS ];
 
     /**
      * Serie and vernr
@@ -66,29 +66,29 @@ class TransDto extends BaseId implements KontoNrInterface
     /**
      * @var string  one of allowedTypes
      */
-    private $transType = self::TRANS;
+    private string $transType = self::TRANS;
 
     use KontoNrTrait;
 
     /**
      * @var DimObjektDto[]
      */
-    private $objektlista = [];
+    private array $objektlista = [];
 
     /**
-     * @var float
+     * @var float|null
      */
-    private $belopp = null;
+    private ?float $belopp = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $transdat = null;
+    private ?DateTime $transdat = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $transtext = null;
+    private ?string $transtext = null;
 
     use KvantitetTrait;
 
@@ -100,11 +100,11 @@ class TransDto extends BaseId implements KontoNrInterface
      * Class factory method, kontoNr/belopp
      *
      * @param int|string $kontoNr
-     * @param float      $belopp
-     * @param string     $transType
+     * @param float $belopp
+     * @param string|null $transType
      * @return self
      */
-    public static function factory( $kontoNr, float $belopp, $transType = self::TRANS ) : self
+    public static function factory( $kontoNr, float $belopp, ? string $transType = self::TRANS ) : self
     {
         $instance = new self();
         $instance->setKontoNr( $kontoNr );
@@ -229,7 +229,7 @@ class TransDto extends BaseId implements KontoNrInterface
      *
      * @return float
      */
-    public function getBelopp()
+    public function getBelopp() : ?float
     {
         return $this->belopp;
     }
@@ -261,7 +261,7 @@ class TransDto extends BaseId implements KontoNrInterface
      *
      * @return DateTime
      */
-    public function getTransdat()
+    public function getTransdat() : ?DateTime
     {
         return $this->transdat;
     }
@@ -293,7 +293,7 @@ class TransDto extends BaseId implements KontoNrInterface
      *
      * @return string
      */
-    public function getTranstext()
+    public function getTranstext() : ?string
     {
         return $this->transtext;
     }

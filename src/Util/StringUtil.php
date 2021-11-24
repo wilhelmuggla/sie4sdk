@@ -45,49 +45,49 @@ class StringUtil
     /**
      * @var string
      */
-    public static $ZERO = '0';
+    public static string $ZERO = '0';
 
     /**
      * @var string
      */
-    public static $SP0  = '';
+    public static string $SP0  = '';
 
     /**
      * @var string
      */
-    public static $DOT  = '.';
+    public static string $DOT  = '.';
 
     /**
      * @var string
      */
-    public static $SP1  = ' ';
+    public static string $SP1  = ' ';
 
     /**
      * @var string[]
      */
-    public static $CURLYBRACKETS = [ '{', '}' ];
+    public static array $CURLYBRACKETS = [ '{', '}' ];
 
     /**
      * @var string
      */
-    public static $QUOTE = '"';
+    public static string $QUOTE = '"';
 
     /**
      * @var string
      */
-    public static $DOUBLEQUOTE = '""';
+    public static string $DOUBLEQUOTE = '""';
 
     /**
      * Encoding charsets
      *
      * @var string
      */
-    private static $UTF8     = 'UTF-8';
+    private static string $UTF8     = 'UTF-8';
 
     /**
      * @var string
      */
-    private static $CP437    = 'CP437';
+    private static string $CP437    = 'CP437';
 
     /**
      * @var string
@@ -104,7 +104,7 @@ class StringUtil
      *
      * @var string
      */
-    private static $FMT1  = 'Error (%s) converting from %s to %s : %s';
+    private static string $FMT1  = 'Error (%s) converting from %s to %s : %s';
 
     /**
      * Return trimmed utf8 string in PC437
@@ -258,7 +258,7 @@ class StringUtil
     public static function d2qRtrim( string $string ) : string
     {
         static $BSQQ = '\\""';
-        while(( self::$DOUBLEQUOTE == substr( $string, -2 )) &&
+        while(( self::$DOUBLEQUOTE === substr( $string, -2 )) &&
             ( $BSQQ !== substr( $string, -3 ))) {
             $string = substr( $string, 0, -3 );
         }
@@ -269,7 +269,7 @@ class StringUtil
      * Split post on label and label data, on missing leading #, all is content
      *
      * @param string $post
-     * @return mixed[]       [ string, string[] ]  i.e. [ label, contentParts[] ]
+     * @return array       [ string, string[] ]  i.e. [ label, contentParts[] ]
      */
     public static function splitPost( string $post ) : array
     {
@@ -288,7 +288,7 @@ class StringUtil
     /**
      * @var int
      */
-    private static $SEP = PHP_INT_MAX;
+    private static int $SEP = PHP_INT_MAX;
 
     /**
      * Split content on space as separator, text within quotes is maintained
@@ -319,7 +319,7 @@ class StringUtil
                     // empty 'field' within curly brackets
                     $output[] = self::$SP0;
                     $current  = self::$SP0;
-                    $x       += 1;
+                    ++$x;
                     break;
                 case in_array( $content[$x], self::$CURLYBRACKETS ) :
                     // 'field' within curly brackets start/end
@@ -329,9 +329,9 @@ class StringUtil
                     // empty quoted field
                     $output[] = self::$SP0;
                     $current  = self::$SP0;
-                    $x       += 1;
+                    ++$x;
                     break;
-                case ( self::$QUOTE == $content[$x] ) :
+                case ( self::$QUOTE === $content[$x] ) :
                     // quoted field start/end
                     $quoteFound = ! $quoteFound;
                     break;
@@ -339,9 +339,9 @@ class StringUtil
                     // any character in field, within quotes or curly brackets
                     $current .= $content[$x];
                     break;
-                case ( self::$SP1 == $content[$x] ) :
+                case ( self::$SP1 === $content[$x] ) :
                     // new field, separated by one or more spaces but not within curly brackets
-                    if( ! empty( $current ) || ( self::$ZERO == $current )) {
+                    if( ! empty( $current ) || ( self::$ZERO === $current )) {
                         // 'close' previous field
                         $output[] = trim( $current );
                         $current  = self::$SP0;
@@ -353,7 +353,7 @@ class StringUtil
             } // end switch
         } // end for
         // get last field
-        if( ! empty( $current ) || ( self::$ZERO == $current )) {
+        if( ! empty( $current ) || ( self::$ZERO === $current )) {
             $output[] = trim( $current );
         }
         // skip leading/trailing quotes, 'restore' \" to "
@@ -380,15 +380,15 @@ class StringUtil
         $len    = strlen( $input );
         for ($x = 0; $x < $len; $x++) {
             $byteInt = ord( $input[$x] );
-            if (( $byteInt < 32 ) || ( 127 == $byteInt )) {
+            if (( $byteInt < 32 ) || ( 127 === $byteInt )) {
                 // skip control characters
                 continue;
             }
-            if( $BS == $input[$x] ) {
+            if( $BS === $input[$x] ) {
                 $x2 = $x + 1;
-                if( isset( $input[$x2] ) && ( self::$QUOTE == $input[$x2] )) {
+                if( isset( $input[$x2] ) && ( self::$QUOTE === $input[$x2] )) {
                     $output .= self::$SEP;
-                    $x += 1;
+                    ++$x;
                     continue;
                 }
             }
@@ -406,7 +406,7 @@ class StringUtil
      */
     private static function isEmptyCurlyBracketField( string $content, int $x ) : bool
     {
-        if( $content[$x] != self::$CURLYBRACKETS[0] ) {
+        if( $content[$x] !== self::$CURLYBRACKETS[0] ) {
             return false;
         }
         $len     = strlen( $content );
@@ -414,7 +414,7 @@ class StringUtil
             if( ! isset( $content[$x2] )) {
                 break; // ??
             }
-            if( self::$CURLYBRACKETS[1] == $content[$x2] ) {
+            if( self::$CURLYBRACKETS[1] === $content[$x2] ) {
                 return true;
             }
             if( self::$SP1 !== $content[$x2] ) {
@@ -433,7 +433,7 @@ class StringUtil
      */
     private static function isEmptyQuotedField( string $content, int $x ) : bool
     {
-        if( self::$QUOTE != $content[$x] ) {
+        if( self::$QUOTE !== $content[$x] ) {
             return false;
         }
         $len     = strlen( $content );
@@ -441,7 +441,7 @@ class StringUtil
             if( ! isset( $content[$x2] )) {
                 break; // ??
             }
-            if( self::$QUOTE == $content[$x2] ) {
+            if( self::$QUOTE === $content[$x2] ) {
                 return true;
             }
             if( self::$SP1 !== $content[$x2] ) {
@@ -612,7 +612,7 @@ class StringUtil
     public static function strrevpos( string $haystack, string $needle )
     {
         return ( false !== ( $rev_pos = strpos( strrev( $haystack ), strrev( $needle ))))
-            ? (int) ( strlen( $haystack ) - $rev_pos - strlen( $needle ))
+            ? ( strlen( $haystack ) - $rev_pos - strlen( $needle ))
             : false;
     }
 
@@ -626,7 +626,7 @@ class StringUtil
      * @param null|int $len       if found contains length of needle
      * @return bool
      */
-    public static function startsWith( string $haystack, string $needle, & $len = null ) : bool
+    public static function startsWith( string $haystack, string $needle, ? int & $len = null ) : bool
     {
         $len       = null;
         $needleLen = strlen( $needle );
@@ -650,14 +650,14 @@ class StringUtil
      * @param null|int  $len       if found contains length of needle
      * @return bool
      */
-    public static function endsWith( string $haystack, string $needle, & $len = null ) : bool
+    public static function endsWith( string $haystack, string $needle, ? int & $len = null ) : bool
     {
         $len       = null;
         $needleLen = strlen( $needle );
         if( $needleLen > strlen( $haystack )) {
             return false;
         }
-        if( $needle == substr( $haystack, ( 0 - $needleLen ))) {
+        if( $needle === substr( $haystack, ( 0 - $needleLen ))) {
             $len = $needleLen;
             return true;
         }

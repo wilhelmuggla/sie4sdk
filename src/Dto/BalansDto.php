@@ -32,7 +32,6 @@ use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KvantitetTrait;
 
 use Kigkonsult\Sie4Sdk\Util\Assert;
-use function get_called_class;
 use function strcmp;
 
 /**
@@ -46,9 +45,9 @@ class BalansDto implements KontoNrInterface
     use KontoNrTrait;
 
     /**
-     * @var float
+     * @var float|null
      */
-    protected $saldo = null;
+    protected ?float $saldo = null;
 
     use KvantitetTrait;
 
@@ -83,17 +82,17 @@ class BalansDto implements KontoNrInterface
      * @param int|string  $arsnr
      * @param int|string  $kontoNr
      * @param int|float|string $saldo
-     * @param null|float  $kvantitet
+     * @param float|null $kvantitet
      * @return self
      */
     public static function factory(
         $arsnr,
         $kontoNr,
         $saldo,
-        $kvantitet = null
+        float $kvantitet = null
     ) : self
     {
-        $class    = get_called_class();
+        $class    = static::class;
         $instance = new $class();
         $instance->setArsnr( $arsnr );
         Assert::isIntOrString( self::KONTONR, $kontoNr );
@@ -109,7 +108,7 @@ class BalansDto implements KontoNrInterface
      *
      * @return float
      */
-    public function getSaldo()
+    public function getSaldo() : ?float
     {
         return $this->saldo;
     }

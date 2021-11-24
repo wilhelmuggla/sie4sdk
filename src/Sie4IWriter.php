@@ -39,17 +39,17 @@ use function sprintf;
 class Sie4IWriter extends Sie4WriterBase
 {
     /**
-     * @param null|Sie4Dto  $sie4IDto
-     * @param null|string   $outputfile
-     * @param null|bool     $writeKsumma
+     * @param Sie4Dto|null $sie4IDto
+     * @param string|null $outputfile
+     * @param bool|null $writeKsumma
      * @return string
      * @throws InvalidArgumentException
      * @deprecated
      */
     public function write4I(
-        $sie4IDto = null,
-        $outputfile = null,
-        $writeKsumma = false
+        ? Sie4Dto $sie4IDto = null,
+        ? string  $outputfile = null,
+        ? bool $writeKsumma = false
     ) : string
     {
         if( ! empty( $sie4IDto ) && $writeKsumma ) {
@@ -62,16 +62,16 @@ class Sie4IWriter extends Sie4WriterBase
     /**
      * Return Sie4I string (without input validation)
      *
-     * @param null|Sie4Dto $sie4Dto
-     * @param null|string  $outputfile
-     * @param null|bool    $writeKsumma
+     * @param Sie4Dto|null $sie4Dto
+     * @param string|null $outputfile
+     * @param bool|null $writeKsumma
      * @return string
      * @throws InvalidArgumentException
      */
     public function process(
-        $sie4Dto = null,
-        $outputfile = null,
-        $writeKsumma = null
+        ? Sie4Dto $sie4Dto = null,
+        ? string  $outputfile = null,
+        ? bool $writeKsumma = null
     ) : string
     {
         if( ! empty( $sie4Dto )) {

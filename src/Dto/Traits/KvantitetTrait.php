@@ -30,16 +30,16 @@ namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 trait KvantitetTrait
 {
     /**
-     * @var float
+     * @var float|null
      */
-    protected $kvantitet = null;
+    protected ?float $kvantitet = null;
 
     /**
      * Return kvantitet
      *
-     * @return float
+     * @return null|float
      */
-    public function getKvantitet() : float
+    public function getKvantitet() : ? float
     {
         return $this->kvantitet;
     }
@@ -58,7 +58,7 @@ trait KvantitetTrait
      * Set kvantitet
      *
      * @param int|float|string $kvantitet
-     * @return self
+     * @return static
      */
     public function setKvantitet( $kvantitet ) : self
     {

@@ -27,6 +27,7 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
+use Exception;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnrTrait;
 use Kigkonsult\Sie4Sdk\Util\GuidUtil;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
@@ -44,7 +45,7 @@ abstract class BaseId implements DtoInterface
      *
      * @var float
      */
-    protected $timestamp = null;
+    protected float $timestamp;
 
     /**
      * Unique (random) guid, default set at instance create
@@ -54,7 +55,7 @@ abstract class BaseId implements DtoInterface
      *
      * @var string
      */
-    protected $correlationId = null;
+    protected string $correlationId;
 
     /**
      * FnrId and orgnr(+multiple), used with timstamp and guid to uniquely identify instance
@@ -63,11 +64,12 @@ abstract class BaseId implements DtoInterface
 
     /**
      * Class constructor
+     * @throws Exception
      */
     public function __construct()
     {
         $this->setTimestamp( microtime( true ));
-        $this->setCorrelationId( GuidUtil::getGuid() );
+        $this->setCorrelationId( GuidUtil::getGuid());
     }
 
     /**

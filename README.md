@@ -153,6 +153,7 @@ composer require kigkonsult/Sie4Sdk
     }
 }
 ```
+Version 1.6 supports PHP 7.4, 1.53 7.0.
 
 [Composer], acquire access
 ``` php

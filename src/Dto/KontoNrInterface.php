@@ -32,7 +32,7 @@ interface KontoNrInterface extends DtoInterface
     /**
      * Return kontoNr
      *
-     * @return string
+     * @return null|string
      */
-    public function getKontoNr() : string;
+    public function getKontoNr() : ? string;
 }

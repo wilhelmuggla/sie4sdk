@@ -55,24 +55,24 @@ class VerDto extends BaseId
     /**
      * @var DateTime
      */
-    private $verdatum = null;
+    private DateTime $verdatum;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $vertext = null;
+    private ?string $vertext = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $regdatum = null;
+    private ?DateTime $regdatum = null;
 
     use SignTrait;
 
     /**
      * @var TransDto[]  contains #TRANS/#RTRANS/#BTRANS
      */
-    private $transDtos = [];
+    private array $transDtos = [];
 
     /**
      * @var callable
@@ -115,15 +115,15 @@ class VerDto extends BaseId
     /**
      * Class factory method, opt vernr/text, verDatum default 'now'
      *
-     * @param null|int      $vernr
-     * @param null|string   $verText
-     * @param null|DateTime $verDatum  default 'now'
+     * @param int|null $vernr
+     * @param string|null $verText
+     * @param DateTime|null $verDatum  default 'now'
      * @return self
      */
     public static function factory(
-        $vernr = null,
-        $verText = null,
-        $verDatum = null
+        ? int    $vernr = null,
+        ? string $verText = null,
+        ? DateTime $verDatum = null
     ) : self
     {
         $instance = new self();
@@ -207,7 +207,7 @@ class VerDto extends BaseId
      *
      * @return string
      */
-    public function getVertext()
+    public function getVertext() : ?string
     {
         return $this->vertext;
     }
@@ -239,7 +239,7 @@ class VerDto extends BaseId
      *
      * @return DateTime
      */
-    public function getRegdatum()
+    public function getRegdatum() : ?DateTime
     {
         return $this->regdatum;
     }

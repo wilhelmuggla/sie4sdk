@@ -41,17 +41,17 @@ class DateTimeUtil
     /**
      * @var string
      */
-    private static $DASH = '-';
+    private static string $DASH = '-';
 
     /**
      * @var string
      */
-    private static $Y = 'Y';
+    private static string $Y = 'Y';
 
     /**
      * @var string
      */
-    private static $M = 'm';
+    private static string $M = 'm';
 
     /**
      * @param string $dateTimeString
@@ -82,7 +82,8 @@ class DateTimeUtil
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertTimestamp( float $timestamp, int $errCode ) {
+    public static function assertTimestamp( float $timestamp, int $errCode ) : void
+    {
         static $TIMESTAMP = 'timestamp';
         static $AT        = '@';
         try {

@@ -37,7 +37,7 @@ class VerDto
      * @param int[] $kontoNrs
      * @return Dto
      */
-    public static function load( array $kontoNrs )
+    public static function load( array $kontoNrs ) : Dto
     {
         $faker = Faker\Factory::create();
 
@@ -53,11 +53,11 @@ class VerDto
         $dto->setVernr( ++$VERNR );
 
         $dateTime = new DateTime();
-        if( 1 == $faker->randomElement( [ 1, 2 ] )) {
+        if( 1 === $faker->randomElement( [ 1, 2 ] )) {
             $dateTime->modify( '-1 day' );
             $dto->setVerdatum( $dateTime );
         }
-        if( 1 == $faker->randomElement( [ 1, 2 ] )) {
+        if( 1 === $faker->randomElement( [ 1, 2 ] )) {
             $dateTime = clone $dateTime;
             $dto->setRegdatum( $dateTime->modify( '-1 day' ));
         }

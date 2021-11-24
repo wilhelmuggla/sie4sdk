@@ -30,16 +30,16 @@ namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 trait SignTrait
 {
     /**
-     * @var string
+     * @var string|null
      */
-    private $sign = null;
+    private ?string $sign = null;
 
     /**
      * Return sign
      *
-     * @return string
+     * @return null|string
      */
-    public function getSign() : string
+    public function getSign() : ? string
     {
         return $this->sign;
     }
@@ -58,7 +58,7 @@ trait SignTrait
      * Set sign
      *
      * @param string $sign
-     * @return self
+     * @return static
      */
     public function setSign( string $sign ) : self
     {

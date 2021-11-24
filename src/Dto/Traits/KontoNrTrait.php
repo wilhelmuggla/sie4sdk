@@ -29,22 +29,21 @@ namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Sie4Interface;
-use Kigkonsult\Sie4Sdk\Sie4Validator;
 use Kigkonsult\Sie4Sdk\Util\Assert;
 
 trait KontoNrTrait
 {
     /**
-     * @var string
+     * @var string|null
      */
-    protected $kontoNr = null;
+    protected ?string $kontoNr = null;
 
     /**
      * Return kontoNr
      *
-     * @return string
+     * @return null|string
      */
-    public function getKontoNr() : string
+    public function getKontoNr() : ? string
     {
         return $this->kontoNr;
     }
@@ -63,7 +62,7 @@ trait KontoNrTrait
      * Set kontoNr
      *
      * @param int|string $kontoNr
-     * @return self
+     * @return static
      * @throws InvalidArgumentException
      */
     public function setKontoNr( $kontoNr ) : self

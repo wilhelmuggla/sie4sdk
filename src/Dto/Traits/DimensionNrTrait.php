@@ -29,22 +29,21 @@ namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Sie4Interface;
-use Kigkonsult\Sie4Sdk\Sie4Validator;
 use Kigkonsult\Sie4Sdk\Util\Assert;
 
 trait DimensionNrTrait
 {
     /**
-     * @var int
+     * @var int|null
      */
-    protected $dimensionNr = null;
+    protected ?int $dimensionNr = null;
 
     /**
      * Return dimensionNr
      *
-     * @return int
+     * @return null|int
      */
-    public function getDimensionNr() : int
+    public function getDimensionNr() : ?int
     {
         return $this->dimensionNr;
     }
@@ -63,7 +62,7 @@ trait DimensionNrTrait
      * Set dimensionNr
      *
      * @param int|string $dimensionNr
-     * @return self
+     * @return static
      * @throws InvalidArgumentException
      */
     public function setDimensionNr( $dimensionNr ) : self

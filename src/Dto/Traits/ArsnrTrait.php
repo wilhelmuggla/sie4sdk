@@ -28,20 +28,19 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
 use InvalidArgumentException;
-use Kigkonsult\Sie4Sdk\Sie4Validator;
 use Kigkonsult\Sie4Sdk\Util\Assert;
 
 trait ArsnrTrait
 {
     /**
-     * @var int
+     * @var int|null
      */
-    protected $arsnr = null;
+    protected ?int $arsnr = null;
 
     /**
-     * @return int
+     * @return null|int
      */
-    public function getArsnr()
+    public function getArsnr() : ?int
     {
         return $this->arsnr;
     }
@@ -56,7 +55,7 @@ trait ArsnrTrait
 
     /**
      * @param int|string $arsnr
-     * @return self
+     * @return static
      * @throws InvalidArgumentException
      */
     public function setArsnr( $arsnr ) : self

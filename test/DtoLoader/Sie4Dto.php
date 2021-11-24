@@ -35,13 +35,13 @@ class Sie4Dto
     /**
      * @return Dto
      */
-    public static function load()
+    public static function load() : Dto
     {
         $faker = Faker\Factory::create();
 
         $dto = new Dto();
 
-        if( 1 == $faker->randomElement( [ 1, 2, 3 ] )) {
+        if( 1 === $faker->randomElement( [ 1, 2, 3 ] )) {
             $dto->setKsumma( 1 );
         }
 
@@ -182,7 +182,6 @@ class Sie4Dto
         for( $x = 0; $x < $max; $x++ ) {
             $dto->addVerDto( VerDto::load( $kontoNrs ));
         } // end for
-        $verDtos = [];
 
         return $dto;
     }

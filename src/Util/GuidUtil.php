@@ -27,10 +27,12 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Util;
 
+use Exception;
 use InvalidArgumentException;
 
 use function function_exists;
 use function preg_match;
+use function random_int;
 use function sprintf;
 use function strlen;
 
@@ -44,15 +46,15 @@ class GuidUtil
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function assertGuid( string $guid, int $errCode )
+    public static function assertGuid( string $guid, int $errCode ) : void
     {
         static $FMT3 = 'Ogiltig guid : ';
         static $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
-        if( 36 != strlen( $guid ) ) {
+        if( 36 !== strlen( $guid )) {
             throw new InvalidArgumentException( $FMT3 . $guid, $errCode );
         }
-        if( 1 !== preg_match( $UUIDv4, $guid ) ) {
-            throw new InvalidArgumentException( $FMT3 . $guid, ($errCode + 1) );
+        if( 1 !== preg_match( $UUIDv4, $guid )) {
+            throw new InvalidArgumentException( $FMT3 . $guid, ($errCode + 1));
         }
     }
 
@@ -61,23 +63,24 @@ class GuidUtil
      *
      * @link https://stackoverflow.com/questions/21671179/how-to-generate-a-new-guid#26163679
      * @return string
+     * @throws Exception
      */
     public static function getGuid(): string
     {
         static $FUNCTION = 'com_create_guid';
         static $FMTGUID = '%04X%04X-%04X-%04X-%04X-%04X%04X%04X';
         return ( true === function_exists( $FUNCTION ))
-            ? StringUtil::trimBrackets( $FUNCTION() )
+            ? StringUtil::trimBrackets( $FUNCTION())
             : sprintf(
                 $FMTGUID,
-                mt_rand( 0, 65535 ),
-                mt_rand( 0, 65535 ),
-                mt_rand( 0, 65535 ),
-                mt_rand( 16384, 20479 ),
-                mt_rand( 32768, 49151 ),
-                mt_rand( 0, 65535 ),
-                mt_rand( 0, 65535 ),
-                mt_rand( 0, 65535 )
+                random_int( 0, 65535 ),
+                random_int( 0, 65535 ),
+                random_int( 0, 65535 ),
+                random_int( 16384, 20479 ),
+                random_int( 32768, 49151 ),
+                random_int( 0, 65535 ),
+                random_int( 0, 65535 ),
+                random_int( 0, 65535 )
             );
     }
 }

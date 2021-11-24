@@ -39,7 +39,7 @@ class PeriodDto
      * @param string $objektNr
      * @return Dto
      */
-    public static function load( string $kontoNr, int $dimensionNr, string $objektNr )
+    public static function load( string $kontoNr, int $dimensionNr, string $objektNr ) : Dto
     {
         $faker = Faker\Factory::create();
 

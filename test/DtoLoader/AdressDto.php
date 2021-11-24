@@ -35,7 +35,7 @@ class AdressDto
     /**
      * @return Dto
      */
-    public static function load()
+    public static function load() : Dto
     {
         $faker = Faker\Factory::create();
 

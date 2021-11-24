@@ -44,84 +44,84 @@ class Sie4Dto extends BaseId
      *
      * @var int
      */
-    private $flagga = 0;
+    private int $flagga = 0;
 
     /**
      * KSUMMA, kontrollsumma, set if > 0
      *
      * @var int
      */
-    private $ksumma = 0;
+    private int $ksumma = 0;
 
     /**
-     * @var IdDto
+     * @var IdDto|null
      */
-    private $idDto = null;
+    private ?IdDto $idDto = null;
 
     /**
      * @var AccountDto[]  #KONTO/#KTYP/#ENHET
      */
-    private $accountDtos = [];
+    private array $accountDtos = [];
 
     /**
      * @var SruDto[]   #SRU
      */
-    private $sruDtos = [];
+    private array $sruDtos = [];
 
     /**
      * @var DimDto[]  #DIM
      */
-    private $dimDtos = [];
+    private array $dimDtos = [];
 
     /**
      * @var UnderDimDto[]  #UNDERDIM
      */
-    private $underDimDtos = [];
+    private array $underDimDtos = [];
 
     /**
      * @var DimObjektDto[]   #OBJECT
      */
-    private $dimObjektDtos = [];
+    private array $dimObjektDtos = [];
 
     /**
      * @var BalansDto[]  Ingående balans  #IB
      */
-    private $ibDtos = [];
+    private array $ibDtos = [];
 
     /**
      * @var BalansDto[]  Utgående balans #UB
      */
-    private $ubDtos = [];
+    private array $ubDtos = [];
 
     /**
      * @var BalansObjektDto[]  Ingående balans för objekt  #OIB
      */
-    private $oibDtos = [];
+    private array $oibDtos = [];
 
     /**
      * @var BalansObjektDto[]  Utgående balans för objekt   #OUB
      */
-    private $oubDtos = [];
+    private array $oubDtos = [];
 
     /**
      * @var BalansDto[]   Saldo för resultatkonto  #RES
      */
-    private $saldoDtos = [];
+    private array $saldoDtos = [];
 
     /**
      * @var PeriodDto[]  Periodsaldopost  #PSALDO
      */
-    private $pSaldoDtos = [];
+    private array $pSaldoDtos = [];
 
     /**
      * @var PeriodDto[]  Periodbudgetpost  #PBUDGET
      */
-    private $pBudgetDtos = [];
+    private array $pBudgetDtos = [];
 
     /**
      * @var VerDto[]   verifikationer med kontringsrader  #VER/#TRANS
      */
-    private $verDtos = [];
+    private array $verDtos = [];
 
     /**
      * Class factory method, set idDto
@@ -192,7 +192,7 @@ class Sie4Dto extends BaseId
      *
      * @return IdDto
      */
-    public function getIdDto()
+    public function getIdDto() : ?IdDto
     {
         return $this->idDto;
     }
@@ -263,14 +263,14 @@ class Sie4Dto extends BaseId
      * @param int|string $kontoNr
      * @param string $kontoNamn
      * @param string $kontoTyp
-     * @param null|string $enhet
+     * @param string|null $enhet
      * @return self
      */
     public function addAccount(
         $kontoNr,
         string $kontoNamn,
         string $kontoTyp,
-        $enhet = null
+        string $enhet = null
     ) : self
     {
         return $this->addAccountDto(
@@ -588,8 +588,8 @@ class Sie4Dto extends BaseId
     public function getIbForKontoNr( string $kontoNr )
     {
         foreach( $this->ibDtos as $balansDto ) {
-            if(( 0 == $balansDto->getArsnr()) &&
-                ( $kontoNr == $balansDto->getKontoNr())) {
+            if(( 0 === $balansDto->getArsnr()) &&
+                ( $kontoNr === $balansDto->getKontoNr())) {
                 return $balansDto;
             }
         }
@@ -605,8 +605,8 @@ class Sie4Dto extends BaseId
     public function isIbKontoNrSet( string $kontoNr ) : bool
     {
         foreach( $this->ibDtos as $balansDto ) {
-            if(( 0 == $balansDto->getArsnr()) &&
-                ( $kontoNr == $balansDto->getKontoNr())) {
+            if(( 0 === $balansDto->getArsnr()) &&
+                ( $kontoNr === $balansDto->getKontoNr())) {
                 return true;
             }
         }
@@ -670,8 +670,8 @@ class Sie4Dto extends BaseId
     public function getUbForKontoNr( string $kontoNr )
     {
         foreach( $this->ubDtos as $balansDto ) {
-            if(( 0 == $balansDto->getArsnr()) &&
-                ( $kontoNr == $balansDto->getKontoNr())) {
+            if(( 0 === $balansDto->getArsnr()) &&
+                ( $kontoNr === $balansDto->getKontoNr())) {
                 return $balansDto;
             }
         }
@@ -687,8 +687,8 @@ class Sie4Dto extends BaseId
     public function isUbKontoNrSet( string $kontoNr ) : bool
     {
         foreach( $this->ubDtos as $balansDto ) {
-            if(( 0 == $balansDto->getArsnr()) &&
-                ( $kontoNr == $balansDto->getKontoNr())) {
+            if(( 0 === $balansDto->getArsnr()) &&
+                ( $kontoNr === $balansDto->getKontoNr())) {
                 return true;
             }
         }
@@ -896,8 +896,8 @@ class Sie4Dto extends BaseId
     public function getPsaldoForKontoNr( string $kontoNr )
     {
         foreach( $this->pSaldoDtos as $periodDto ) {
-            if(( 0 == $periodDto->getArsnr()) &&
-                ( $kontoNr == $periodDto->getKontoNr())) {
+            if(( 0 === $periodDto->getArsnr()) &&
+                ( $kontoNr === $periodDto->getKontoNr())) {
                 return $periodDto;
             }
         }
@@ -913,8 +913,8 @@ class Sie4Dto extends BaseId
     public function isPsaldoKontoNrSet( string $kontoNr ) : bool
     {
         foreach( $this->pSaldoDtos as $periodDto ) {
-            if(( 0 == $periodDto->getArsnr()) &&
-                ( $kontoNr == $periodDto->getKontoNr())) {
+            if(( 0 === $periodDto->getArsnr()) &&
+                ( $kontoNr === $periodDto->getKontoNr())) {
                 return true;
             }
         }
@@ -978,8 +978,8 @@ class Sie4Dto extends BaseId
     public function getPbudgetForKontoNr( string $kontoNr )
     {
         foreach( $this->pBudgetDtos as $periodDto ) {
-            if(( 0 == $periodDto->getArsnr()) &&
-                ( $kontoNr == $periodDto->getKontoNr())) {
+            if(( 0 === $periodDto->getArsnr()) &&
+                ( $kontoNr === $periodDto->getKontoNr())) {
                 return $periodDto;
             }
         }
@@ -995,8 +995,8 @@ class Sie4Dto extends BaseId
     public function isPbudgetKontoNrSet( string $kontoNr ) : bool
     {
         foreach( $this->pBudgetDtos as $periodDto ) {
-            if(( 0 == $periodDto->getArsnr()) &&
-                ( $kontoNr == $periodDto->getKontoNr())) {
+            if(( 0 === $periodDto->getArsnr()) &&
+                ( $kontoNr === $periodDto->getKontoNr())) {
                 return true;
             }
         }
