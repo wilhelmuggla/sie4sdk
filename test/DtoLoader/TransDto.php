@@ -55,8 +55,8 @@ class TransDto
         for( $x = 0; $x < $max; $x++ ) {
             $dto->addObjektlista(
                 DimObjektDto::factoryDimObject(
-                    $faker->randomElement( $DIMs ),
-                    $faker->randomElement( $OBJECTs )
+                    (int) $faker->randomElement( $DIMs ),
+                    (string) $faker->randomElement( $OBJECTs )
                 )
             );
         } // end for

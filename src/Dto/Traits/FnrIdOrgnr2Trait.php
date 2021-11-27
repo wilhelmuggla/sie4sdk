@@ -36,9 +36,9 @@ trait FnrIdOrgnr2Trait
      * Set fnrId
      *
      * @param string $fnrId
-     * @return self
+     * @return static
      */
-    public function setFnrId( string $fnrId ) : self
+    public function setFnrId( string $fnrId ) : static
     {
         $this->fnrId = $fnrId;
         return $this;
@@ -50,7 +50,7 @@ trait FnrIdOrgnr2Trait
      * @param string $orgnr
      * @return static
      */
-    public function setOrgnr( string $orgnr ) : self
+    public function setOrgnr( string $orgnr ) : static
     {
         $this->orgnr = $orgnr;
         return $this;
@@ -62,7 +62,7 @@ trait FnrIdOrgnr2Trait
      * @param int $multiple
      * @return static
      */
-    public function setMultiple( int $multiple ) : self
+    public function setMultiple( int $multiple ) : static
     {
         $this->multiple = $multiple;
         return $this;

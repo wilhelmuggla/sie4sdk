@@ -119,7 +119,7 @@ class FileUtil
      * @return void
      * @throws RunTimeException
      */
-    public static function writeFile( string $fileName, $output, int $errCode ) : void
+    public static function writeFile( string $fileName, array | string $output, int $errCode ) : void
     {
         static $FMT3 = 'Can\'t write to ';
         $errCode *= 10;

@@ -33,10 +33,12 @@ use RuntimeException;
 use function explode;
 use function iconv;
 use function sprintf;
+use function str_contains;
+use function str_replace;
+use function strcmp;
 use function strlen;
 use function strpos;
 use function strrev;
-use function str_replace;
 use function substr;
 use function trim;
 
@@ -179,7 +181,7 @@ class StringUtil
         static $EOL2  = PHP_EOL . PHP_EOL;
         /* fix eol chars */
         $string = str_replace( $CRLFs, PHP_EOL, $string );
-        while( false !== strpos( $string, $EOL2 )) {
+        while( str_contains( $string, $EOL2 ) ) {
             $string = str_replace( $EOL2, PHP_EOL, $string );
         } // end while
         return $string;
@@ -217,7 +219,7 @@ class StringUtil
     public static function trimString( string $string ) : string
     {
         static $SP2 = '  ';
-        while( self::isIn( $SP2, $string )) {
+        while( str_contains( $string, $SP2 )) {
             $string = str_replace( $SP2, self::$SP1, $string );
         } // end while
         return trim( $string );
@@ -232,7 +234,7 @@ class StringUtil
     public static function quoteString( string $string ) : string
     {
         static $BSQ = '\\"';
-        if( self::isIn( self::$QUOTE, $string )) {
+        if( str_contains( $string, self::$QUOTE )) {
             $string = str_replace( self::$QUOTE, $BSQ, $string );
         }
         return self::$QUOTE . $string . self::$QUOTE;
@@ -277,7 +279,7 @@ class StringUtil
         if( ! self::startsWith( $post, $HASH )) {
             return [ null, self::splitContent( $post ) ];
         }
-        if( ! self::isIn( self::$SP1, $post )) {
+        if( ! str_contains( $post, self::$SP1 )) {
             return [ $post, [] ];
         }
         $label   = self::before( self::$SP1, $post );
@@ -358,7 +360,7 @@ class StringUtil
         }
         // skip leading/trailing quotes, 'restore' \" to "
         foreach( $output as & $element ) {
-            if (self::isIn( self::$QUOTE, $element )) {
+            if( str_contains( $element, self::$QUOTE )) {
                 $element = trim( $element, self::$QUOTE );
             }
             $element = str_replace((string) self::$SEP, self::$QUOTE, $element );
@@ -462,22 +464,18 @@ class StringUtil
     }
 
     /**
-     * @link https://php.net/manual/en/function.substr.php#112707
+     * @param string $a
+     * @param string $b
+     * @return int
      */
+    public static function strSort( string $a,string $b ) : int
+    {
+        return strcmp( $a, $b );
+    }
 
     /**
-     * Return bool true if needle is in haystack
-     *
-     * Case-sensitive search for needle in haystack
-     *
-     * @param string $needle
-     * @param string $haystack
-     * @return bool
+     * @link https://php.net/manual/en/function.substr.php#112707
      */
-    public static function isIn( string $needle, string $haystack ) : bool
-    {
-        return ( false !== strpos( $haystack, $needle ));
-    }
 
     /**
      * Return substring after first found needle in haystack, '' on not found
@@ -491,7 +489,7 @@ class StringUtil
      */
     public static function after( string $needle, string $haystack ) : string
     {
-        if( ! self::isIn( $needle, $haystack )) {
+        if( ! str_contains( $haystack, $needle )) {
             return self::$SP0;
         }
         $pos = strpos( $haystack, $needle );
@@ -510,7 +508,7 @@ class StringUtil
      */
     public static function afterLast( string $needle, string $haystack ) : string
     {
-        if( ! self::isIn( $needle, $haystack )) {
+        if( ! str_contains( $haystack, $needle )) {
             return self::$SP0;
         }
         $pos = self::strrevpos( $haystack, $needle );
@@ -529,7 +527,7 @@ class StringUtil
      */
     public static function before( string $needle, string $haystack ) : string
     {
-        if( ! self::isIn( $needle, $haystack )) {
+        if( ! str_contains( $haystack, $needle )) {
             return self::$SP0;
         }
         return substr( $haystack, 0, (int) strpos( $haystack, $needle ));
@@ -547,7 +545,7 @@ class StringUtil
      */
     public static function beforeLast( string $needle, string $haystack ) : string
     {
-        if( ! self::isIn( $needle, $haystack )) {
+        if( ! str_contains( $haystack, $needle )) {
             return self::$SP0;
         }
         return substr( $haystack, 0, (int) self::strrevpos( $haystack, $needle ));
@@ -569,18 +567,14 @@ class StringUtil
      */
     public static function between( string $needle1, string $needle2, string $haystack ) : string
     {
-        $exists1 = self::isIn( $needle1, $haystack );
-        $exists2 = self::isIn( $needle2, $haystack );
-        switch( true ) {
-            case ( ! $exists1 && ! $exists2 ) :
-                return self::$SP0;
-            case ( $exists1  && ! $exists2 ) :
-                return self::after( $needle1, $haystack );
-            case ( ! $exists1 && $exists2 ) :
-                return self::before( $needle2, $haystack );
-            default :
-                return self::before( $needle2, self::after( $needle1, $haystack ));
-        } // end switch
+        $exists1 = str_contains( $haystack, $needle1 );
+        $exists2 = str_contains( $haystack, $needle2 );
+        return match ( true ) {
+            ! $exists1 && ! $exists2 => self::$SP0,
+            $exists1 && ! $exists2   => self::after( $needle1, $haystack ),
+            ! $exists1 && $exists2   => self::before( $needle2, $haystack ),
+            default                  => self::before( $needle2, self::after( $needle1, $haystack ) ),
+        }; // end match
     }
 
     /**
@@ -609,7 +603,7 @@ class StringUtil
      * @param string $needle
      * @return int|bool
      */
-    public static function strrevpos( string $haystack, string $needle )
+    public static function strrevpos( string $haystack, string $needle ) : bool | int
     {
         return ( false !== ( $rev_pos = strpos( strrev( $haystack ), strrev( $needle ))))
             ? ( strlen( $haystack ) - $rev_pos - strlen( $needle ))
@@ -633,7 +627,7 @@ class StringUtil
         if( $needleLen > strlen( $haystack )) {
             return false;
         }
-        if( 0 === strpos( $haystack, $needle )) {
+        if( str_starts_with( $haystack, $needle ) ) {
             $len = $needleLen;
             return true;
         }

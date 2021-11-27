@@ -82,9 +82,9 @@ abstract class BaseId implements DtoInterface
 
     /**
      * @param float $timestamp
-     * @return self
+     * @return static
      */
-    public function setTimestamp( float $timestamp ) : self
+    public function setTimestamp( float $timestamp ) : static
     {
         $this->timestamp = $timestamp;
         return $this;
@@ -104,9 +104,9 @@ abstract class BaseId implements DtoInterface
      * Use GuidUtil::assertGuid() for validation
      *
      * @param string $correlationId
-     * @return self
+     * @return static
      */
-    public function setCorrelationId( string $correlationId ) : self
+    public function setCorrelationId( string $correlationId ) : static
     {
         $this->correlationId = StringUtil::trimBrackets( $correlationId );
         return $this;

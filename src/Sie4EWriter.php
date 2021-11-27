@@ -53,7 +53,7 @@ class Sie4EWriter extends Sie4WriterBase
         ? bool $writeKsumma = null
     ) : string
     {
-        if( ! empty( $sie4Dto )) {
+        if( $sie4Dto !== null ) {
             $this->setSie4Dto( $sie4Dto );
         }
         if( ! empty( $outputfile )) {

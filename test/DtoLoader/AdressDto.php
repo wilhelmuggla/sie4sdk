@@ -43,7 +43,7 @@ class AdressDto
 
         $dto->setKontakt( $faker->name );
         $dto->setUtdelningsadr( $faker->streetAddress );
-        $dto->setPostadr( $faker->postcode . ' ' .  $faker->city );
+        $dto->setPostadr( $faker->postcode . ' ' .  $faker->city . ' ' .  $faker->country());
         $dto->setTel( $faker->phoneNumber );
 
         return $dto;

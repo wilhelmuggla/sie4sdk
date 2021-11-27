@@ -45,30 +45,30 @@ class IdDto
         $dto->setProsa((string) $faker->words( 4, true ));
 
         static $FTYPS = [
-            'AB' => 'Aktiebolag',
-            'E' => 'Enskild näringsidkare',
-            'HB' => 'Handelsbolag',
-            'KB' => 'Kommanditbolag',
-            'EK' => 'Ekonomisk förening',
+            'AB'  => 'Aktiebolag',
+            'E'   => 'Enskild näringsidkare',
+            'HB'  => 'Handelsbolag',
+            'KB'  => 'Kommanditbolag',
+            'EK'  => 'Ekonomisk förening',
             'KHF' => 'Kooperativ hyresrättsförening',
             'BRF' => 'Bostadsrättsförening',
-            'BF' => 'Bostadsförening',
-            'SF' => 'Sambruksförening',
-            'I' => 'Ideell förening som bedriver näring',
-            'S' => 'Stiftelse som bedriver näring',
-            'FL' => 'Filial till utländskt bolag',
+            'BF'  => 'Bostadsförening',
+            'SF'  => 'Sambruksförening',
+            'I'   => 'Ideell förening som bedriver näring',
+            'S'   => 'Stiftelse som bedriver näring',
+            'FL'  => 'Filial till utländskt bolag',
             'BAB' => 'Bankaktiebolag.',
-            'MB' => 'Medlemsbank',
-            'SB' => 'Sparbank',
+            'MB'  => 'Medlemsbank',
+            'SB'  => 'Sparbank',
             'BFL' => 'Utländsk banks filial',
             'FAB' => 'Försäkringsaktiebolag',
             'OFB' => 'Ömsesidigt försäkringsbolag',
-            'SE' => 'Europabolag',
+            'SE'  => 'Europabolag',
             'SCE' => 'Europakooperativ',
             'TSF' => 'Trossamfund',
-            'X' => 'Annan företagsform'
+            'X'   => 'Annan företagsform'
         ];
-        $dto->setFtyp( $faker->randomElement(array_keys($FTYPS)));
+        $dto->setFtyp((string) $faker->randomElement(array_keys( $FTYPS )));
 
         $dto->setFnrId((string) $faker->numberBetween( 10000000, 999999999999 ));
 
@@ -89,7 +89,7 @@ class IdDto
         $dto->setOmfattn( new DateTime());
 
         static $KPTYPS = ['BAS95', 'BAS96', 'EUBAS97', 'NE2007'];
-        $dto->setKptyp( $faker->randomElement( $KPTYPS ));
+        $dto->setKptyp((string) $faker->randomElement( $KPTYPS ));
 
         $dto->setValutakod( $faker->currencyCode );
 

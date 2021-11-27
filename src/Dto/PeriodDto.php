@@ -60,7 +60,7 @@ class PeriodDto extends BalansObjektDto
     /**
      * Return period
      *
-     * @return string
+     * @return string|null
      */
     public function getPeriod() : ?string
     {
@@ -82,7 +82,7 @@ class PeriodDto extends BalansObjektDto
      * @return self
      * @throws InvalidArgumentException
      */
-    public function setPeriod( $period ) : self
+    public function setPeriod( int | string $period ) : self
     {
         static $PERIOD = 'period';
         Assert::isIntegerish( $PERIOD, $period );

@@ -33,7 +33,7 @@ Interface Sie4Interface
      * Product constants
      */
     public const PRODUCTNAME              = 'Kigkonsult\Sie4Sdk';
-    public const PRODUCTVERSION           = '1.6';
+    public const PRODUCTVERSION           = '1.8';
 
     public const TIMESTAMP                = 'TIMESTAMP';
     public const GUID                     = 'GUID';

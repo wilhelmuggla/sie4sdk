@@ -89,7 +89,7 @@ class Sie5EntryLoader implements Sie4Interface
     public static function factory( ? Sie4Dto $sie4IDto = null ): self
     {
         $instance = new self();
-        if( ! empty( $sie4IDto )) {
+        if( $sie4IDto !== null ) {
             $instance->setSie4IDto( $sie4IDto );
         }
         return $instance;
@@ -132,7 +132,7 @@ class Sie5EntryLoader implements Sie4Interface
      */
     public function getSieEntry( ? Sie4Dto $sie4IDto = null ) : SieEntry
     {
-        if( ! empty( $sie4IDto )) {
+        if( $sie4IDto !== null ) {
             $this->sieEntry = self::newSieEntry();
             $this->setSie4IDto( $sie4IDto );
         }
@@ -164,7 +164,7 @@ class Sie5EntryLoader implements Sie4Interface
                 $name    = SoftwareProductType::PRODUCTNAME;
                 $version = SoftwareProductType::PRODUCTVERSION;
                 break;
-            case ( false !== strpos( $name, self::PRODUCTNAME )) :
+            case ( str_contains( $name, self::PRODUCTNAME ) ) :
                 $name    = trim( str_replace( self::PRODUCTNAME, StringUtil::$SP0, $name ));
                 $version = trim( str_replace( self::PRODUCTVERSION, StringUtil::$SP0, $version ));
                 break;
@@ -222,7 +222,7 @@ class Sie5EntryLoader implements Sie4Interface
         }
         $accountDtos = $this->sie4IDto->getAccountDtos();
         $accounts    = $this->sieEntry->getAccounts();
-        if( empty( $accounts )) {
+        if( $accounts === null ) {
             $accounts = AccountsTypeEntry::factory();
             $this->sieEntry->setAccounts( $accounts );
         }
@@ -250,7 +250,7 @@ class Sie5EntryLoader implements Sie4Interface
             return;
         }
         $dimensions = $this->sieEntry->getDimensions();
-        if( empty( $dimensions )) {
+        if( $dimensions === null ) {
             $dimensions = DimensionsTypeEntry::factory();
             $this->sieEntry->setDimensions( $dimensions );
         }
@@ -275,7 +275,7 @@ class Sie5EntryLoader implements Sie4Interface
             return;
         }
         $dimensions = $this->sieEntry->getDimensions();
-        if( empty( $dimensions )) {
+        if( $dimensions === null ) {
             $dimensions = DimensionsTypeEntry::factory();
             $this->sieEntry->setDimensions( $dimensions );
         }

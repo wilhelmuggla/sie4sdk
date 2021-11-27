@@ -104,12 +104,12 @@ class TransDto extends BaseId implements KontoNrInterface
      * @param string|null $transType
      * @return self
      */
-    public static function factory( $kontoNr, float $belopp, ? string $transType = self::TRANS ) : self
+    public static function factory( int | string $kontoNr, float $belopp, ? string $transType = null ) : self
     {
         $instance = new self();
         $instance->setKontoNr( $kontoNr );
         $instance->setBelopp( $belopp );
-        $instance->setTransType( $transType );
+        $instance->setTransType( $transType ?? self::TRANS );
         return $instance;
     }
 
@@ -143,7 +143,7 @@ class TransDto extends BaseId implements KontoNrInterface
      * @param int|string $serie
      * @return self
      */
-    public function setSerie( $serie ) : self
+    public function setSerie( int | string $serie ) : self
     {
         Assert::isIntOrString( self::VERSERIE, $serie );
         $this->serie = (string) $serie;
@@ -227,7 +227,7 @@ class TransDto extends BaseId implements KontoNrInterface
     /**
      * Return belopp
      *
-     * @return float
+     * @return float|null
      */
     public function getBelopp() : ?float
     {
@@ -247,10 +247,10 @@ class TransDto extends BaseId implements KontoNrInterface
     /**
      * Set belopp
      *
-     * @param int|float|string $belopp
+     * @param float|int|string $belopp
      * @return self
      */
-    public function setBelopp( $belopp ) : self
+    public function setBelopp( float | int | string $belopp ) : self
     {
         $this->belopp = (float) $belopp;
         return $this;
@@ -259,7 +259,7 @@ class TransDto extends BaseId implements KontoNrInterface
     /**
      * Return transdat
      *
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getTransdat() : ?DateTime
     {
@@ -291,7 +291,7 @@ class TransDto extends BaseId implements KontoNrInterface
     /**
      * Return transtext
      *
-     * @return string
+     * @return string|null
      */
     public function getTranstext() : ?string
     {

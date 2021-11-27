@@ -60,7 +60,7 @@ trait SignTrait
      * @param string $sign
      * @return static
      */
-    public function setSign( string $sign ) : self
+    public function setSign( string $sign ) : static
     {
         $this->sign = $sign;
         return $this;

@@ -70,7 +70,7 @@ class Sie4ILoader implements Sie4Interface
     public static function factory( ? SieEntry $sieEntry = null ) : self
     {
         $instance = new self();
-        if( ! empty( $sieEntry )) {
+        if( $sieEntry !== null ) {
             $instance->setSieEntry( $sieEntry );
         }
         return $instance;
@@ -87,7 +87,7 @@ class Sie4ILoader implements Sie4Interface
     public function getSie4IDto( ? SieEntry $sieEntry = null ) : Sie4Dto
     {
         static $FMT1 = 'SieEntry saknas';
-        if( ! empty( $sieEntry )) {
+        if( $sieEntry !== null ) {
             $this->sie4IDto = new Sie4Dto();
             $this->setSieEntry( $sieEntry );
         }
@@ -125,7 +125,7 @@ class Sie4ILoader implements Sie4Interface
 
         $fileCreation = $fileInfo->getFileCreation();
         $value = $fileCreation->getTime();
-        if( ! empty( $value )) {
+        if( $value !== null ) {
             $idDto->setGenDate( $value);
         }
         $value = $fileCreation->getBy();
@@ -143,7 +143,7 @@ class Sie4ILoader implements Sie4Interface
         if( ! empty( $value )) {
             $idDto->setOrgnr( $value );
             $value = $company->getMultiple();
-            if( ! empty( $value )) {
+            if( $value !== null ) {
                 $idDto->setMultiple( $company->getMultiple());
             }
         }
@@ -154,7 +154,7 @@ class Sie4ILoader implements Sie4Interface
         }
 
         $accountingCurrency = $fileInfo->getAccountingCurrency();
-        if( ! empty( $accountingCurrency )) {
+        if( $accountingCurrency !== null ) {
             $value = $accountingCurrency->getCurrency();
             if( ! empty( $value )) {
                 $idDto->setValutakod( $value );
@@ -172,7 +172,7 @@ class Sie4ILoader implements Sie4Interface
     private function processAccountData() : void
     {
         $accounts = $this->sieEntry->getAccounts();
-        if( empty( $accounts )) {
+        if( $accounts === null ) {
             return;
         }
         foreach((array) $accounts->getAccount() as $accountTypeEntry ) {
@@ -193,7 +193,7 @@ class Sie4ILoader implements Sie4Interface
     private function processDimData() : void
     {
         $dimensions = $this->sieEntry->getDimensions();
-        if( empty( $dimensions )) {
+        if( $dimensions === null ) {
             return;
         }
         foreach((array) $dimensions->getDimension() as $dimensionTypeEntry ) {
@@ -243,12 +243,12 @@ class Sie4ILoader implements Sie4Interface
 
     /**
      * @param JournalEntryTypeEntry $journalEntryTypeEntry
-     * @param null|int|string $serie
+     * @param int|string|null $serie
      * @return VerDto
      */
     private static function getVerDto(
         JournalEntryTypeEntry $journalEntryTypeEntry,
-        $serie
+        int | string | null $serie = null
     ) : VerDto
     {
         $verDto  = new VerDto();
@@ -256,7 +256,7 @@ class Sie4ILoader implements Sie4Interface
             $verDto->setSerie( $serie );
         }
         $verNr   = $journalEntryTypeEntry->getId();
-        if( ! empty( $verNr )) {
+        if( $verNr !== null ) {
             $verDto->setVernr( $journalEntryTypeEntry->getId());
         }
         $verDatum    = $journalEntryTypeEntry->getJournalDate();
@@ -308,7 +308,7 @@ class Sie4ILoader implements Sie4Interface
         } // end if
         $transDto->setBelopp( $ledgerEntryTypeEntry->getAmount() ?? 0.0 );
         $transDate = $ledgerEntryTypeEntry->getLedgerDate();
-        if( ! empty( $transDate ) &&
+        if( $transDate !== null &&
             ( $verDatumYmd !== $transDate->format( self::SIE4YYYYMMDD ))) {
             $transDto->setTransdat( $transDate );
         }

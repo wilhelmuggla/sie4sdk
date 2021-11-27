@@ -58,7 +58,7 @@ trait ArsnrTrait
      * @return static
      * @throws InvalidArgumentException
      */
-    public function setArsnr( $arsnr ) : self
+    public function setArsnr( int|string $arsnr ) : static
     {
         static $ARSNR = 'ASRNR';
         Assert::isNonPositiveInt( $ARSNR, $arsnr );

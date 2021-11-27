@@ -30,9 +30,8 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 use Kigkonsult\Sie4Sdk\Dto\Traits\ArsnrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KvantitetTrait;
-
 use Kigkonsult\Sie4Sdk\Util\Assert;
-use function strcmp;
+use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 /**
  * Class BalansDto
@@ -65,31 +64,26 @@ class BalansDto implements KontoNrInterface
      */
     public static function balansSorter( BalansDto $a, BalansDto $b ) : int
     {
-        $kontoNrA = $a->getKontoNr();
-        $kontoNrB = $b->getKontoNr();
-        if( $kontoNrA < $kontoNrB ) {
-            return -1;
+        if( 0 !== ( $res = StringUtil::strSort((string) $a->getKontoNr(),(string) $b->getKontoNr() ))) {
+            return $res;
         }
-        if( $kontoNrA > $kontoNrB ) {
-            return 1;
-        }
-        return strcmp((string) $a->getArsnr(), (string) $b->getArsnr());
+        return StringUtil::strSort((string) $a->getArsnr(), (string) $b->getArsnr());
     }
 
     /**
      * Class factory method, arsnr, kontoNr, saldo, kvantitet
      *
-     * @param int|string  $arsnr
-     * @param int|string  $kontoNr
-     * @param int|float|string $saldo
+     * @param int|string $arsnr
+     * @param int|string $kontoNr
+     * @param float|int|string $saldo
      * @param float|null $kvantitet
      * @return self
      */
     public static function factory(
-        $arsnr,
-        $kontoNr,
-        $saldo,
-        float $kvantitet = null
+        int | string         $arsnr,
+        int | string         $kontoNr,
+        float | int | string $saldo,
+        float                $kvantitet = null
     ) : self
     {
         $class    = static::class;
@@ -103,10 +97,11 @@ class BalansDto implements KontoNrInterface
         }
         return $instance;
     }
+
     /**
      * Return saldo
      *
-     * @return float
+     * @return float|null
      */
     public function getSaldo() : ?float
     {
@@ -126,10 +121,10 @@ class BalansDto implements KontoNrInterface
     /**
      * Set saldo
      *
-     * @param int|float|string $saldo
+     * @param float|int|string $saldo
      * @return self
      */
-    public function setSaldo( $saldo ) : self
+    public function setSaldo( float | int | string $saldo ) : self
     {
         $this->saldo = (float) $saldo;
         return $this;

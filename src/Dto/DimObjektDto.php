@@ -28,8 +28,7 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
 use Kigkonsult\Sie4Sdk\Dto\Traits\ObjektNrTrait;
-
-use function strcmp;
+use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 /**
  * Class DimObjektDto
@@ -52,7 +51,7 @@ class DimObjektDto extends DimDto
     public static $SORTER = [ DimObjektDto::class, 'dimObjektSorter' ];
 
     /**
-     * Sort DimObjektDto[] on dimensionsnr
+     * Sort DimObjektDto[] on dimensionsnr and ojektNr
      *
      * @override
      * @param DimObjektDto $a
@@ -61,10 +60,10 @@ class DimObjektDto extends DimDto
      */
     public static function dimObjektSorter( DimObjektDto $a, DimObjektDto $b ) : int
     {
-        if( 0 === ( $dimCmp = parent::dimSorter( $a, $b ))) {
-            return strcmp( $a->getObjektNr(), $b->getObjektNr());
+        if( 0 !== ( $dimCmp = parent::dimSorter( $a, $b ))) {
+            return $dimCmp;
         }
-        return $dimCmp;
+        return StringUtil::strSort((string) $a->getObjektNr(), (string) $b->getObjektNr());
     }
 
     /**
@@ -75,7 +74,7 @@ class DimObjektDto extends DimDto
      * @param string|null $objektNamn
      * @return self
      */
-    public static function factoryDimObject( $dimensionsNr, string $objektNr, string $objektNamn = null ) : self
+    public static function factoryDimObject( int | string $dimensionsNr, string $objektNr, string $objektNamn = null ) : self
     {
         $instance = new self();
         $instance->setDimensionNr( $dimensionsNr );
@@ -89,7 +88,7 @@ class DimObjektDto extends DimDto
     /**
      * Return objektNamn
      *
-     * @return string
+     * @return string|null
      */
     public function getObjektNamn() : ?string
     {

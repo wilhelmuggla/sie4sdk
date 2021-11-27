@@ -60,7 +60,7 @@ trait KvantitetTrait
      * @param int|float|string $kvantitet
      * @return static
      */
-    public function setKvantitet( $kvantitet ) : self
+    public function setKvantitet( int|float|string $kvantitet ) : static
     {
         $this->kvantitet = (float) $kvantitet;
         return $this;

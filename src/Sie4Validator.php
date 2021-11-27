@@ -49,6 +49,7 @@ use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 use function number_format;
 use function sprintf;
+use function str_contains;
 
 class Sie4Validator implements Sie4Interface
 {
@@ -102,7 +103,7 @@ class Sie4Validator implements Sie4Interface
                     break;
                 case ( $flaggaExist &&
                     StringUtil::startsWith( $post, self::SIETYP ) &&
-                    StringUtil::isIn( self::$FOUR, StringUtil::after( self::SIETYP, $post ))) :
+                    str_contains( StringUtil::after( self::SIETYP, $post ), self::$FOUR )) :
                     $sieType4Exist = true;
                     break;
                 case ( $sieType4Exist &&
@@ -708,10 +709,10 @@ class Sie4Validator implements Sie4Interface
      * @throws InvalidArgumentException
      */
     public static function assertTransDto(
-        $verNr,
-        int      $vx,
-        int      $tx,
-        TransDto $transDto
+        int | string $verNr,
+        int          $vx,
+        int          $tx,
+        TransDto     $transDto
     ) : void
     {
         static $FMT0 = '%s (#%d) %s (#%d)';

@@ -60,7 +60,7 @@ trait ObjektNrTrait
      * @param string $objektNr
      * @return static
      */
-    public function setObjektNr( string $objektNr ) : self
+    public function setObjektNr( string $objektNr ) : static
     {
         $this->objektNr = $objektNr;
         return $this;

@@ -28,8 +28,7 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
 use Kigkonsult\Sie4Sdk\Dto\Traits\DimensionNrTrait;
-
-use function strcmp;
+use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 class DimDto implements DimensionNrInterface
 {
@@ -54,7 +53,7 @@ class DimDto implements DimensionNrInterface
      */
     public static function dimSorter( DimDto $a, DimDto $b ) : int
     {
-        return strcmp((string) $a->getDimensionNr(), (string) $b->getDimensionNr());
+        return StringUtil::strSort((string) $a->getDimensionNr(), (string) $b->getDimensionNr());
     }
 
     /**
@@ -62,9 +61,9 @@ class DimDto implements DimensionNrInterface
      *
      * @param int|string $dimensionsNr
      * @param string $dimensionsNamn
-     * @return self
+     * @return static
      */
-    public static function factoryDim( $dimensionsNr, string $dimensionsNamn ) : self
+    public static function factoryDim( int | string $dimensionsNr, string $dimensionsNamn ) : static
     {
         $instance = new self();
         $instance->setDimensionNr( $dimensionsNr );
@@ -75,7 +74,7 @@ class DimDto implements DimensionNrInterface
     /**
      * Return dimensionsNamn
      *
-     * @return string
+     * @return string|null
      */
     public function getDimensionsNamn() : ?string
     {
@@ -96,9 +95,9 @@ class DimDto implements DimensionNrInterface
      * Set dimensionsNamn
      *
      * @param string $dimensionsNamn
-     * @return self
+     * @return static
      */
-    public function setDimensionsNamn( string $dimensionsNamn ) : self
+    public function setDimensionsNamn( string $dimensionsNamn ) : static
     {
         $this->dimensionsNamn = $dimensionsNamn;
         return $this;

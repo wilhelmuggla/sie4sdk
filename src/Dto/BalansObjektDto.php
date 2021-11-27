@@ -29,8 +29,7 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use Kigkonsult\Sie4Sdk\Dto\Traits\DimensionNrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\ObjektNrTrait;
-
-use function strcmp;
+use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 /**
  * Class BalansObjektDto
@@ -58,14 +57,9 @@ class BalansObjektDto extends BalansDto
         if( 0 !== ( $kontoNrArsnrCmp = parent::balansSorter( $a, $b ))) {
             return $kontoNrArsnrCmp;
         }
-        $dimnsionNrA = $a->getDimensionNr();
-        $dimnsionNrB = $b->getDimensionNr();
-        if( $dimnsionNrA < $dimnsionNrB ) {
-            return -1;
+        if( 0 !== ( $res = StringUtil::strSort((string) $a->getDimensionNr(),(string) $b->getDimensionNr()))) {
+            return $res;
         }
-        if( $dimnsionNrA > $dimnsionNrB ) {
-            return 1;
-        }
-        return strcmp( $a->getObjektNr(), $b->getObjektNr());
+        return StringUtil::strSort((string) $a->getObjektNr(), (string)$b->getObjektNr());
     }
 }

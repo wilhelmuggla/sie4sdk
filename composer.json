@@ -39,17 +39,12 @@
         "files": ["autoload.php"],
         "psr-4": { "Kigkonsult\\Sie4Sdk\\": ["src/"] }
     },
-    "config": {
-        "platform": {
-            "php": "7.4"
-        }
-    },
     "require": {
-        "php": "<=7.4",
+        "php": ">=8",
         "ext-iconv": "*",
         "ext-json": "*",
-        "kigkonsult/asit": "<=2.0",
-        "kigkonsult/sie5sdk": "<=1.2"
+        "kigkonsult/asit": ">=2.2",
+        "kigkonsult/sie5sdk": ">=1.4"
     },
     "require-dev": {
         "fakerphp/faker": "dev-main",

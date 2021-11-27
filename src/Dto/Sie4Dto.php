@@ -190,7 +190,7 @@ class Sie4Dto extends BaseId
     /**
      * Return IdDto
      *
-     * @return IdDto
+     * @return IdDto|null
      */
     public function getIdDto() : ?IdDto
     {
@@ -267,10 +267,10 @@ class Sie4Dto extends BaseId
      * @return self
      */
     public function addAccount(
-        $kontoNr,
-        string $kontoNamn,
-        string $kontoTyp,
-        string $enhet = null
+        int | string $kontoNr,
+        string       $kontoNamn,
+        string       $kontoTyp,
+        string       $enhet = null
     ) : self
     {
         return $this->addAccountDto(
@@ -338,7 +338,7 @@ class Sie4Dto extends BaseId
      * @param int|string $sruKod
      * @return self
      */
-    public function addSru( $kontoNr, $sruKod ) : self
+    public function addSru( int | string $kontoNr, int | string $sruKod ) : self
     {
         return $this->addSruDto( SruDto::factory( $kontoNr, $sruKod ));
     }
@@ -398,7 +398,7 @@ class Sie4Dto extends BaseId
      * @param string $dimensionsNamn
      * @return self
      */
-    public function addDim( $dimensionsNr, string $dimensionsNamn ) : self
+    public function addDim( int | string $dimensionsNr, string $dimensionsNamn ) : self
     {
         return $this->addDimDto(
             DimDto::factoryDim(
@@ -464,7 +464,7 @@ class Sie4Dto extends BaseId
      * @param int|string $superDimNr
      * @return self
      */
-    public function addUnderDim( $dimensionsNr, string $dimensionsNamn, $superDimNr ) : self
+    public function addUnderDim( int | string $dimensionsNr, string $dimensionsNamn, int | string $superDimNr ) : self
     {
         return $this->addUnderDimDto(
             UnderDimDto::factoryUnderDim(
@@ -531,7 +531,7 @@ class Sie4Dto extends BaseId
      * @param string $objektNamn
      * @return self
      */
-    public function addDimObjekt( $dimensionsNr, string $objektNr, string $objektNamn ) : self
+    public function addDimObjekt( int | string $dimensionsNr, string $objektNr, string $objektNamn ) : self
     {
         return $this->addDimObjektDto(
             DimObjektDto::factoryDimObject(
@@ -585,7 +585,7 @@ class Sie4Dto extends BaseId
      * @param string $kontoNr
      * @return false|BalansDto
      */
-    public function getIbForKontoNr( string $kontoNr )
+    public function getIbForKontoNr( string $kontoNr ) : BalansDto | bool
     {
         foreach( $this->ibDtos as $balansDto ) {
             if(( 0 === $balansDto->getArsnr()) &&
@@ -667,7 +667,7 @@ class Sie4Dto extends BaseId
      * @param string $kontoNr
      * @return false|BalansDto
      */
-    public function getUbForKontoNr( string $kontoNr )
+    public function getUbForKontoNr( string $kontoNr ) : BalansDto | bool
     {
         foreach( $this->ubDtos as $balansDto ) {
             if(( 0 === $balansDto->getArsnr()) &&
@@ -891,9 +891,9 @@ class Sie4Dto extends BaseId
      * Return PeriodDto for pSaldo with arsnr == 0 and kontonr
      *
      * @param string $kontoNr
-     * @return false|BalansDto
+     * @return false|PeriodDto
      */
-    public function getPsaldoForKontoNr( string $kontoNr )
+    public function getPsaldoForKontoNr( string $kontoNr ) : bool | PeriodDto
     {
         foreach( $this->pSaldoDtos as $periodDto ) {
             if(( 0 === $periodDto->getArsnr()) &&
@@ -975,7 +975,7 @@ class Sie4Dto extends BaseId
      * @param string $kontoNr
      * @return false|PeriodDto
      */
-    public function getPbudgetForKontoNr( string $kontoNr )
+    public function getPbudgetForKontoNr( string $kontoNr ) : bool | PeriodDto
     {
         foreach( $this->pBudgetDtos as $periodDto ) {
             if(( 0 === $periodDto->getArsnr()) &&

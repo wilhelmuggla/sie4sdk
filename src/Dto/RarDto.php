@@ -29,8 +29,7 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use DateTime;
 use Kigkonsult\Sie4Sdk\Dto\Traits\ArsnrTrait;
-
-use function strcmp;
+use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 class RarDto implements DtoInterface
 {
@@ -60,7 +59,7 @@ class RarDto implements DtoInterface
      */
     public static function rarSorter( RarDto $a, RarDto $b ) : int
     {
-        return strcmp((string) $b->getArsnr(), (string) $a->getArsnr());
+        return StringUtil::strSort((string) $b->getArsnr(), (string) $a->getArsnr());
     }
 
     /**
@@ -71,7 +70,7 @@ class RarDto implements DtoInterface
      * @param DateTime $slut
      * @return self
      */
-    public static function factory( $arsnr, DateTime $start, DateTime $slut ) : self
+    public static function factory( int | string $arsnr, DateTime $start, DateTime $slut ) : self
     {
         $instance = new self();
         $instance->setArsnr( $arsnr );
@@ -82,7 +81,7 @@ class RarDto implements DtoInterface
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getStart() : ?DateTime
     {
@@ -108,7 +107,7 @@ class RarDto implements DtoInterface
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getSlut() : ?DateTime
     {

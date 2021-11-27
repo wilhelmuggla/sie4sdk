@@ -48,10 +48,10 @@ class Assert
      * @param int|string $value
      * @return void
      */
-    public static function isIntOrString( string $label, $value ) : void
+    public static function isIntOrString( string $label, int | string $value ) : void
     {
         static $ERR = '%s expects int or string, got %s';
-        if( ! is_int( $value ) && ! is_string( $value )) {
+        if( ! ( is_int( $value ) || is_string( $value ))) {
             throw new InvalidArgumentException(
                 sprintf( $ERR, $label, gettype( $value )),
                 3711
@@ -67,7 +67,7 @@ class Assert
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function isNonPositiveInt( string $label, $value ) : void
+    public static function isNonPositiveInt( string $label, int | string $value ) : void
     {
         static $ERR = '%s integer <= 0 förväntas, nu %s';
         self::isIntegerish( $label, $value );
@@ -87,7 +87,7 @@ class Assert
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function isIntegerish( string $label, $value ) : void
+    public static function isIntegerish( string $label, int | string $value ) : void
     {
         static $ERR = '%s integer förväntas, nu %s';
         if( ! is_scalar( $value ) || ( $value != (int)$value )) {
@@ -106,7 +106,7 @@ class Assert
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function isYYYYMMDate( string $label, $value ) : void
+    public static function isYYYYMMDate( string $label, int | string $value ) : void
     {
         static $ONE = '01';
         static $ERR = '%s (#%d) YYYYMM-datum förväntas, nu %s';

@@ -29,10 +29,10 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
+use Kigkonsult\Sie4Sdk\Util\StringUtil;
 use Kigkonsult\Sie5Sdk\Dto\AccountTypeEntry;
 
 use function array_flip;
-use function strcmp;
 use function strtoupper;
 
 /**
@@ -57,7 +57,7 @@ class AccountDto implements DtoInterface
      * @param bool    $forSie4
      * @return false|string
      */
-    public static function getKontoType( string $type, bool $forSie4 )
+    public static function getKontoType( string $type, bool $forSie4 ) : bool | string
     {
         static $KONTOTYPER = [
             self::T => AccountTypeEntry::ASSET,     // Tillgång
@@ -106,7 +106,7 @@ class AccountDto implements DtoInterface
      */
     public static function accountSorter( AccountDto $a, AccountDto $b ) : int
     {
-        return strcmp( $a->getKontoNr(), $b->getKontoNr());
+        return StringUtil::strSort((string) $a->getKontoNr(), (string) $b->getKontoNr());
     }
 
     /**
@@ -119,10 +119,10 @@ class AccountDto implements DtoInterface
      * @return self
      */
     public static function factory(
-        $kontoNr,
-        string $kontoNamn,
-        string $kontoTyp,
-        string $enhet = null
+        int | string $kontoNr,
+        string       $kontoNamn,
+        string       $kontoTyp,
+        string       $enhet = null
     ) : self
     {
         $instance = new self();
@@ -138,7 +138,7 @@ class AccountDto implements DtoInterface
     /**
      * Return kontoNamn
      *
-     * @return string
+     * @return string|null
      */
     public function getKontoNamn() : ?string
     {
@@ -170,7 +170,7 @@ class AccountDto implements DtoInterface
     /**
      * Return kontoTyp
      *
-     * @return string
+     * @return string|null
      */
     public function getKontoTyp() : ?string
     {
@@ -208,7 +208,7 @@ class AccountDto implements DtoInterface
     /**
      * Return enhet
      *
-     * @return string
+     * @return string|null
      */
     public function getEnhet() : ?string
     {

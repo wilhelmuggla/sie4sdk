@@ -65,7 +65,7 @@ trait KontoNrTrait
      * @return static
      * @throws InvalidArgumentException
      */
-    public function setKontoNr( $kontoNr ) : self
+    public function setKontoNr( int|string $kontoNr ) : static
     {
         Assert::isIntegerish( Sie4Interface::KONTONR, $kontoNr );
         $this->kontoNr = (string) $kontoNr;

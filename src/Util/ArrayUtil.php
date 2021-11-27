@@ -39,7 +39,7 @@ class ArrayUtil
      * @param string|string[] $key
      * @return void
      */
-    public static function assureIsArray( array & $array, $key ) : void
+    public static function assureIsArray( array & $array, array | string $key ) : void
     {
         foreach((array) $key as $k ) {
             if( ! isset( $array[$k] )) {

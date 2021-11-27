@@ -65,7 +65,7 @@ trait DimensionNrTrait
      * @return static
      * @throws InvalidArgumentException
      */
-    public function setDimensionNr( $dimensionNr ) : self
+    public function setDimensionNr( int|string $dimensionNr ) : static
     {
         Assert::isIntegerish( Sie4Interface::DIMENSIONNR, $dimensionNr );
         $this->dimensionNr = (int) $dimensionNr;

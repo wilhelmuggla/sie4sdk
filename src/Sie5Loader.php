@@ -58,8 +58,8 @@ use Kigkonsult\Sie5Sdk\Dto\OriginalEntryInfoType;
 use Kigkonsult\Sie5Sdk\Dto\Sie;
 use Kigkonsult\Sie5Sdk\Dto\SoftwareProductType;
 
-use function strcmp;
 use function str_replace;
+use function strcmp;
 use function trim;
 
 /**
@@ -84,9 +84,9 @@ class Sie5Loader implements Sie4Interface
     private ?Sie4Dto $sie4EDto = null;
 
     /**
-     * @var Sie|null
+     * @var Sie
      */
-    private ?Sie $sie;
+    private Sie $sie;
 
     /**
      * Sie5EntryLoader constructor
@@ -104,7 +104,7 @@ class Sie5Loader implements Sie4Interface
     public static function factory( ? Sie4Dto $sie4EDto = null ): self
     {
         $instance = new self();
-        if( ! empty( $sie4EDto )) {
+        if( $sie4EDto !== null ) {
             $instance->setSie4EDto( $sie4EDto );
         }
         return $instance;
@@ -148,7 +148,7 @@ class Sie5Loader implements Sie4Interface
      */
     public function getSie( ? Sie4Dto $sie4Idata = null ) : Sie
     {
-        if( ! empty( $sie4Idata )) {
+        if( $sie4Idata !== null ) {
             $this->sie = self::newSie();
             $this->setSie4EDto( $sie4Idata );
         }
@@ -180,7 +180,7 @@ class Sie5Loader implements Sie4Interface
                 $name    = SoftwareProductType::PRODUCTNAME;
                 $version = SoftwareProductType::PRODUCTVERSION;
                 break;
-            case StringUtil::isIn(self::PRODUCTNAME, $name ) :
+            case str_contains( $name, self::PRODUCTNAME ) :
                 $name    = trim( str_replace( self::PRODUCTNAME, StringUtil::$SP0, $name ));
                 $version = trim( str_replace( self::PRODUCTVERSION, StringUtil::$SP0, $version ));
                 break;
@@ -252,7 +252,7 @@ class Sie5Loader implements Sie4Interface
         }
         $accountDtos = $this->sie4EDto->getAccountDtos();
         $accounts    = $this->sie->getAccounts();
-        if( empty( $accounts )) {
+        if( $accounts === null ) {
             $accounts = AccountsType::factory();
             $this->sie->setAccounts( $accounts );
         }
@@ -353,7 +353,7 @@ class Sie5Loader implements Sie4Interface
             return;
         }
         $dimensions = $this->sie->getDimensions();
-        if( empty( $dimensions )) {
+        if( $dimensions === null ) {
             $dimensions = DimensionsType::factory();
             $this->sie->setDimensions( $dimensions );
         }
@@ -378,7 +378,7 @@ class Sie5Loader implements Sie4Interface
             return;
         }
         $dimensions = $this->sie->getDimensions();
-        if( empty( $dimensions )) {
+        if( $dimensions === null ) {
             $dimensions = DimensionsType::factory();
             $this->sie->setDimensions( $dimensions );
         }

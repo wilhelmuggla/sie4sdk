@@ -233,7 +233,7 @@ class IdDto implements DtoInterface
      * @return self
      * @throws InvalidArgumentException
      */
-    public function setSieTyp( $sieTyp ) : self
+    public function setSieTyp( int | string $sieTyp ) : self
     {
         Assert::isIntegerish( self::SIETYP, $sieTyp );
         $this->sieTyp = (int) $sieTyp;
@@ -241,7 +241,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getProsa() : ?string
     {
@@ -269,7 +269,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getFtyp() : ?string
     {
@@ -298,7 +298,7 @@ class IdDto implements DtoInterface
 
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getBkod() : ?string
     {
@@ -326,7 +326,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return AdressDto
+     * @return AdressDto|null
      */
     public function getAdress() : ?AdressDto
     {
@@ -356,7 +356,7 @@ class IdDto implements DtoInterface
     /**
      * Return fnamn
      *
-     * @return string
+     * @return string|null
      */
     public function getFnamn() : ?string
     {
@@ -428,7 +428,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getTaxar() : ?int
     {
@@ -450,7 +450,7 @@ class IdDto implements DtoInterface
      * @return self
      * @throws InvalidArgumentException
      */
-    public function setTaxar( $taxar ) : self
+    public function setTaxar( int | string $taxar ) : self
     {
         Assert::isIntegerish( self::TAXAR, $taxar );
         $this->taxar = (int) $taxar;
@@ -458,7 +458,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getOmfattn() : ?DateTime
     {
@@ -486,7 +486,7 @@ class IdDto implements DtoInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getKptyp() : ?string
     {
@@ -516,7 +516,7 @@ class IdDto implements DtoInterface
     /**
      * Return valutakod
      *
-     * @return string
+     * @return string|null
      */
     public function getValutakod() : ?string
     {

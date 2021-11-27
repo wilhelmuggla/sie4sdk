@@ -147,7 +147,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     {
         $class    = static::class;
         $instance = new $class();
-        if( ! empty( $sie4Dto )) {
+        if( $sie4Dto !== null ) {
             $instance->setSie4Dto( $sie4Dto );
         }
         return $instance;
@@ -350,10 +350,10 @@ abstract class Sie4WriterBase implements Sie4Interface
         $idDto = $this->sie4Dto->getIdDto();
         if( $idDto->isAdressSet()) {
             $adressDto     = $idDto->getAdress();
-            $kontakt       = StringUtil::utf8toCP437( $adressDto->getKontakt());
-            $utdelningsadr = StringUtil::utf8toCP437( $adressDto->getUtdelningsadr());
-            $postadr       = StringUtil::utf8toCP437( $adressDto->getPostadr());
-            $tel           = StringUtil::utf8toCP437( $adressDto->getTel());
+            $kontakt       = StringUtil::utf8toCP437((string) $adressDto->getKontakt());
+            $utdelningsadr = StringUtil::utf8toCP437((string) $adressDto->getUtdelningsadr());
+            $postadr       = StringUtil::utf8toCP437((string) $adressDto->getPostadr());
+            $tel           = StringUtil::utf8toCP437((string) $adressDto->getTel());
             $this->appendKsumma( self::ADRESS, $kontakt, $utdelningsadr, $postadr, $tel );
             $this->output->append(
                 sprintf( self::$SIEENTRYFMT4,
@@ -376,7 +376,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     {
         $idDto = $this->sie4Dto->getIdDto();
         if( $idDto->isFnamnSet()) {
-            $companyName = StringUtil::utf8toCP437( $idDto->getFnamn());
+            $companyName = StringUtil::utf8toCP437((string) $idDto->getFnamn());
             $this->appendKsumma( self::FNAMN, $companyName );
             $this->output->append(
                 sprintf(
@@ -466,7 +466,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     {
         $idDto = $this->sie4Dto->getIdDto();
         if( $idDto->isKptypSet()) {
-            $kptyp = StringUtil::utf8toCP437( $idDto->getKptyp());
+            $kptyp = StringUtil::utf8toCP437((string) $idDto->getKptyp());
             $this->appendKsumma( self::KPTYP, $kptyp );
             $this->output->append(
                 sprintf(
@@ -522,7 +522,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     private function writeKontoData( AccountDto $accountDto ) : void
     {
         $kontoNr   = $accountDto->getKontoNr();
-        $kontonamn = StringUtil::utf8toCP437( $accountDto->getKontoNamn());
+        $kontonamn = StringUtil::utf8toCP437((string) $accountDto->getKontoNamn());
         $this->appendKsumma( self::KONTO, $kontoNr, $kontonamn );
         $this->output->append(
             sprintf(
@@ -532,7 +532,7 @@ abstract class Sie4WriterBase implements Sie4Interface
                 StringUtil::quoteString( $kontonamn )
             )
         );
-        $kontotyp = StringUtil::utf8toCP437( $accountDto->getKontoTyp());
+        $kontotyp = StringUtil::utf8toCP437((string) $accountDto->getKontoTyp());
         $this->appendKsumma( self::KTYP, $kontoNr, $kontotyp );
         $this->output->append(
             sprintf(
@@ -543,7 +543,7 @@ abstract class Sie4WriterBase implements Sie4Interface
             )
         );
         if( $accountDto->isEnhetSet()) {
-            $enhet = StringUtil::utf8toCP437( $accountDto->getEnhet());
+            $enhet = StringUtil::utf8toCP437((string) $accountDto->getEnhet());
             $this->appendKsumma( self::ENHET, $kontoNr, $enhet );
             $this->output->append(
                 sprintf(
@@ -618,7 +618,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     private function writeDimData( DimDto $dimDto ) : void
     {
         $dimId = $dimDto->getDimensionNr();
-        $namn  = StringUtil::utf8toCP437( $dimDto->getDimensionsNamn());
+        $namn  = StringUtil::utf8toCP437((string) $dimDto->getDimensionsNamn());
         $this->appendKsumma( self::DIM, $dimId, $namn );
         $this->output->append(
             sprintf(
@@ -655,7 +655,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     private function writeUnderDimData( UnderDimDto $underDimDto ) : void
     {
         $underDimId = $underDimDto->getDimensionNr();
-        $namn       = StringUtil::utf8toCP437( $underDimDto->getDimensionsNamn());
+        $namn       = StringUtil::utf8toCP437((string) $underDimDto->getDimensionsNamn());
         $superDimId = $underDimDto->getSuperDimNr();
         $this->appendKsumma( self::UNDERDIM, $underDimId, $namn, $superDimId );
         $this->output->append(
@@ -694,8 +694,8 @@ abstract class Sie4WriterBase implements Sie4Interface
     private function writeDimObjektData( DimObjektDto $dimObjektDto ) : void
     {
         $dimId      = $dimObjektDto->getDimensionNr();
-        $objektnr   = StringUtil::utf8toCP437( $dimObjektDto->getObjektNr());
-        $objektnamn = StringUtil::utf8toCP437( $dimObjektDto->getObjektNamn());
+        $objektnr   = StringUtil::utf8toCP437((string) $dimObjektDto->getObjektNr());
+        $objektnamn = StringUtil::utf8toCP437((string) $dimObjektDto->getObjektNamn());
         $this->appendKsumma( self::OBJEKT, $dimId, $objektnr, $objektnamn );
         $this->output->append(
             sprintf(

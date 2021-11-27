@@ -28,13 +28,13 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
 use DateTime;
+use Exception;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SerieVernrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
-
 use Kigkonsult\Sie4Sdk\Util\Assert;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
+
 use function count;
-use function strcmp;
 
 /**
  * Class VerDto
@@ -88,23 +88,18 @@ class VerDto extends BaseId
      */
     public static function verSorter( VerDto $a, VerDto $b ) : int
     {
-        $aValue = $a->isSerieSet() ? $a->getSerie() : StringUtil::$SP0;
-        $bValue = $b->isSerieSet() ? $b->getSerie() : StringUtil::$SP0;
-        if( $aValue < $bValue ) {
-            return -1;
+        if( 0 !== ( $res = StringUtil::strSort((string) $a->getSerie(),(string) $b->getSerie()))) {
+            return $res;
         }
-        if( $aValue > $bValue ) {
-            return 1;
-        }
-        $aValue = $a->isVernrSet() ? (string) $a->getVernr() : StringUtil::$SP0;
-        $bValue = $b->isVernrSet() ? (string) $b->getVernr() : StringUtil::$SP0;
-        return strcmp( $aValue, $bValue );
+        return StringUtil::strSort((string) $a->getVernr(), (string) $b->getVernr());
     }
 
     /**
      * VerDto constructor
      *
      * Sets unique timestamp, guid and verdatum
+     *
+     * @throws Exception
      */
     public function __construct()
     {
@@ -127,13 +122,13 @@ class VerDto extends BaseId
     ) : self
     {
         $instance = new self();
-        if( ! empty( $vernr )) {
+        if( $vernr !== null ) {
             $instance->setVernr( $vernr );
         }
         if( ! empty( $verText )) {
             $instance->setVertext( $verText );
         }
-        if( ! empty( $verDatum )) {
+        if( $verDatum !== null ) {
             $instance->setVerdatum( $verDatum );
         }
         return $instance;
@@ -145,7 +140,7 @@ class VerDto extends BaseId
      * @param int|string $serie
      * @return self
      */
-    public function setSerie( $serie ) : self
+    public function setSerie( int | string $serie ) : self
     {
         Assert::isIntOrString( self::VERSERIE, $serie );
         $this->serie = (string) $serie;
@@ -205,7 +200,7 @@ class VerDto extends BaseId
     /**
      * Return vertext
      *
-     * @return string
+     * @return string|null
      */
     public function getVertext() : ?string
     {
@@ -237,7 +232,7 @@ class VerDto extends BaseId
     /**
      * Return regdatum
      *
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getRegdatum() : ?DateTime
     {
@@ -293,7 +288,7 @@ class VerDto extends BaseId
      * @param float  $belopp
      * @return self
      */
-    public function addTransKontoNrBelopp( $kontoNr, float $belopp ) : self
+    public function addTransKontoNrBelopp( int | string $kontoNr, float $belopp ) : self
     {
         return $this->addTransDto(
             TransDto::factory( $kontoNr, $belopp )

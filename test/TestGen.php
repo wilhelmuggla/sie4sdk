@@ -39,6 +39,7 @@ use Kigkonsult\Sie4Sdk\Dto\VerDto;
 use Kigkonsult\Sie4Sdk\DtoLoader\Sie4Dto as Sie4DtoLoader;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class TestGen extends TestCase
 {
@@ -178,6 +179,17 @@ class TestGen extends TestCase
             sprintf( $ERR2, $case, 7, 'E' )
         );
 
+        // save test-file
+        if( isset( $GLOBALS['TESTSAVEDIR'] )) {
+            $path      = dirname( __DIR__ ) . DIRECTORY_SEPARATOR . $GLOBALS['TESTSAVEDIR'];
+            if( ! is_dir( $path ) && ! mkdir( $path )) {
+                throw new RuntimeException( sprintf( 'Directory "%s" was not created', $path ) );
+            }
+            $saveFileName = $path . DIRECTORY_SEPARATOR . __FUNCTION__ . $case;
+            file_put_contents( $saveFileName . '.sie4E', $sie4String4 );
+        } // end if save-file
+
+
         // prep as Sie4I
         $idDto1 = $sie4Dto3->getIdDto();
         $idDto2 = new IdDto();
@@ -231,6 +243,11 @@ class TestGen extends TestCase
         $sie4String3 = StringUtil::cp437toUtf8(
             Sie4IWriter::factory()->process( $sie4Dto3 )
         );
+
+        // save test-file
+        if( isset( $GLOBALS['TESTSAVEDIR'] )) {
+            file_put_contents( $saveFileName . '.sie4I', $sie4String3 );
+        } // end if save-file
 
         // parse Sie4IDto into SieEntry
         $sieEntry = Sie5EntryLoader::factory( $sie4Dto3 )->getSieEntry();
@@ -433,9 +450,11 @@ class TestGen extends TestCase
                     )
                 );
 
+                /*
                 if( empty( $vx ) && empty( $tx )) {
                     echo var_export( $verDto, true ) . PHP_EOL; // test ###
                 }
+                */
             } // end foreach
         } // end foreach
     }

@@ -115,5 +115,7 @@
     <php>
         <!-- Set max TestGen:genTestProvider test sets -->
         <var name="GENTESTMAX" value="20"/>
+        <!-- Set TestGen directory where to save sie4 test files, remove or comment for No save-files -->
+        <var name="TESTSAVEDIR" value="testDocs/files"/>
     </php>
 </phpunit>

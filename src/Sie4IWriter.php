@@ -52,7 +52,7 @@ class Sie4IWriter extends Sie4WriterBase
         ? bool $writeKsumma = false
     ) : string
     {
-        if( ! empty( $sie4IDto ) && $writeKsumma ) {
+        if( $sie4IDto !== null && $writeKsumma ) {
             $sie4IDto = clone $sie4IDto;
             $sie4IDto->setKsumma( 1 ); // force recount
         }
@@ -74,7 +74,7 @@ class Sie4IWriter extends Sie4WriterBase
         ? bool $writeKsumma = null
     ) : string
     {
-        if( ! empty( $sie4Dto )) {
+        if( $sie4Dto !== null ) {
             $this->setSie4Dto( $sie4Dto );
         }
         if( ! empty( $outputfile )) {

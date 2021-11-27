@@ -71,7 +71,7 @@ class VerDto
             $kontoNr = $faker->randomElement( $kontoNrs );
             if ( ! isset( $kontoNrs2[$kontoNr] )) {
                 $kontoNrs2[$kontoNr] = $kontoNr;
-                $transDto = TransDto::load((string) $kontoNr, $dateTime );
+                $transDto = TransDto::load( $kontoNr, $dateTime );
                 $balans  += $transDto->getBelopp();
                 $dto->addTransDto( $transDto );
             }
@@ -80,7 +80,7 @@ class VerDto
         while( isset($kontoNrs2[$kontoNr] )) {
             $kontoNr = $faker->randomElement( $kontoNrs );
         }
-        $transDto = TransDto::load((string) $kontoNr, $dateTime );
+        $transDto = TransDto::load( $kontoNr, $dateTime );
         $transDto->setBelopp( 0 - $balans );
         $dto->addTransDto( $transDto );
 

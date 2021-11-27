@@ -30,7 +30,7 @@ namespace Kigkonsult\Sie4Sdk;
 use DirectoryIterator;
 use Exception;
 use InvalidArgumentException;
-use Kigkonsult\DsigSdk\Dto\SignatureType;
+use Kigkonsult\DsigSdk\Dto\Signature;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 use Kigkonsult\Sie5Sdk\XMLParse\Sie5Parser;
 use Kigkonsult\Sie5Sdk\XMLWrite\Sie5Writer;
@@ -53,7 +53,7 @@ class TestFiles extends TestCase
      *
      * @return array
      */
-    public function sie4IFileProvider() : array
+    public function sie4IFileTestProvider() : array
     {
 
         $testPath = __DIR__ . '/Sie4I_files';
@@ -82,7 +82,8 @@ class TestFiles extends TestCase
      * Expects error due to attributes with default value
      *
      * @test
-     * @dataProvider sie4IFileProvider
+     * @dataProvider sie4IFileTestProvider
+     *
      * @param int $case
      * @param string $fileName
      * @return void
@@ -90,14 +91,14 @@ class TestFiles extends TestCase
      * @throws RuntimeException
      * @throws Exception
      */
-    public function testSie4IFile( int $case, string $fileName ) : void
+    public function sie4IFileTest( int $case, string $fileName ) : void
     {
         static $FMT1 = '%s (#%s) not valid%s%s%s';
 
         echo sprintf( self::$FMT0, PHP_EOL, __FUNCTION__, $case, basename( $fileName ), PHP_EOL );
 
         $sie4Istring1Utf8 = file_get_contents( $fileName );
-        $sie4Istring1     = StringUtil::utf8toCP437( $sie4Istring1Utf8 );
+        $sie4Istring1     = StringUtil::utf8toCP437((string) $sie4Istring1Utf8 );
         // convert file content to CP437, save into tempFile
         $tempFile1 = tempnam( sys_get_temp_dir(), __FUNCTION__ . '_1_');
         file_put_contents(
@@ -228,7 +229,7 @@ class TestFiles extends TestCase
      *
      * @return array
      */
-    public function sie4EFileProvider() : array
+    public function sie4EFileTestProvider() : array
     {
 
         $testPath = __DIR__ . '/Sie4E_files';
@@ -258,7 +259,7 @@ class TestFiles extends TestCase
      * Expects error due to attributes with default value
      *
      * @test
-     * @dataProvider sie4EFileProvider
+     * @dataProvider sie4EFileTestProvider
      * @param int $case
      * @param string $fileName
      * @return void
@@ -266,7 +267,7 @@ class TestFiles extends TestCase
      * @throws RuntimeException
      * @throws Exception
      */
-    public function testSie4EFile( int $case, string $fileName ) : void
+    public function sie4EFileTest( int $case, string $fileName ) : void
     {
         static $FMT1 = '%s (#%s) not valid%s%s%s';
 
@@ -310,7 +311,7 @@ class TestFiles extends TestCase
 
         // parse Sie4EDto into Sie
         $sie1 = Sie5Loader::factory( $sie4EDto )->getSie();
-        $sie1->setSignature( new SignatureType()); // empty...
+        $sie1->setSignature( new Signature()); // empty...
 
         echo 'sie1 XMl : ' . PHP_EOL . Sie5Writer::factory()->write( $sie1 ) . PHP_EOL; // test ###
 
@@ -327,7 +328,7 @@ class TestFiles extends TestCase
         $sie1String = Sie5Writer::factory()->write( $sie1 );
         // parse xml back into Sie2
         $sie2 = Sie5Parser::factory()->parseXmlFromString( $sie1String );
-        $sie2->setSignature( new SignatureType()); // empty...
+        $sie2->setSignature( new Signature()); // empty...
 
         /*
          * will not validate ok due to empty journal id
@@ -353,7 +354,7 @@ class TestFiles extends TestCase
         $isKsummaSet2    = $sie4EDto2->isKsummaSet();
         // $sie3            = Sie4::sie4EDto2Sie( $sie4EDto2 ); no validation as above
         $sie3            = Sie5Loader::factory( $sie4EDto2 )->getSie();
-        $sie3->setSignature( new SignatureType()); // empty...
+        $sie3->setSignature( new Signature()); // empty...
         $sie3String      = Sie5Writer::factory()->write( $sie3 );
 
         /*
@@ -427,7 +428,7 @@ class TestFiles extends TestCase
      * testSie5IFile dataProvider
      * @return array
      */
-    public function sie5FileProvider() : array
+    public function sie5FileTestProvider() : array
     {
 
         $testPath = __DIR__ . '/Sie5_files';
@@ -456,7 +457,7 @@ class TestFiles extends TestCase
      * NO ksumma test here
      *
      * @test
-     * @dataProvider sie5FileProvider
+     * @dataProvider sie5FileTestProvider
      * @param int $case
      * @param string $fileName
      * @return void
@@ -464,7 +465,7 @@ class TestFiles extends TestCase
      * @throws RuntimeException
      * @throws Exception
      */
-    public function testSie5File( int $case, string $fileName ) : void
+    public function sie5FileTest( int $case, string $fileName ) : void
     {
         echo sprintf( self::$FMT0, PHP_EOL, __FUNCTION__, $case, basename( $fileName ), PHP_EOL );
 

@@ -165,10 +165,10 @@ class Sie4Parser implements Sie4Interface
     /**
      * Return instance
      *
-     * @param null|string|string[] $source
+     * @param string|string[]|null $source
      * @return self
      */
-    public static function factory( $source = null ) : self
+    public static function factory( array | string $source = null ) : self
     {
         $instance = new self();
         if( ! empty( $source )) {
@@ -184,7 +184,7 @@ class Sie4Parser implements Sie4Interface
      * @return self
      * @throws InvalidArgumentException
      */
-    public function setInput( $source ) : self
+    public function setInput( array | string $source ) : self
     {
         static $TRIM      = [ StringUtil::class, 'trimString' ];
         static $TAB2SPACE = [ StringUtil::class, 'tab2Space' ];
@@ -198,12 +198,12 @@ class Sie4Parser implements Sie4Interface
             }
             $source = trim( $source );
             if( ! StringUtil::startsWith( $source, self::FLAGGA )) {
-                FileUtil::assertReadFile((string) $source, 1112 );
-                $input = FileUtil::readFile((string) $source, 1113 );
+                FileUtil::assertReadFile( $source, 1112 );
+                $input = FileUtil::readFile( $source, 1113 );
             }
             else {
                 $input = StringUtil::string2Arr(
-                    StringUtil::convEolChar((string) $source )
+                    StringUtil::convEolChar( $source )
                 );
             }
         } // end else
@@ -218,13 +218,13 @@ class Sie4Parser implements Sie4Interface
     /**
      * Parse Sie4, opt input from Sie4 file, -array (rows), -string, return sie4Dto
      *
-     * @param mixed $source
+     * @param null|string|string[] $source
      * @return Sie4Dto
      * @throws InvalidArgumentException
      * @throws RuntimeException
      * @deprecated
      */
-    public function parse4I( $source = null ) : Sie4Dto
+    public function parse4I( null|string|array $source = null ) : Sie4Dto
     {
         return $this->process( $source );
     }
@@ -232,12 +232,12 @@ class Sie4Parser implements Sie4Interface
     /**
      * Parse Sie4/Sie4E, opt input from Sie4 file, -array (rows), -string, return sie4Dto
      *
-     * @param mixed $source
+     * @param null|string|string[] $source
      * @return Sie4Dto
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    public function process( $source = null ) : Sie4Dto
+    public function process( null|string|array $source = null ) : Sie4Dto
     {
         static $FMT1      = 'Input error (#%d) on post %s';
         static $GROUP12   = [ 1, 2 ];
@@ -254,7 +254,7 @@ class Sie4Parser implements Sie4Interface
         $prevLabel      = null;
         $this->postGroupActions = [];
         while( $this->input->valid()) {
-            $row = $this->input->current();
+            $row = (string) $this->input->current();
             if( empty( $row )) {
                 $this->input->next();
                 continue;

@@ -46,10 +46,10 @@ class AccountDto
         $dto->setKontoNamn((string) $faker->words( 3, true ));
 
         static $KTYPES = [ Dto::T, Dto::S, Dto::K, Dto::I ];
-        $dto->setKontoTyp( $faker->randomElement( $KTYPES ));
+        $dto->setKontoTyp((string) $faker->randomElement( $KTYPES ));
 
         static $UNITS = [ 'st', 'kg', 'l' ];
-        $dto->setEnhet( $faker->randomElement( $UNITS ));
+        $dto->setEnhet((string) $faker->randomElement( $UNITS ));
 
         return $dto;
     }

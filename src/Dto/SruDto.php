@@ -29,9 +29,8 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
-
 use Kigkonsult\Sie4Sdk\Util\Assert;
-use function strcmp;
+use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 /**
  * Class SruDto
@@ -59,15 +58,10 @@ class SruDto implements DtoInterface
      */
     public static function sruSorter( SruDto $a, SruDto $b ) : int
     {
-        $kontoNrA = $a->getKontoNr();
-        $kontoNrB = $b->getKontoNr();
-        if( $kontoNrA < $kontoNrB ) {
-            return -1;
+        if( 0 !== ( $res = StringUtil::strSort((string) $a->getKontoNr(),(string) $b->getKontoNr()))) {
+            return $res;
         }
-        if( $kontoNrA > $kontoNrB ) {
-            return 1;
-        }
-        return strcmp((string) $a->getSruKod(), (string) $b->getSruKod());
+        return StringUtil::strSort((string) $a->getSruKod(), (string) $b->getSruKod());
     }
 
     /**
@@ -77,7 +71,7 @@ class SruDto implements DtoInterface
      * @param int|string $sruKod
      * @return self
      */
-    public static function factory( $kontoNr, $sruKod ) : self
+    public static function factory( int | string $kontoNr, int | string $sruKod ) : self
     {
         $instance = new self();
         $instance->setKontoNr( $kontoNr );
@@ -88,7 +82,7 @@ class SruDto implements DtoInterface
     /**
      * Return sruKod
      *
-     * @return int
+     * @return int|null
      */
     public function getSruKod() : ?int
     {
@@ -112,7 +106,7 @@ class SruDto implements DtoInterface
      * @return self
      * @throws InvalidArgumentException
      */
-    public function setSruKod( $sruKod ) : self
+    public function setSruKod( int | string $sruKod ) : self
     {
         Assert::isIntegerish( self::SRU, $sruKod );
         $this->sruKod = (int) $sruKod;
