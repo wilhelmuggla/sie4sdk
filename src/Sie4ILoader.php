@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -30,11 +30,8 @@ namespace Kigkonsult\Sie4Sdk;
 use Exception;
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\AccountDto;
-use Kigkonsult\Sie4Sdk\Dto\IdDto;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 use Kigkonsult\Sie4Sdk\Dto\TransDto;
-use Kigkonsult\Sie4Sdk\Dto\VerDto;
-use Kigkonsult\Sie5Sdk\Dto\JournalEntryTypeEntry;
 use Kigkonsult\Sie5Sdk\Dto\LedgerEntryTypeEntry;
 use Kigkonsult\Sie5Sdk\Dto\SieEntry;
 
@@ -43,25 +40,17 @@ use Kigkonsult\Sie5Sdk\Dto\SieEntry;
  *
  * Convert SieEntry data into Sie4IDto
  */
-class Sie4ILoader implements Sie4Interface
+class Sie4ILoader extends Sie4LoaderBase
 {
     /**
      * @var Sie4Dto|null
      */
-    private ?Sie4Dto $sie4IDto;
+    private ? Sie4Dto $sie4IDto;
 
     /**
      * @var SieEntry|null
      */
-    private ?SieEntry $sieEntry = null;
-
-    /**
-     * Sie4ILoader constructor
-     */
-    public function __construct()
-    {
-        $this->sie4IDto = new Sie4Dto();
-    }
+    private ? SieEntry $sieEntry = null;
 
     /**
      * @param SieEntry|null $sieEntry
@@ -88,80 +77,16 @@ class Sie4ILoader implements Sie4Interface
     {
         static $FMT1 = 'SieEntry saknas';
         if( $sieEntry !== null ) {
-            $this->sie4IDto = new Sie4Dto();
             $this->setSieEntry( $sieEntry );
         }
         if( ! $this->isSieEntrySet()) {
             throw new InvalidArgumentException( $FMT1, 4201 );
         }
-
-        $this->processIdData();
+        $this->sie4IDto = new Sie4Dto( self::processIdData( false, $this->sieEntry->getFileInfo()));
         $this->processAccountData();
         $this->processDimData();
         $this->processVerData();
-
         return $this->sie4IDto;
-    }
-
-    /**
-     * Updates IdData
-     *
-     * @return void
-     */
-    private function processIdData() : void
-    {
-        $idDto = new IdDto();
-        $fileInfo = $this->sieEntry->getFileInfo();
-
-        $softwareProduct = $fileInfo->getSoftwareProduct();
-        $value = $softwareProduct->getName();
-        if( ! empty( $value )) {
-            $idDto->setProgramnamn( $value );
-        }
-        $value = $softwareProduct->getVersion();
-        if( ! empty( $value )) {
-            $idDto->setVersion( $value );
-        }
-
-        $fileCreation = $fileInfo->getFileCreation();
-        $value = $fileCreation->getTime();
-        if( $value !== null ) {
-            $idDto->setGenDate( $value);
-        }
-        $value = $fileCreation->getBy();
-        if( ! empty( $value )) {
-            $idDto->setSign( $value);
-        }
-
-        $company = $fileInfo->getCompany();
-        $value   = $company->getClientId();
-        if( ! empty( $value )) {
-            $idDto->setFnrId(  $value );
-        }
-
-        $value = $company->getOrganizationId();
-        if( ! empty( $value )) {
-            $idDto->setOrgnr( $value );
-            $value = $company->getMultiple();
-            if( $value !== null ) {
-                $idDto->setMultiple( $company->getMultiple());
-            }
-        }
-
-        $value = $company->getName();
-        if( ! empty( $value )) {
-            $idDto->setFnamn( $value );
-        }
-
-        $accountingCurrency = $fileInfo->getAccountingCurrency();
-        if( $accountingCurrency !== null ) {
-            $value = $accountingCurrency->getCurrency();
-            if( ! empty( $value )) {
-                $idDto->setValutakod( $value );
-            }
-        }
-
-        $this->sie4IDto->setIdDto( $idDto );
     }
 
     /**
@@ -231,52 +156,9 @@ class Sie4ILoader implements Sie4Interface
         foreach( $journals as $journalTypeEntry ) {
             $serie = $journalTypeEntry->getId();
             foreach( $journalTypeEntry->getJournalEntry() as $journalEntryTypeEntry ) {
-                $this->sie4IDto->addVerDto(
-                    self::getVerDto(
-                        $journalEntryTypeEntry,
-                        $serie
-                    )
-                );
+                $this->sie4IDto->addVerDto( self::getVerDto( $journalEntryTypeEntry, $serie ));
             } // end foreach
         } // end foreach
-    }
-
-    /**
-     * @param JournalEntryTypeEntry $journalEntryTypeEntry
-     * @param int|string|null $serie
-     * @return VerDto
-     */
-    private static function getVerDto(
-        JournalEntryTypeEntry $journalEntryTypeEntry,
-        int | string | null $serie = null
-    ) : VerDto
-    {
-        $verDto  = new VerDto();
-        if( ! empty( $serie ) || ( '0' === $serie )) {
-            $verDto->setSerie( $serie );
-        }
-        $verNr   = $journalEntryTypeEntry->getId();
-        if( $verNr !== null ) {
-            $verDto->setVernr( $journalEntryTypeEntry->getId());
-        }
-        $verDatum    = $journalEntryTypeEntry->getJournalDate();
-        $verDatumYmd = $verDatum->format( self::SIE4YYYYMMDD );
-        $verDto->setVerdatum( $verDatum );
-        $vertext     = $journalEntryTypeEntry->getText();
-        if( ! empty( $vertext )) {
-            $verDto->setVertext( $vertext );
-        }
-        $originalEntryInfo = $journalEntryTypeEntry->getOriginalEntryInfo();
-        $regdatum = $originalEntryInfo->getDate();
-        if( $verDatumYmd !==
-            $regdatum->format( self::SIE4YYYYMMDD )) {
-            $verDto->setRegdatum( $regdatum );
-        }
-        $verDto->setSign( $originalEntryInfo->getBy());
-        foreach( $journalEntryTypeEntry->getLedgerEntry() as $ledgerEntryTypeEntry ) {
-            $verDto->addTransDto( self::getTransDto( $ledgerEntryTypeEntry, $verDatumYmd ));
-        } // end foreach
-        return $verDto;
     }
 
     /**
@@ -284,7 +166,7 @@ class Sie4ILoader implements Sie4Interface
      * @param string $verDatumYmd
      * @return TransDto
      */
-    private static function getTransDto(
+    protected static function getTransDto(
         LedgerEntryTypeEntry $ledgerEntryTypeEntry,
         string $verDatumYmd
     ) : TransDto

@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -27,6 +27,9 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Api;
 
+use Kigkonsult\Sie4Sdk\Dto\BalansDto;
+use Kigkonsult\Sie4Sdk\Dto\BalansObjektDto;
+use Kigkonsult\Sie4Sdk\Dto\PeriodDto;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 use Kigkonsult\Sie4Sdk\Dto\TransDto;
 use Kigkonsult\Sie4Sdk\Util\ArrayUtil;
@@ -255,9 +258,6 @@ class Sie4Dto2Array extends ArrayBase
      */
     private function processIdDto() : void
     {
-        if( ! $this->sie4Dto->isIdDtoSet()) {
-            return;
-        }
         $idDto = $this->sie4Dto->getIdDto();
         $this->output[self::PROGRAMNAMN]    = $idDto->getProgramnamn();
         $this->output[self::PROGRAMVERSION] = $idDto->getVersion();
@@ -471,24 +471,12 @@ class Sie4Dto2Array extends ArrayBase
             self::IBSALDO,
             self::IBKVANTITET
         ];
-        if( empty( $this->sie4Dto->countIbDtos())) {
-            return;
+        if( ! empty( $this->sie4Dto->countIbDtos())) {
+            ArrayUtil::assureIsArray( $this->output, $KEYS );
+            foreach( $this->sie4Dto->getIbDtos() as $x => $ibDto ) {
+                $this->loadFromBalansDto( $KEYS, $x, $ibDto );
+            }
         }
-        ArrayUtil::assureIsArray( $this->output, $KEYS );
-        foreach( $this->sie4Dto->getIbDtos() as $x => $ibDto ) {
-            if( $ibDto->isArsnrSet()) {
-                $this->output[self::IBARSNR][$x]     = $ibDto->getArsnr();
-            }
-            if( $ibDto->isKontoNrSet()) {
-                $this->output[self::IBKONTONR][$x]   = $ibDto->getKontoNr();
-            }
-            if( $ibDto->isSaldoSet()) {
-                $this->output[self::IBSALDO][$x]     = $ibDto->getSaldo();
-            }
-            if( $ibDto->isKvantitetSet()) {
-                $this->output[self::IBKVANTITET][$x] = $ibDto->getKvantitet();
-            }
-        } // end foreach
     }
 
     /**
@@ -504,24 +492,33 @@ class Sie4Dto2Array extends ArrayBase
             self::UBSALDO,
             self::UBKVANTITET
         ];
-        if( empty( $this->sie4Dto->countUbDtos())) {
-            return;
+        if( ! empty( $this->sie4Dto->countUbDtos())) {
+            ArrayUtil::assureIsArray( $this->output, $KEYS );
+            foreach( $this->sie4Dto->getUbDtos() as $x => $ubDto ) {
+                $this->loadFromBalansDto( $KEYS, $x, $ubDto );
+            }
         }
-        ArrayUtil::assureIsArray( $this->output, $KEYS );
-        foreach( $this->sie4Dto->getUbDtos() as $x => $ubDto ) {
-            if( $ubDto->isArsnrSet()) {
-                $this->output[self::UBARSNR][$x]     = $ubDto->getArsnr();
-            }
-            if( $ubDto->isKontoNrSet()) {
-                $this->output[self::UBKONTONR][$x]   = $ubDto->getKontoNr();
-            }
-            if( $ubDto->isSaldoSet()) {
-                $this->output[self::UBSALDO][$x]     = $ubDto->getSaldo();
-            }
-            if( $ubDto->isKvantitetSet()) {
-                $this->output[self::UBKVANTITET][$x] = $ubDto->getKvantitet();
-            }
-        } // end foreach
+    }
+
+    /**
+     * @param string[] $keys
+     * @param int|string $x
+     * @param BalansDto $dto
+     */
+    private function loadFromBalansDto( array $keys, int|string $x, BalansDto $dto ) : void
+    {
+        if( $dto->isArsnrSet()) {
+            $this->output[$keys[0]][$x] = $dto->getArsnr();
+        }
+        if( $dto->isKontoNrSet()) {
+            $this->output[$keys[1]][$x] = $dto->getKontoNr();
+        }
+        if( $dto->isSaldoSet()) {
+            $this->output[$keys[2]][$x] = $dto->getSaldo();
+        }
+        if( $dto->isKvantitetSet()) {
+            $this->output[$keys[3]][$x] = $dto->getKvantitet();
+        }
     }
 
     /**
@@ -539,30 +536,12 @@ class Sie4Dto2Array extends ArrayBase
             self::OIBSALDO,
             self::OIBKVANTITET
         ];
-        if( empty( $this->sie4Dto->countOibDtos())) {
-            return;
+        if( ! empty( $this->sie4Dto->countOibDtos())) {
+            ArrayUtil::assureIsArray( $this->output, $KEYS );
+            foreach( $this->sie4Dto->getOibDtos() as $x => $oibDto ) {
+                $this->loadFromBalansObjektDto( $KEYS, $x, $oibDto );
+            }
         }
-        ArrayUtil::assureIsArray( $this->output, $KEYS );
-        foreach( $this->sie4Dto->getOibDtos() as $x => $oibDto ) {
-            if( $oibDto->isArsnrSet()) {
-                $this->output[self::OIBARSNR][$x]       = $oibDto->getArsnr();
-            }
-            if( $oibDto->isKontoNrSet()) {
-                $this->output[self::OIBKONTONR][$x]     = $oibDto->getKontoNr();
-            }
-            if( $oibDto->isDimensionsNrSet()) {
-                $this->output[self::OIBDIMENSIONNR][$x] = $oibDto->getDimensionNr();
-            }
-            if( $oibDto->isObjektNrSet()) {
-                $this->output[self::OIBOBJEKTNR][$x]    = $oibDto->getObjektNr();
-            }
-            if( $oibDto->isSaldoSet()) {
-                $this->output[self::OIBSALDO][$x]       = $oibDto->getSaldo();
-            }
-            if( $oibDto->isKvantitetSet()) {
-                $this->output[self::OIBKVANTITET][$x]   = $oibDto->getKvantitet();
-            }
-        } // end foreach
     }
 
     /**
@@ -580,30 +559,39 @@ class Sie4Dto2Array extends ArrayBase
             self::OUBSALDO,
             self::OUBKVANTITET
         ];
-        if( empty( $this->sie4Dto->countOubDtos())) {
-            return;
+        if( ! empty( $this->sie4Dto->countOubDtos())) {
+            ArrayUtil::assureIsArray( $this->output, $KEYS );
+            foreach( $this->sie4Dto->getOubDtos() as $x => $oubDto ) {
+                $this->loadFromBalansObjektDto( $KEYS, $x, $oubDto );
+            }
         }
-        ArrayUtil::assureIsArray( $this->output, $KEYS );
-        foreach( $this->sie4Dto->getOubDtos() as $x => $oubDto ) {
-            if( $oubDto->isArsnrSet()) {
-                $this->output[self::OUBARSNR][$x]       = $oubDto->getArsnr();
-            }
-            if( $oubDto->isKontoNrSet()) {
-                $this->output[self::OUBKONTONR][$x]     = $oubDto->getKontoNr();
-            }
-            if( $oubDto->isDimensionsNrSet()) {
-                $this->output[self::OUBDIMENSIONNR][$x] = $oubDto->getDimensionNr();
-            }
-            if( $oubDto->isObjektNrSet()) {
-                $this->output[self::OUBOBJEKTNR][$x]    = $oubDto->getObjektNr();
-            }
-            if( $oubDto->isSaldoSet()) {
-                $this->output[self::OUBSALDO][$x]       = $oubDto->getSaldo();
-            }
-            if( $oubDto->isKvantitetSet()) {
-                $this->output[self::OUBKVANTITET][$x]   = $oubDto->getKvantitet();
-            }
-        } // end foreach
+    }
+
+    /**
+     * @param string[] $keys
+     * @param int|string $x
+     * @param BalansObjektDto $dto
+     */
+    private function loadFromBalansObjektDto( array $keys, int|string $x, BalansObjektDto $dto ) : void
+    {
+        if( $dto->isArsnrSet()) {
+            $this->output[$keys[0]][$x] = $dto->getArsnr();
+        }
+        if( $dto->isKontoNrSet()) {
+            $this->output[$keys[1]][$x] = $dto->getKontoNr();
+        }
+        if( $dto->isDimensionsNrSet()) {
+            $this->output[$keys[2]][$x] = $dto->getDimensionNr();
+        }
+        if( $dto->isObjektNrSet()) {
+            $this->output[$keys[3]][$x] = $dto->getObjektNr();
+        }
+        if( $dto->isSaldoSet()) {
+            $this->output[$keys[4]][$x] = $dto->getSaldo();
+        }
+        if( $dto->isKvantitetSet()) {
+            $this->output[$keys[5]][$x] = $dto->getKvantitet();
+        }
     }
 
     /**
@@ -619,24 +607,12 @@ class Sie4Dto2Array extends ArrayBase
             self::RESSALDO,
             self::RESKVANTITET
         ];
-        if( empty( $this->sie4Dto->countSaldoDtos())) {
-            return;
+        if( ! empty( $this->sie4Dto->countSaldoDtos())) {
+            ArrayUtil::assureIsArray( $this->output, $KEYS );
+            foreach( $this->sie4Dto->getSaldoDtos() as $x => $resDto ) {
+                $this->loadFromBalansDto( $KEYS, $x, $resDto );
+            }
         }
-        ArrayUtil::assureIsArray( $this->output, $KEYS );
-        foreach( $this->sie4Dto->getSaldoDtos() as $x => $resDto ) {
-            if( $resDto->isArsnrSet()) {
-                $this->output[self::RESARSNR][$x]     = $resDto->getArsnr();
-            }
-            if( $resDto->isKontoNrSet()) {
-                $this->output[self::RESKONTONR][$x]   = $resDto->getKontoNr();
-            }
-            if( $resDto->isSaldoSet()) {
-                $this->output[self::RESSALDO][$x]     = $resDto->getSaldo();
-            }
-            if( $resDto->isKvantitetSet()) {
-                $this->output[self::RESKVANTITET][$x] = $resDto->getKvantitet();
-            }
-        } // end foreach
     }
 
     /**
@@ -655,33 +631,12 @@ class Sie4Dto2Array extends ArrayBase
             self::PSALDOSALDO,
             self::PSALDOKVANTITET
         ];
-        if( empty( $this->sie4Dto->countPsaldoDtos())) {
-            return;
+        if( ! empty( $this->sie4Dto->countPsaldoDtos())) {
+            ArrayUtil::assureIsArray( $this->output, $KEYS );
+            foreach( $this->sie4Dto->getPsaldoDtos() as $x => $pSaldoDto ) {
+                $this->loadFromPeriodDto( $KEYS, $x, $pSaldoDto );
+            }
         }
-        ArrayUtil::assureIsArray( $this->output, $KEYS );
-        foreach( $this->sie4Dto->getPsaldoDtos() as $x => $pSaldoDto ) {
-            if( $pSaldoDto->isArsnrSet()) {
-                $this->output[self::PSALDOARSNR][$x]       = $pSaldoDto->getArsnr();
-            }
-            if( $pSaldoDto->isPeriodSet()) {
-                $this->output[self::PSALDOPERIOD][$x]      = $pSaldoDto->getPeriod();
-            }
-            if( $pSaldoDto->isKontoNrSet()) {
-                $this->output[self::PSALDOKONTONR][$x]     = $pSaldoDto->getKontoNr();
-            }
-            if( $pSaldoDto->isDimensionsNrSet()) {
-                $this->output[self::PSALDODIMENSIONNR][$x] = $pSaldoDto->getDimensionNr();
-            }
-            if( $pSaldoDto->isObjektNrSet()) {
-                $this->output[self::PSALDOOBJEKTNR][$x]    = $pSaldoDto->getObjektNr();
-            }
-            if( $pSaldoDto->isSaldoSet()) {
-                $this->output[self::PSALDOSALDO][$x]       = $pSaldoDto->getSaldo();
-            }
-            if( $pSaldoDto->isKvantitetSet()) {
-                $this->output[self::PSALDOKVANTITET][$x]   = $pSaldoDto->getKvantitet();
-            }
-        } // end foreach
     }
 
     /**
@@ -700,33 +655,42 @@ class Sie4Dto2Array extends ArrayBase
             self::PBUDGETSALDO,
             self::PBUDGETKVANTITET
         ];
-        if( empty( $this->sie4Dto->countPbudgetDtos())) {
-            return;
+        if( ! empty( $this->sie4Dto->countPbudgetDtos())) {
+            ArrayUtil::assureIsArray( $this->output, $KEYS );
+            foreach( $this->sie4Dto->getPbudgetDtos() as $x => $pBudgetDto ) {
+                $this->loadFromPeriodDto( $KEYS, $x, $pBudgetDto );
+            }
         }
-        ArrayUtil::assureIsArray( $this->output, $KEYS );
-        foreach( $this->sie4Dto->getPbudgetDtos() as $x => $pBudgetDto ) {
-            if( $pBudgetDto->isArsnrSet()) {
-                $this->output[self::PBUDGETARSNR][$x]       = $pBudgetDto->getArsnr();
-            }
-            if( $pBudgetDto->isPeriodSet()) {
-                $this->output[self::PBUDGETPERIOD][$x]      = $pBudgetDto->getPeriod();
-            }
-            if( $pBudgetDto->isKontoNrSet()) {
-                $this->output[self::PBUDGETKONTONR][$x]     = $pBudgetDto->getKontoNr();
-            }
-            if( $pBudgetDto->isDimensionsNrSet()) {
-                $this->output[self::PBUDGETDIMENSIONNR][$x] = $pBudgetDto->getDimensionNr();
-            }
-            if( $pBudgetDto->isObjektNrSet()) {
-                $this->output[self::PBUDGETOBJEKTNR][$x]    = $pBudgetDto->getObjektNr();
-            }
-            if( $pBudgetDto->isSaldoSet()) {
-                $this->output[self::PBUDGETSALDO][$x]       = $pBudgetDto->getSaldo();
-            }
-            if( $pBudgetDto->isKvantitetSet()) {
-                $this->output[self::PBUDGETKVANTITET][$x]   = $pBudgetDto->getKvantitet();
-            }
-        } // end foreach
+    }
+
+    /**
+     * @param string[] $keys
+     * @param int|string $x
+     * @param PeriodDto $dto
+     */
+    private function loadFromPeriodDto( array $keys, int|string $x, PeriodDto $dto ) : void
+    {
+        if( $dto->isArsnrSet()) {
+            $this->output[$keys[0]][$x] = $dto->getArsnr();
+        }
+        if( $dto->isPeriodSet()) {
+            $this->output[$keys[1]][$x] = $dto->getPeriod();
+        }
+        if( $dto->isKontoNrSet()) {
+            $this->output[$keys[2]][$x] = $dto->getKontoNr();
+        }
+        if( $dto->isDimensionsNrSet()) {
+            $this->output[$keys[3]][$x] = $dto->getDimensionNr();
+        }
+        if( $dto->isObjektNrSet()) {
+            $this->output[$keys[4]][$x] = $dto->getObjektNr();
+        }
+        if( $dto->isSaldoSet()) {
+            $this->output[$keys[5]][$x] = $dto->getSaldo();
+        }
+        if( $dto->isKvantitetSet()) {
+            $this->output[$keys[6]][$x] = $dto->getKvantitet();
+        }
     }
 
     /**
@@ -880,7 +844,7 @@ class Sie4Dto2Array extends ArrayBase
     public function getOutput() : array
     {
         foreach( array_keys( $this->output ) as $key ) {
-            if(( 0 == $this->output[$key] ) || ( 0.0 == $this->output[$key] )) {
+            if(( 0 == $this->output[$key] ) || ( 0.0 == $this->output[$key] )) { // Note ==
                 continue;
             }
             if( empty( $this->output[$key] )) {

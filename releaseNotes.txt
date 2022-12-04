@@ -39,3 +39,5 @@
        alter test from fzaninotto/faker to fakerphp/faker
 
 1.8    PHP 8.0
+
+1.8.1  Some code rewrite

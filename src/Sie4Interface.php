@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -33,7 +33,7 @@ Interface Sie4Interface
      * Product constants
      */
     public const PRODUCTNAME              = 'Kigkonsult\Sie4Sdk';
-    public const PRODUCTVERSION           = '1.8';
+    public const PRODUCTVERSION           = '1.8.1';
 
     public const TIMESTAMP                = 'TIMESTAMP';
     public const GUID                     = 'GUID';

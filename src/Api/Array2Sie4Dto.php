@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -27,6 +27,7 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Api;
 
+use Exception;
 use Kigkonsult\Sie4Sdk\Dto\AccountDto;
 use Kigkonsult\Sie4Sdk\Dto\AdressDto;
 use Kigkonsult\Sie4Sdk\Dto\BalansDto;
@@ -224,23 +225,15 @@ class Array2Sie4Dto extends ArrayBase
      *
      * @param array $input
      * @return Sie4Dto
+     * @throws Exception
      */
     public static function process( array $input ) : Sie4Dto
     {
         $instance          = new self();
         $instance->input   = array_change_key_case( $input, CASE_UPPER );
-        $instance->sie4Dto = new Sie4Dto();
-
-        if( isset( $instance->input[self::TIMESTAMP] )) {
-            $instance->sie4Dto->setTimestamp((float) $instance->input[self::TIMESTAMP] );
-        }
-        if( isset( $instance->input[self::GUID] )) {
-            $instance->sie4Dto->setCorrelationId( $instance->input[self::GUID] );
-        }
-        if( isset( $instance->input[self::FLAGGPOST] )) {
-            $instance->sie4Dto->setFlagga((int) $instance->input[self::FLAGGPOST] );
-        }
-        $instance->readIdData();
+        $idDto             = $instance->loadIdDto();
+        $instance->sie4Dto = new Sie4Dto( $idDto );
+        $instance->readBasic();
 
         $instance->readAccountData();
         $instance->readSruData();
@@ -267,12 +260,11 @@ class Array2Sie4Dto extends ArrayBase
     /**
      * Process identifikationsposter in order
      *
-     * @return void
+     * @return IdDto
      */
-    private function readIdData() : void
+    private function loadIdDto() : IdDto
     {
         $idDto = new IdDto();
-        $this->sie4Dto->setIdDto( $idDto );
         /**
          * Vilket program som genererat filen
          * Obligatorisk
@@ -305,17 +297,12 @@ class Array2Sie4Dto extends ArrayBase
          */
         if( isset( $this->input[self::GENDATUM] )) {
             $idDto->setGenDate(
-                DateTimeUtil::getDateTime(
-                    $this->input[self::GENDATUM],
-                    self::GEN,
-                    3511
-                )
+                DateTimeUtil::getDateTime( $this->input[self::GENDATUM], self::GEN, 3511 )
             );
         }
         if( isset( $this->input[self::GENSIGN] )) {
             $idDto->setSign( $this->input[self::GENSIGN] );
         }
-
         /**
          * Fri kommentartext kring filens innehåll
          *
@@ -325,7 +312,6 @@ class Array2Sie4Dto extends ArrayBase
         if( isset( $this->input[self::PROSATEXT] )) {
             $idDto->setProsa( $this->input[self::PROSATEXT] );
         }
-
         /**
          * Företagstyp
          *
@@ -335,7 +321,6 @@ class Array2Sie4Dto extends ArrayBase
         if( isset( $this->input[self::FORETAGSTYP] )) {
             $idDto->setFtyp( $this->input[self::FORETAGSTYP] );
         }
-
         /**
          * Redovisningsprogrammets internkod för exporterat företag
          *
@@ -349,7 +334,7 @@ class Array2Sie4Dto extends ArrayBase
          * ]
          */
         if( isset( $this->input[self::FNRID] )) {
-            $this->sie4Dto->setFnrId( $this->input[self::FNRID] );
+            $idDto->setFnrId( $this->input[self::FNRID] );
         }
         /**
          * Organisationsnummer för det företag som exporterats
@@ -367,12 +352,11 @@ class Array2Sie4Dto extends ArrayBase
          * ]
          */
         if( isset( $this->input[self::ORGNRORGNR] )) {
-            $this->sie4Dto->setOrgnr( $this->input[self::ORGNRORGNR] );
+            $idDto->setOrgnr( $this->input[self::ORGNRORGNR] );
         }
         if( isset( $this->input[self::ORGNRFORNVR] )) {
-            $this->sie4Dto->setMultiple((int) $this->input[self::ORGNRFORNVR] );
+            $idDto->setMultiple( $this->input[self::ORGNRFORNVR] );
         }
-
         /**
          * Branschtillhörighet för det exporterade företaget, Sie4E only
          *
@@ -381,37 +365,7 @@ class Array2Sie4Dto extends ArrayBase
         if( isset( $this->input[self::SNIKOD] )) {
             $idDto->setBkod( $this->input[self::SNIKOD] );
         }
-
-        /**
-         * Adressuppgifter för det aktuella företaget
-         *
-         * #ADRESS kontakt utdelningsadr postadr tel
-         * valfri
-         */
-        static $ADRKEYS = [ self::ADRKONTAKT, self::UTDELNINGSADR, self::POSTADR, self::TEL ];
-        $found = false;
-        foreach( $ADRKEYS as $adrKey ) {
-            if( isset( $this->input[$adrKey] )) {
-                $found = true;
-                break;
-            }
-        }
-        if( $found ) {
-            $adressDto = new AdressDto();
-            if( isset( $this->input[self::ADRKONTAKT] )) {
-                $adressDto->setKontakt( $this->input[self::ADRKONTAKT] );
-            }
-            if( isset( $this->input[self::UTDELNINGSADR] )) {
-                $adressDto->setUtdelningsadr( $this->input[self::UTDELNINGSADR] );
-            }
-            if( isset( $this->input[self::POSTADR] )) {
-                $adressDto->setPostadr( $this->input[self::POSTADR] );
-            }
-            if( isset( $this->input[self::TEL] )) {
-                $adressDto->setTel( $this->input[self::TEL] );
-            }
-            $idDto->setAdress( $adressDto );
-        }
+        $this->readIdDtoAdrData( $idDto );
 
         /**
          * Fullständigt namn för det företag som exporterats
@@ -428,39 +382,7 @@ class Array2Sie4Dto extends ArrayBase
         if( isset( $this->input[self::FTGNAMN] )) {
             $idDto->setFnamn( $this->input[self::FTGNAMN] );
         }
-
-        /**
-         * Räkenskapsår från vilket exporterade data hämtats
-         *
-         * #RAR årsnr start slut
-         * valfri
-         */
-        if( isset( $this->input[self::RARARSNR] )) {
-            foreach( array_keys( $this->input[self::RARARSNR] ) as $x ) {
-                $rarDto = new RarDto();
-                $rarDto->setArsnr( $this->input[self::RARARSNR][$x] );
-                if( isset( $this->input[self::RARSTART][$x] )) {
-                    $rarDto->setStart(
-                        DateTimeUtil::getDateTime(
-                            $this->input[self::RARSTART][$x],
-                            self::RAR,
-                            6788
-                        )
-                    );
-                }
-                if( isset( $this->input[self::RARSLUT][$x] )) {
-                    $rarDto->setSlut(
-                        DateTimeUtil::getDateTime(
-                            $this->input[self::RARSLUT][$x],
-                            self::RAR,
-                            6789
-                        )
-                    );
-                }
-                $idDto->addRarDto( $rarDto );
-            } // end foreach
-        }
-
+        $this->readIdDtoRarData( $idDto );
         /**
          * Taxeringsår för deklarations- information (SRU-koder)
          *
@@ -478,11 +400,7 @@ class Array2Sie4Dto extends ArrayBase
          */
         if( isset( $this->input[self::OMFATTNDATUM] )) {
             $idDto->setOmfattn(
-                DateTimeUtil::getDateTime(
-                    $this->input[self::OMFATTNDATUM],
-                    self::OMFATTN,
-                    3519
-                )
+                DateTimeUtil::getDateTime( $this->input[self::OMFATTNDATUM], self::OMFATTN, 3519 )
             );
         }
         /**
@@ -494,7 +412,6 @@ class Array2Sie4Dto extends ArrayBase
         if( isset( $this->input[self::KPTYPE] )) {
             $idDto->setKptyp( $this->input[self::KPTYPE] );
         }
-
 
         /**
          * Redovisningsvaluta
@@ -511,7 +428,101 @@ class Array2Sie4Dto extends ArrayBase
         if( isset( $this->input[self::VALUTAKOD] )) {
             $idDto->setValutakod( $this->input[self::VALUTAKOD] );
         }
+        return $idDto;
     }
+
+    /**
+     * Load basic/mandatory parts
+     */
+    private function readBasic() : void
+    {
+        if( isset( $this->input[self::TIMESTAMP] )) {
+            $this->sie4Dto->setTimestamp((float) $this->input[self::TIMESTAMP] );
+        }
+        if( isset( $this->input[self::GUID] )) {
+            $this->sie4Dto->setCorrelationId( $this->input[self::GUID] );
+        }
+        if( isset( $this->input[self::FLAGGPOST] )) {
+            $this->sie4Dto->setFlagga((int) $this->input[self::FLAGGPOST] );
+        }
+        if( isset( $this->input[self::FNRID] )) {
+            $this->sie4Dto->setFnrId( $this->input[self::FNRID] );
+        }
+        if( isset( $this->input[self::ORGNRORGNR] )) {
+            $this->sie4Dto->setOrgnr( $this->input[self::ORGNRORGNR] );
+        }
+        if( isset( $this->input[self::ORGNRFORNVR] )) {
+            $this->sie4Dto->setMultiple((int) $this->input[self::ORGNRFORNVR] );
+        }
+    }
+
+    /**
+     * Adressuppgifter för det aktuella företaget
+     *
+     * #ADRESS kontakt utdelningsadr postadr tel
+     * valfri
+     *
+     * @param IdDto $idDto
+     */
+    private function readIdDtoAdrData( IdDto $idDto ) : void
+    {
+        static $ADRKEYS = [ self::ADRKONTAKT, self::UTDELNINGSADR, self::POSTADR, self::TEL ];
+        $found = false;
+        foreach( $ADRKEYS as $adrKey ) {
+            if( isset( $this->input[$adrKey] )) {
+                $found = true;
+                break;
+            }
+        }
+        if( ! $found ) {
+            return;
+        }
+        $adressDto = new AdressDto();
+        if( isset( $this->input[self::ADRKONTAKT] )) {
+            $adressDto->setKontakt( $this->input[self::ADRKONTAKT] );
+        }
+        if( isset( $this->input[self::UTDELNINGSADR] )) {
+            $adressDto->setUtdelningsadr( $this->input[self::UTDELNINGSADR] );
+        }
+        if( isset( $this->input[self::POSTADR] )) {
+            $adressDto->setPostadr( $this->input[self::POSTADR] );
+        }
+        if( isset( $this->input[self::TEL] )) {
+            $adressDto->setTel( $this->input[self::TEL] );
+        }
+        $idDto->setAdress( $adressDto );
+    }
+
+    /**
+     * Räkenskapsår från vilket exporterade data hämtats
+     *
+     * #RAR årsnr start slut
+     * valfri
+     *
+     * @param IdDto $idDto
+     */
+    private function readIdDtoRarData( IdDto $idDto ) : void
+    {
+        if( ! isset( $this->input[self::RARARSNR] )) {
+            return;
+        }
+        foreach( array_keys( $this->input[self::RARARSNR] ) as $x ) {
+            $rarDto = new RarDto();
+            $rarDto->setArsnr( $this->input[self::RARARSNR][$x] );
+            if( isset( $this->input[self::RARSTART][$x] )) {
+                $rarDto->setStart(
+                    DateTimeUtil::getDateTime( $this->input[self::RARSTART][$x], self::RAR, 6788 )
+                );
+            } // end if
+            if( isset( $this->input[self::RARSLUT][$x] )) {
+                $rarDto->setSlut(
+                   DateTimeUtil::getDateTime( $this->input[self::RARSLUT][$x], self::RAR, 6789 )
+                );
+            } // end if
+            $idDto->addRarDto( $rarDto );
+        } // end foreach
+    }
+
 
     /**
      * Manage Sie4  'Kontoplansuppgifter', #KONTO, #KTYP, #ENHET
@@ -530,22 +541,23 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readAccountData() : void
     {
-        if( isset( $this->input[self::KONTONR] )) {
-            foreach( array_keys( $this->input[self::KONTONR] ) as $x ) {
-                $accountDto = new AccountDto();
-                $accountDto->setKontoNr( $this->input[self::KONTONR][$x] );
-                if( isset( $this->input[self::KONTONAMN][$x] )) {
-                    $accountDto->setKontoNamn( $this->input[self::KONTONAMN][$x] );
-                }
-                if( isset( $this->input[self::KONTOTYP][$x] )) {
-                    $accountDto->setKontoTyp( $this->input[self::KONTOTYP][$x] );
-                }
-                if( isset( $this->input[self::KONTOENHET][$x] )) {
-                    $accountDto->setEnhet( $this->input[self::KONTOENHET][$x] );
-                }
-                $this->sie4Dto->addAccountDto( $accountDto );
-            } // end foreach
-        } // end if
+        if( ! isset( $this->input[self::KONTONR] )) {
+            return;
+        }
+        foreach( array_keys( $this->input[self::KONTONR] ) as $x ) {
+            $accountDto = new AccountDto();
+            $accountDto->setKontoNr( $this->input[self::KONTONR][$x] );
+            if( isset( $this->input[self::KONTONAMN][$x] )) {
+                $accountDto->setKontoNamn( $this->input[self::KONTONAMN][$x] );
+            }
+            if( isset( $this->input[self::KONTOTYP][$x] )) {
+                $accountDto->setKontoTyp( $this->input[self::KONTOTYP][$x] );
+            }
+            if( isset( $this->input[self::KONTOENHET][$x] )) {
+                $accountDto->setEnhet( $this->input[self::KONTOENHET][$x] );
+            }
+            $this->sie4Dto->addAccountDto( $accountDto );
+        } // end foreach
     }
 
     /**
@@ -563,16 +575,17 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readSruData() : void
     {
-        if( isset( $this->input[self::SRUKONTO] )) {
-            foreach( array_keys( $this->input[self::SRUKONTO] ) as $x ) {
-                $sruDto = new SruDto();
-                $sruDto->setKontoNr( $this->input[self::SRUKONTO][$x] );
-                if( isset( $this->input[self::SRUKOD][$x] )) {
-                    $sruDto->setSruKod( $this->input[self::SRUKOD][$x] );
-                }
-                $this->sie4Dto->addSruDto( $sruDto );
-            } // end foreach
-        } // end if
+        if( ! isset( $this->input[self::SRUKONTO] )) {
+            return;
+        }
+        foreach( array_keys( $this->input[self::SRUKONTO] ) as $x ) {
+            $sruDto = new SruDto();
+            $sruDto->setKontoNr( $this->input[self::SRUKONTO][$x] );
+            if( isset( $this->input[self::SRUKOD][$x] )) {
+                $sruDto->setSruKod( $this->input[self::SRUKOD][$x] );
+            }
+            $this->sie4Dto->addSruDto( $sruDto );
+        } // end foreach
     }
 
     /**
@@ -590,16 +603,17 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readDimData() : void
     {
-        if( isset( $this->input[self::DIMENSIONNR] )) {
-            foreach( array_keys( $this->input[self::DIMENSIONNR] ) as $x ) {
-                $dimDto = new DimDto();
-                $dimDto->setDimensionNr( $this->input[self::DIMENSIONNR][$x] );
-                if( isset( $this->input[self::DIMENSIONNAMN][$x] )) {
-                    $dimDto->setDimensionsNamn( $this->input[self::DIMENSIONNAMN][$x] );
-                }
-                $this->sie4Dto->addDimDto( $dimDto );
-            } // end foreach
-        } // end if
+        if( ! isset( $this->input[self::DIMENSIONNR] )) {
+            return;
+        }
+        foreach( array_keys( $this->input[self::DIMENSIONNR] ) as $x ) {
+            $dimDto = new DimDto();
+            $dimDto->setDimensionNr( $this->input[self::DIMENSIONNR][$x] );
+            if( isset( $this->input[self::DIMENSIONNAMN][$x] )) {
+                $dimDto->setDimensionsNamn( $this->input[self::DIMENSIONNAMN][$x] );
+            }
+            $this->sie4Dto->addDimDto( $dimDto );
+        } // end foreach
     }
 
     /**
@@ -618,19 +632,20 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readUnderDimData() : void
     {
-        if( isset( $this->input[self::UNDERDIMNR] )) {
-            foreach( array_keys( $this->input[self::UNDERDIMNR] ) as $x ) {
-                $underDimDto = new UnderDimDto();
-                $underDimDto->setDimensionNr( $this->input[self::UNDERDIMNR][$x] );
-                if( isset( $this->input[self::UNDERDIMNAMN][$x] )) {
-                    $underDimDto->setDimensionsNamn( $this->input[self::UNDERDIMNAMN][$x] );
-                }
-                if( isset( $this->input[self::UNDERDIMSUPER][$x] )) {
-                    $underDimDto->setSuperDimNr((int) $this->input[self::UNDERDIMSUPER][$x] );
-                }
-                $this->sie4Dto->addUnderDimDto( $underDimDto );
-            } // end foreach
-        } // end if
+        if( ! isset( $this->input[self::UNDERDIMNR] )) {
+            return;
+        }
+        foreach( array_keys( $this->input[self::UNDERDIMNR] ) as $x ) {
+            $underDimDto = new UnderDimDto();
+            $underDimDto->setDimensionNr( $this->input[self::UNDERDIMNR][$x] );
+            if( isset( $this->input[self::UNDERDIMNAMN][$x] )) {
+                $underDimDto->setDimensionsNamn( $this->input[self::UNDERDIMNAMN][$x] );
+            }
+            if( isset( $this->input[self::UNDERDIMSUPER][$x] )) {
+                $underDimDto->setSuperDimNr((int) $this->input[self::UNDERDIMSUPER][$x] );
+            }
+            $this->sie4Dto->addUnderDimDto( $underDimDto );
+        } // end foreach
     }
 
     /**
@@ -649,19 +664,20 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readDimObjektData() : void
     {
-        if( isset( $this->input[self::OBJEKTDIMENSIONNR] )) {
-            foreach( array_keys( $this->input[self::OBJEKTDIMENSIONNR] ) as $x ) {
-                $dimObjektDto = new DimObjektDto();
-                $dimObjektDto->setDimensionNr( $this->input[self::OBJEKTDIMENSIONNR][$x] );
-                if( isset( $this->input[self::OBJEKTNR][$x] )) {
-                    $dimObjektDto->setObjektNr( $this->input[self::OBJEKTNR][$x] );
-                }
-                if( isset( $this->input[self::OBJEKTNAMN][$x] )) {
-                    $dimObjektDto->setObjektNamn( $this->input[self::OBJEKTNAMN][$x] );
-                }
-                $this->sie4Dto->addDimObjektDto( $dimObjektDto );
-            } // end foreach
-        } // end if
+        if( ! isset( $this->input[self::OBJEKTDIMENSIONNR] )) {
+            return;
+        }
+        foreach( array_keys( $this->input[self::OBJEKTDIMENSIONNR] ) as $x ) {
+            $dimObjektDto = new DimObjektDto();
+            $dimObjektDto->setDimensionNr( $this->input[self::OBJEKTDIMENSIONNR][$x] );
+            if( isset( $this->input[self::OBJEKTNR][$x] )) {
+                $dimObjektDto->setObjektNr( $this->input[self::OBJEKTNR][$x] );
+            }
+            if( isset( $this->input[self::OBJEKTNAMN][$x] )) {
+                $dimObjektDto->setObjektNamn( $this->input[self::OBJEKTNAMN][$x] );
+            }
+            $this->sie4Dto->addDimObjektDto( $dimObjektDto );
+        } // end foreach
     }
 
     /**
@@ -682,22 +698,12 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readIbData() : void
     {
+        static $KEYS = [ self::IBARSNR, self::IBKONTONR, self::IBSALDO, self::IBKVANTITET ];
         if( isset( $this->input[self::IBARSNR] )) {
             foreach( array_keys( $this->input[self::IBARSNR] ) as $x ) {
-                $ibDto = new BalansDto();
-                $ibDto->setArsnr( $this->input[self::IBARSNR][$x] );
-                if( isset( $this->input[self::IBKONTONR][$x] )) {
-                    $ibDto->setKontoNr( $this->input[self::IBKONTONR][$x] );
-                }
-                if( isset( $this->input[self::IBSALDO][$x] )) {
-                    $ibDto->setSaldo( $this->input[self::IBSALDO][$x] );
-                }
-                if( isset( $this->input[self::IBKVANTITET][$x] )) {
-                    $ibDto->setKvantitet( $this->input[self::IBKVANTITET][$x] );
-                }
-                $this->sie4Dto->addIbDto( $ibDto );
-            } // end foreach
-        } // end if
+                $this->sie4Dto->addIbDto( $this->loadBalansDto( $KEYS, $x ));
+            }
+        }
     }
 
     /**
@@ -718,23 +724,35 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readUbData() : void
     {
+        static $KEYS = [ self::UBARSNR, self::UBKONTONR, self::UBSALDO, self::UBKVANTITET ];
         if( isset( $this->input[self::UBARSNR] )) {
             foreach( array_keys( $this->input[self::UBARSNR] ) as $x ) {
-                $ubDto = new BalansDto();
-                $ubDto->setArsnr( $this->input[self::UBARSNR][$x] );
-                if( isset( $this->input[self::UBKONTONR][$x] )) {
-                    $ubDto->setKontoNr( $this->input[self::UBKONTONR][$x] );
-                }
-                if( isset( $this->input[self::UBSALDO][$x] )) {
-                    $ubDto->setSaldo( $this->input[self::UBSALDO][$x] );
-                }
-                if( isset( $this->input[self::UBKVANTITET][$x] )) {
-                    $ubDto->setKvantitet( $this->input[self::UBKVANTITET][$x] );
-                }
-                $this->sie4Dto->addUbDto( $ubDto );
-            } // end foreach
-        } // end if
+                $this->sie4Dto->addUbDto( $this->loadBalansDto( $KEYS, $x ));
+            }
+        }
     }
+
+    /**
+     * @param string[] $keys
+     * @param int|string $x
+     * @return BalansDto
+     */
+    private function loadBalansDto( array $keys, int|string $x ) : BalansDto
+    {
+        $dto = new BalansDto();
+        $dto->setArsnr( $this->input[$keys[0]][$x] );
+        if( isset( $this->input[$keys[1]][$x] )) {
+            $dto->setKontoNr( $this->input[$keys[1]][$x] );
+        }
+        if( isset( $this->input[$keys[2]][$x] )) {
+            $dto->setSaldo( $this->input[$keys[2]][$x] );
+        }
+        if( isset( $this->input[$keys[3]][$x] )) {
+            $dto->setKvantitet( $this->input[$keys[3]][$x] );
+        }
+        return $dto;
+    }
+
 
     /**
      * Manage Sie4  'Saldoposter', #OIB
@@ -756,28 +774,15 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readOibData() : void
     {
+        static $KEYS = [
+            self::OIBARSNR, self::OIBKONTONR, self::OIBDIMENSIONNR,
+            self::OIBOBJEKTNR, self::OIBSALDO, self::OIBKVANTITET
+        ];
         if( isset( $this->input[self::OIBARSNR] )) {
             foreach( array_keys( $this->input[self::OIBARSNR] ) as $x ) {
-                $oibDto = new BalansObjektDto();
-                $oibDto->setArsnr( $this->input[self::OIBARSNR][$x] );
-                if( isset( $this->input[self::OIBKONTONR][$x] )) {
-                    $oibDto->setKontoNr( $this->input[self::OIBKONTONR][$x] );
-                }
-                if( isset( $this->input[self::OIBDIMENSIONNR][$x] )) {
-                    $oibDto->setDimensionNr( $this->input[self::OIBDIMENSIONNR][$x] );
-                }
-                if( isset( $this->input[self::OIBOBJEKTNR][$x] )) {
-                    $oibDto->setObjektNr( $this->input[self::OIBOBJEKTNR][$x] );
-                }
-                if( isset( $this->input[self::OIBSALDO][$x] )) {
-                    $oibDto->setSaldo( $this->input[self::OIBSALDO][$x] );
-                }
-                if( isset( $this->input[self::OIBKVANTITET][$x] )) {
-                    $oibDto->setKvantitet( $this->input[self::OIBKVANTITET][$x] );
-                }
-                $this->sie4Dto->addOibDto( $oibDto );
-            } // end foreach
-        } // end if
+                $this->sie4Dto->addOibDto( $this->loadBalansObjektDto( $KEYS, $x ) );
+            }
+        }
     }
 
     /**
@@ -800,28 +805,42 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readOubData() : void
     {
+        static $KEYS = [
+            self::OUBARSNR, self::OUBKONTONR, self::OUBDIMENSIONNR,
+            self::OUBOBJEKTNR, self::OUBSALDO, self::OUBKVANTITET
+        ];
         if( isset( $this->input[self::OUBARSNR] )) {
             foreach( array_keys( $this->input[self::OUBARSNR] ) as $x ) {
-                $oubDto = new BalansObjektDto();
-                $oubDto->setArsnr( $this->input[self::OUBARSNR][$x] );
-                if( isset( $this->input[self::OUBKONTONR][$x] )) {
-                    $oubDto->setKontoNr( $this->input[self::OUBKONTONR][$x] );
-                }
-                if( isset( $this->input[self::OUBDIMENSIONNR][$x] )) {
-                    $oubDto->setDimensionNr( $this->input[self::OUBDIMENSIONNR][$x] );
-                }
-                if( isset( $this->input[self::OUBOBJEKTNR][$x] )) {
-                    $oubDto->setObjektNr( $this->input[self::OUBOBJEKTNR][$x] );
-                }
-                if( isset( $this->input[self::OUBSALDO][$x] )) {
-                    $oubDto->setSaldo( $this->input[self::OUBSALDO][$x] );
-                }
-                if( isset( $this->input[self::OUBKVANTITET][$x] )) {
-                    $oubDto->setKvantitet( $this->input[self::OUBKVANTITET][$x] );
-                }
-                $this->sie4Dto->addOubDto( $oubDto );
-            } // end foreach
-        } // end if
+                $this->sie4Dto->addOubDto( $this->loadBalansObjektDto( $KEYS, $x ));
+            }
+        }
+    }
+
+    /**
+     * @param string[] $keys
+     * @param int|string $x
+     * @return BalansObjektDto
+     */
+    private function loadBalansObjektDto( array $keys, int|string $x ) : BalansObjektDto
+    {
+        $dto = new BalansObjektDto();
+        $dto->setArsnr( $this->input[$keys[0]][$x] );
+        if( isset( $this->input[$keys[1]][$x] )) {
+            $dto->setKontoNr( $this->input[$keys[1]][$x] );
+        }
+        if( isset( $this->input[$keys[2]][$x] )) {
+            $dto->setDimensionNr( $this->input[$keys[2]][$x] );
+        }
+        if( isset( $this->input[$keys[3]][$x] )) {
+            $dto->setObjektNr( $this->input[$keys[3]][$x] );
+        }
+        if( isset( $this->input[$keys[4]][$x] )) {
+            $dto->setSaldo( $this->input[$keys[4]][$x] );
+        }
+        if( isset( $this->input[$keys[5]][$x] )) {
+            $dto->setKvantitet( $this->input[$keys[5]][$x] );
+        }
+        return $dto;
     }
 
     /**
@@ -842,22 +861,12 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readResData() : void
     {
+        static $KEYS = [ self::RESARSNR, self::RESKONTONR, self::RESSALDO, self::RESKVANTITET ];
         if( isset( $this->input[self::RESARSNR] )) {
             foreach( array_keys( $this->input[self::RESARSNR] ) as $x ) {
-                $resDto = new BalansDto();
-                $resDto->setArsnr( $this->input[self::RESARSNR][$x] );
-                if( isset( $this->input[self::RESKONTONR][$x] )) {
-                    $resDto->setKontoNr( $this->input[self::RESKONTONR][$x] );
-                }
-                if( isset( $this->input[self::RESSALDO][$x] )) {
-                    $resDto->setSaldo( $this->input[self::RESSALDO][$x] );
-                }
-                if( isset( $this->input[self::RESKVANTITET][$x] )) {
-                    $resDto->setKvantitet( $this->input[self::RESKVANTITET][$x] );
-                }
-                $this->sie4Dto->addSaldoDto( $resDto );
-            } // end foreach
-        } // end if
+                $this->sie4Dto->addSaldoDto( $this->loadBalansDto( $KEYS, $x ) );
+            }
+        }
     }
 
     /**
@@ -881,31 +890,15 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readPsaldoData() : void
     {
+        static $KEYS = [
+            self::PSALDOARSNR, self::PSALDOPERIOD, self::PSALDOKONTONR, self::PSALDODIMENSIONNR,
+            self::PSALDOOBJEKTNR, self::PSALDOSALDO, self::PSALDOKVANTITET
+        ];
         if( isset( $this->input[self::PSALDOARSNR] )) {
             foreach( array_keys( $this->input[self::PSALDOARSNR] ) as $x ) {
-                $periodDto = new PeriodDto();
-                $periodDto->setArsnr( $this->input[self::PSALDOARSNR][$x] );
-                if( isset( $this->input[self::PSALDOPERIOD][$x] )) {
-                    $periodDto->setPeriod( $this->input[self::PSALDOPERIOD][$x] );
-                }
-                if( isset( $this->input[self::PSALDOKONTONR][$x] )) {
-                    $periodDto->setKontoNr( $this->input[self::PSALDOKONTONR][$x] );
-                }
-                if( isset( $this->input[self::PSALDODIMENSIONNR][$x] )) {
-                    $periodDto->setDimensionNr( $this->input[self::PSALDODIMENSIONNR][$x] );
-                }
-                if( isset( $this->input[self::PSALDOOBJEKTNR][$x] )) {
-                    $periodDto->setObjektNr( $this->input[self::PSALDOOBJEKTNR][$x] );
-                }
-                if( isset( $this->input[self::PSALDOSALDO][$x] )) {
-                    $periodDto->setSaldo( $this->input[self::PSALDOSALDO][$x] );
-                }
-                if( isset( $this->input[self::PSALDOKVANTITET][$x] )) {
-                    $periodDto->setKvantitet( $this->input[self::PSALDOKVANTITET][$x] );
-                }
-                $this->sie4Dto->addPsaldoDto( $periodDto );
-            } // end foreach
-        } // end if
+                $this->sie4Dto->addPsaldoDto( $this->loadPeriodDto( $KEYS, $x ) );
+            }
+        }
     }
 
     /**
@@ -929,32 +922,47 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readPbudgetData() : void
     {
+        static $KEYS = [
+            self::PBUDGETARSNR, self::PBUDGETPERIOD, self::PBUDGETKONTONR, self::PBUDGETDIMENSIONNR,
+            self::PBUDGETOBJEKTNR, self::PBUDGETSALDO, self::PBUDGETKVANTITET
+        ];
         if( isset( $this->input[self::PBUDGETARSNR] )) {
             foreach( array_keys( $this->input[self::PBUDGETARSNR] ) as $x ) {
-                $periodDto = new PeriodDto();
-                $periodDto->setArsnr( $this->input[self::PBUDGETARSNR][$x] );
-                if( isset( $this->input[self::PBUDGETPERIOD][$x] )) {
-                    $periodDto->setPeriod( $this->input[self::PBUDGETPERIOD][$x] );
-                }
-                if( isset( $this->input[self::PBUDGETKONTONR][$x] )) {
-                    $periodDto->setKontoNr( $this->input[self::PBUDGETKONTONR][$x] );
-                }
-                if( isset( $this->input[self::PBUDGETDIMENSIONNR][$x] )) {
-                    $periodDto->setDimensionNr( $this->input[self::PBUDGETDIMENSIONNR][$x] );
-                }
-                if( isset( $this->input[self::PBUDGETOBJEKTNR][$x] )) {
-                    $periodDto->setObjektNr( $this->input[self::PBUDGETOBJEKTNR][$x] );
-                }
-                if( isset( $this->input[self::PBUDGETSALDO][$x] )) {
-                    $periodDto->setSaldo( $this->input[self::PBUDGETSALDO][$x] );
-                }
-                if( isset( $this->input[self::PBUDGETKVANTITET][$x] )) {
-                    $periodDto->setKvantitet( $this->input[self::PBUDGETKVANTITET][$x] );
-                }
-                $this->sie4Dto->addPbudgetDto( $periodDto );
-            } // end foreach
-        } // end if
+                $this->sie4Dto->addPbudgetDto( $this->loadPeriodDto( $KEYS, $x ));
+            }
+        }
     }
+
+    /**
+     * @param string[] $keys
+     * @param int|string $x
+     * @return PeriodDto
+     */
+    private function loadPeriodDto( array $keys, int|string $x ) : PeriodDto
+    {
+        $dto = new PeriodDto();
+        $dto->setArsnr( $this->input[$keys[0]][$x] );
+        if( isset( $this->input[$keys[1]][$x] )) {
+            $dto->setPeriod( $this->input[$keys[1]][$x] );
+        }
+        if( isset( $this->input[$keys[2]][$x] )) {
+            $dto->setKontoNr( $this->input[$keys[2]][$x] );
+        }
+        if( isset( $this->input[$keys[3]][$x] )) {
+            $dto->setDimensionNr( $this->input[$keys[3]][$x] );
+        }
+        if( isset( $this->input[$keys[4]][$x] )) {
+            $dto->setObjektNr( $this->input[$keys[4]][$x] );
+        }
+        if( isset( $this->input[$keys[5]][$x] )) {
+            $dto->setSaldo( $this->input[$keys[5]][$x] );
+        }
+        if( isset( $this->input[$keys[6]][$x] )) {
+            $dto->setKvantitet( $this->input[$keys[6]][$x] );
+        }
+        return $dto;
+    }
+
 
     /**
      * Manage Sie4  'Verifikationsposter' with  #TRANS data
@@ -983,16 +991,13 @@ class Array2Sie4Dto extends ArrayBase
         }
         foreach( array_keys( $this->input[self::VERDATUM] ) as $verX ) {
             $verDto = new VerDto();
-
-            if( isset( $this->input[self::VERTIMESTAMP][$verX] )) {
-                // accepts empty
+            if( isset( $this->input[self::VERTIMESTAMP][$verX] )) { // accepts empty
                 $verDto->setTimestamp((float) $this->input[self::VERTIMESTAMP][$verX] );
             }
             if( isset( $this->input[self::VERGUID][$verX] ) &&
                 ! empty( $this->input[self::VERGUID][$verX] )) {
                 $verDto->setCorrelationId( $this->input[self::VERGUID][$verX] );
             }
-
             $verDto->setVerdatum(
                 DateTimeUtil::getDateTime(
                     $this->input[self::VERDATUM][$verX],
@@ -1015,11 +1020,7 @@ class Array2Sie4Dto extends ArrayBase
             if( isset( $this->input[self::REGDATUM][$verX] ) &&
                 ! empty( $this->input[self::REGDATUM][$verX] )) {
                 $verDto->setRegdatum(
-                    DateTimeUtil::getDateTime(
-                        $this->input[self::REGDATUM][$verX],
-                        self::VER,
-                        3712
-                    )
+                    DateTimeUtil::getDateTime( $this->input[self::REGDATUM][$verX], self::VER, 3712 )
                 );
             }
             else {
@@ -1107,7 +1108,7 @@ class Array2Sie4Dto extends ArrayBase
      * Process single #TRANS/#RTRANS/#BTRANS
      *
      * @param TransDto $transDto
-     * @param array $keyArr
+     * @param array    $keyArr
      * @param int      $verX
      * @param int      $transX
      * @param string   $label
@@ -1122,8 +1123,7 @@ class Array2Sie4Dto extends ArrayBase
     ) : void
     {
         $keyTimestamp = $keyArr[self::TRANSTIMESTAMP];
-        if( isset( $this->input[$keyTimestamp][$verX][$transX] )) {
-            // accepts empty
+        if( isset( $this->input[$keyTimestamp][$verX][$transX] )) { // accepts empty
             $transDto->setTimestamp((float) $this->input[$keyTimestamp][$verX][$transX] );
         }
         $keyGuid      = $keyArr[self::TRANSGUID];
@@ -1131,37 +1131,22 @@ class Array2Sie4Dto extends ArrayBase
             ! empty( $this->input[$keyGuid][$verX][$transX] )) {
             $transDto->setCorrelationId( $this->input[$keyGuid][$verX][$transX] );
         }
-
-        $keyDimNr    = $keyArr[self::TRANSDIMENSIONNR];
-        $keyObjektNr = $keyArr[self::TRANSOBJEKTNR];
-        if( isset( $this->input[$keyDimNr][$verX][$transX] )) {
-            foreach( array_keys( $this->input[$keyDimNr][$verX][$transX] ) as $doX ) {
-                $dimObjektDto = new DimObjektDto();
-                $dimObjektDto->setDimensionNr(
-                    $this->input[$keyDimNr][$verX][$transX][$doX]
-                );
-                if( isset( $this->input[$keyObjektNr][$verX][$transX][$doX] )) {
-                    $dimObjektDto->setObjektNr(
-                        $this->input[$keyObjektNr][$verX][$transX][$doX]
-                    );
-                }
-                $transDto->addObjektlista( $dimObjektDto );
-            } // end foreach
-        } // end objektLista
+        $this->loadObjektlista(
+            $keyArr[self::TRANSDIMENSIONNR],
+            $keyArr[self::TRANSOBJEKTNR],
+            $verX,
+            $transX,
+            $transDto
+        );
         $keyBelopp = $keyArr[self::TRANSBELOPP];
-        if( isset( $this->input[$keyBelopp][$verX][$transX] )) {
-            // accepts empty
+        if( isset( $this->input[$keyBelopp][$verX][$transX] )) { // accepts empty
             $transDto->setBelopp( $this->input[$keyBelopp][$verX][$transX] );
         }
         $keyDatum = $keyArr[self::TRANSDAT];
         if( isset( $this->input[$keyDatum][$verX][$transX] ) &&
             ! empty( $this->input[$keyDatum][$verX][$transX] )) {
             $transDto->setTransdat(
-                DateTimeUtil::getDateTime(
-                    $this->input[$keyDatum][$verX][$transX],
-                    $label,
-                    3713
-                )
+                DateTimeUtil::getDateTime( $this->input[$keyDatum][$verX][$transX], $label, 3713 )
             );
         }
         $keyText = $keyArr[self::TRANSTEXT];
@@ -1170,8 +1155,7 @@ class Array2Sie4Dto extends ArrayBase
             $transDto->setTranstext( $this->input[$keyText][$verX][$transX] );
         }
         $keyKvantitet = $keyArr[self::TRANSKVANTITET];
-        if( isset( $this->input[$keyKvantitet][$verX][$transX] )) {
-            // accepts empty
+        if( isset( $this->input[$keyKvantitet][$verX][$transX] )) { // accepts empty
             $transDto->setKvantitet( $this->input[$keyKvantitet][$verX][$transX] );
         }
         $keySign = $keyArr[self::TRANSSIGN];
@@ -1179,5 +1163,37 @@ class Array2Sie4Dto extends ArrayBase
             ! empty( $this->input[$keySign][$verX][$transX] )) {
             $transDto->setSign( $this->input[$keySign][$verX][$transX] );
         }
+    }
+
+    /**
+     * @param string $keyDimNr
+     * @param string $keyObjektNr
+     * @param int $verX
+     * @param int $transX
+     * @param TransDto $transDto
+     */
+    private function loadObjektlista(
+        string $keyDimNr,
+        string $keyObjektNr,
+        int    $verX,
+        int    $transX,
+        TransDto $transDto
+    ) : void
+    {
+        if( ! isset( $this->input[$keyDimNr][$verX][$transX] )) {
+            return;
+        }
+        foreach( array_keys( $this->input[$keyDimNr][$verX][$transX] ) as $doX ) {
+            $dimObjektDto = new DimObjektDto();
+            $dimObjektDto->setDimensionNr(
+                $this->input[$keyDimNr][$verX][$transX][$doX]
+            );
+            if( isset( $this->input[$keyObjektNr][$verX][$transX][$doX] )) {
+                $dimObjektDto->setObjektNr(
+                    $this->input[$keyObjektNr][$verX][$transX][$doX]
+                );
+            }
+            $transDto->addObjektlista( $dimObjektDto );
+        } // end foreach
     }
 }

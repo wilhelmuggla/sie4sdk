@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -153,15 +153,11 @@ class Sie4Validator implements Sie4Interface
     public static function assertBase( Sie4Dto $sie4Dto ) : void
     {
         static $FMT5 = 'Ogiltig flagga (0,1 förväntas) : ';
-        static $FMT7 = 'Sie4 idDto saknas';
         DateTimeUtil::assertTimestamp( $sie4Dto->getTimestamp(), 3211 );
         GuidUtil::assertGuid( $sie4Dto->getCorrelationId(), 3215 );
         $flagga =$sie4Dto->getFlagga();
         if( ! in_array( $flagga, [ 0, 1 ] )) {
             throw new InvalidArgumentException( $FMT5 . $flagga, 3215 );
-        }
-        if( ! $sie4Dto->isIdDtoSet()) {
-            throw new InvalidArgumentException( $FMT7, 3217 );
         }
     }
 
@@ -204,7 +200,6 @@ class Sie4Validator implements Sie4Interface
                 self::assertDimObjektDto( $x, $dimObjektDto );
             }
         }
-
         if( 0 < $sie4IDto->countIbDtos()) {
             throw new InvalidArgumentException( sprintf( $FMT6, self::IB ), 3313 );
         }
@@ -687,7 +682,7 @@ class Sie4Validator implements Sie4Interface
             }
             self::assertTransDto( $verNr, $x, $kx, $transDto );
         } // end foreach
-        if( 0.00 != (float) number_format( $balans, 2, StringUtil::$DOT, $SP0 )) {
+        if( 0.00 != (float) number_format( $balans, 2, StringUtil::$DOT, $SP0 )) { // Note !=
             throw new InvalidArgumentException(
                 sprintf( $FMT3, $verNr, $x, $balans ),
                 3707

@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -90,7 +90,7 @@ class Assert
     public static function isIntegerish( string $label, int | string $value ) : void
     {
         static $ERR = '%s integer förväntas, nu %s';
-        if( ! is_scalar( $value ) || ( $value != (int)$value )) {
+        if( ! is_scalar( $value ) || ( $value != (int)$value )) { // Note !=
             throw new InvalidArgumentException(
                 sprintf( $ERR, $label, var_export( $value, true )),
                 3731

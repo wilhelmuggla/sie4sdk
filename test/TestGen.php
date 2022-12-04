@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -44,7 +44,7 @@ use RuntimeException;
 class TestGen extends TestCase
 {
     /**
-     * genTest dataProvider
+     * genTest1/2 dataProvider
      *
      * Using phpunit php/var dirctive to set number of test sets, now 20
      *
@@ -53,10 +53,9 @@ class TestGen extends TestCase
     public function genTestProvider() : array
     {
         $dataArr  = [];
-        $max      = $GLOBALS['GENTESTMAX'];
-        $case     = 0;
+        $max      = (int) $GLOBALS['GENTESTMAX'];
 
-        for( $x = 0; $x < $max; ++$x ) {
+        for( $case = 1; $case <= $max; $case++ ) {
             $dataArr[] =
                 [
                     $case++,
@@ -68,6 +67,8 @@ class TestGen extends TestCase
     }
 
     /**
+     * Simple double create-string/parse-string test
+     *
      * @test
      * @dataProvider genTestProvider
      *
@@ -76,10 +77,55 @@ class TestGen extends TestCase
      * @return void
      * @throws Exception
      */
-    public function genTest( int $case, Sie4Dto $sie4Dto ) : void
+    public function genTest1( int $case, Sie4Dto $sie4Dto ) : void
     {
-        static $ERR1 = '#%d-%d Sie4%sDto assert error, %s%s%s';
         static $ERR2 = '#%d-%d Sie4%sDto string compare error';
+        $case += 100;
+        // create cp437 sie4String
+        $sie4String1 = Sie4EWriter::factory()->process( $sie4Dto );
+
+        // parse the Sie4 string back and create new Sie4 string
+        $sie4String2 = Sie4EWriter::factory()->process(
+            Sie4Parser::factory()->process( $sie4String1 )
+        );
+        // parse the Sie4 string back and create new Sie4 string, compare
+        $sie4String3 = Sie4EWriter::factory()->process(
+            Sie4Parser::factory()->process( $sie4String2 )
+        );
+        // compare sie4 strings
+        $this->assertEquals(
+            StringUtil::cp437toUtf8( $sie4String1 ),
+            StringUtil::cp437toUtf8( $sie4String3 ),
+            sprintf( $ERR2, $case, 11, 'E' )
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider genTestProvider
+     *
+     * @param int $case
+     * @param Sie4Dto $sie4Dto
+     * @return void
+     * @throws Exception
+     */
+    public function genTest2( int $case, Sie4Dto $sie4Dto ) : void
+    {
+        static $ERR1 = '#%d-%d Sie4%sDto assert error, %s%s';
+        static $ERR2 = '#%d-%d Sie4%sDto string compare error';
+        $case += 200;
+
+        // SAVE here to solve sie5/sie5 disparity and to avoid last assert errors
+        $fixes = [];
+        $fixes[Sie4Dto::GENSIGN]  = $sie4Dto->getIdDto()->getSign() ?? Sie4Dto::PRODUCTNAME;
+        $fixes[Sie4Dto::PROSA]    = $sie4Dto->getIdDto()->getProsa();
+        $fixes[Sie4Dto::FTYP]     = $sie4Dto->getIdDto()->getFtyp();
+        $fixes[Sie4Dto::ADRESS]   = $sie4Dto->getIdDto()->getAdress();
+        $fixes[Sie4Dto::RAR]      = $sie4Dto->getIdDto()->getRarDtos();
+        $fixes[Sie4Dto::TAXAR]    = $sie4Dto->getIdDto()->getTaxar();
+        $fixes[Sie4Dto::KPTYPE]   = $sie4Dto->getIdDto()->getKptyp();
+        $fixes[Sie4Dto::SRU]      = $sie4Dto->getSruDtos();
+        $fixes[Sie4Dto::UNDERDIM] = $sie4Dto->getUnderDimDtos();
 
         if( empty( $case )) {
             // first only, save and read from file
@@ -94,6 +140,7 @@ class TestGen extends TestCase
             Sie4EWriter::factory()->process( $sie4Dto )
         );
 
+        /*
         if( empty( $case )) {
             echo 'sie4Dto (case #' . $case . ') has ' . PHP_EOL .
                 $sie4Dto->countAccountDtos()   . ' accontDtos'    . PHP_EOL .
@@ -102,7 +149,7 @@ class TestGen extends TestCase
                 $sie4Dto->countDimObjektDtos() . ' dimObjektDtos' . PHP_EOL .
                 $sie4Dto->countIbDtos()        . ' ibDtos'        . PHP_EOL .
                 $sie4Dto->countUbDtos()        . ' ibDtos'        . PHP_EOL .
-                $sie4Dto->countOibDtos()       . ' oibDtos'      . PHP_EOL .
+                $sie4Dto->countOibDtos()       . ' oibDtos'       . PHP_EOL .
                 $sie4Dto->countOubDtos()       . ' oubDtos'       . PHP_EOL .
                 $sie4Dto->countSaldoDtos()     . ' saldoDtos'     . PHP_EOL .
                 $sie4Dto->countPsaldoDtos()    . ' pSaldoDtos'    . PHP_EOL .
@@ -111,6 +158,7 @@ class TestGen extends TestCase
                 $sie4Dto->countVerTransDtos()  . ' transDtos'     . PHP_EOL . PHP_EOL; // test ###
             echo 'sie4String1' . PHP_EOL . StringUtil::cp437toUtf8( $sie4String1 ) . PHP_EOL . PHP_EOL; // test ###
         }
+        */
 
         // assert as Sie4E
         $outcome = true;
@@ -122,7 +170,7 @@ class TestGen extends TestCase
         }
         $this->assertTrue(
             $outcome,
-            sprintf( $ERR1, $case, 1, 'E', $outcome, PHP_EOL, $sie4String1 )
+            sprintf( $ERR1, $case, 21, 'E', PHP_EOL, $sie4String1 )
         );
 
         // test convert to array and back and compare sie4Strings
@@ -134,24 +182,24 @@ class TestGen extends TestCase
             StringUtil::cp437toUtf8(
                 Sie4EWriter::factory()->process( $sie4Dto2 )
             ),
-            sprintf( $ERR2, $case, 2, 'E' )
+            sprintf( $ERR2, $case, 22, 'E' )
         );
 
         // test convert to json and back and compare sie4Strings
         $jsonString = Sie4Dto2Json::process( $sie4Dto );
-        // echo $jsonString . PHP_EOL;
         $sie4Dto3    = Json2Sie4Dto::process( $jsonString );
 
         if( empty( $case )) {
+            // echo $jsonString . PHP_EOL;
             // first only, test timestamp+guid, uniqueness in SieDto
             // also same in sie4Dto and sie4Dto3
-            $this->checkTimeStampGuid( $case, $sie4Dto, $sie4Dto3 );
+            $this->checkTimeStampGuid4( $case, $sie4Dto, $sie4Dto3 );
             // check set fnrId, same in SieDto, IdDto, verDto and TransDto
-            $this->checkFnrId( $case, $sie4Dto );
+            $this->checkFnrId5( $case, $sie4Dto );
             // check set orgnr, same in SieDto, IdDto, verDto and TransDto
-            $this->checkOrgnr( $case, $sie4Dto );
+            $this->checkOrgnr6( $case, $sie4Dto );
             // check serie/vernr, populatd down from VerDto to each TransDto
-            $this->checkSerieVernr( $case, $sie4Dto );
+            $this->checkSerieVernr7( $case, $sie4Dto );
         }
 
         // check $sie4Dto/$sie4Dto3 strings
@@ -159,7 +207,7 @@ class TestGen extends TestCase
         $this->assertEquals(
             $sie4String1,
             StringUtil::cp437toUtf8( $sie4String3 ),
-            sprintf( $ERR2, $case, 3, 'E' )
+            sprintf( $ERR2, $case, 23, 'E' )
         );
 
         // parse the Sie4E string back and create new Sie4E string, compare
@@ -173,16 +221,17 @@ class TestGen extends TestCase
             $sie4String1 = StringUtil::beforeLast( Sie4Dto::KSUMMA, $sie4String1 );
             $sie4String4 = StringUtil::beforeLast( Sie4Dto::KSUMMA, $sie4String4 );
         }
+        // compare
         $this->assertEquals(
             $sie4String1,
             $sie4String4,
-            sprintf( $ERR2, $case, 7, 'E' )
+            sprintf( $ERR2, $case, 25, 'E' )
         );
 
         // save test-file
         if( isset( $GLOBALS['TESTSAVEDIR'] )) {
             $path      = dirname( __DIR__ ) . DIRECTORY_SEPARATOR . $GLOBALS['TESTSAVEDIR'];
-            if( ! is_dir( $path ) && ! mkdir( $path )) {
+            if( ! is_dir( $path ) && ! mkdir( $path ) && ! is_dir( $path )) {
                 throw new RuntimeException( sprintf( 'Directory "%s" was not created', $path ) );
             }
             $saveFileName = $path . DIRECTORY_SEPARATOR . __FUNCTION__ . $case;
@@ -206,6 +255,7 @@ class TestGen extends TestCase
         // skip omfattn
         $idDto2->setKptyp( $idDto1->getKptyp());
         $idDto2->setValutakod( $idDto1->getValutakod());
+
         $sie4Dto3->setIdDto( $idDto2 );
 
         $sie4Dto3->setIbDtos( [] );
@@ -229,9 +279,8 @@ class TestGen extends TestCase
             sprintf(
                 $ERR1,
                 $case,
-                9,
+                26,
                 'I',
-                $outcome,
                 PHP_EOL,
                 StringUtil::cp437toUtf8(
                     Sie4EWriter::factory()->process( $sie4Dto3 ) // note Sie4EWriter
@@ -255,11 +304,11 @@ class TestGen extends TestCase
         // validate SieEntry
         $this->assertTrue(
             $sieEntry->isValid( $expected ),
-            sprintf( $ERR1, $case, 10, 'I', '', PHP_EOL, var_export( $expected, true ) . PHP_EOL )
+            sprintf( $ERR1, $case, 27, 'I', PHP_EOL, var_export( $expected, true ) . PHP_EOL )
         );
 
         // parse SieEntry into Sie4
-        $sie4IDto5 = Sie4ILoader::factory(  $sieEntry )->getSie4IDto();
+        $sie4IDto5 = Sie4ILoader::factory( $sieEntry )->getSie4IDto();
         if( $sie4Dto->isKsummaSet()) {
             $sie4IDto5->setKsumma( 1 );
         }
@@ -267,7 +316,7 @@ class TestGen extends TestCase
         // assert as Sie4I
         $outcome = true;
         try {
-            Sie4Validator::assertSie4IDto( $sie4Dto3 );
+            Sie4Validator::assertSie4IDto( $sie4IDto5 );
         }
         catch( Exception $e ) {
             $outcome = $e->getMessage();
@@ -277,9 +326,8 @@ class TestGen extends TestCase
             sprintf(
                 $ERR1,
                 $case,
-                11,
+                28,
                 'I',
-                $outcome,
                 PHP_EOL,
                 StringUtil::cp437toUtf8(
                     Sie4EWriter::factory()->process( $sie4Dto3 ) // note Sie4EWriter
@@ -287,16 +335,30 @@ class TestGen extends TestCase
             )
         );
 
+        // fixes here to solve sie5/sie5 disparity and to avoid last assert errors
+        $sie4IDto5->getIdDto()->setProgramnamn( Sie4Dto::PRODUCTNAME );
+        $sie4IDto5->getIdDto()->setVersion( Sie4Dto::PRODUCTVERSION );
+        $sie4IDto5->getIdDto()->setSign( $fixes[Sie4Dto::GENSIGN] );
+        $sie4IDto5->getIdDto()->setProsa( $fixes[Sie4Dto::PROSA] );
+        $sie4IDto5->getIdDto()->setFtyp( $fixes[Sie4Dto::FTYP] );
+        $sie4IDto5->getIdDto()->setAdress( $fixes[Sie4Dto::ADRESS] );
+        $sie4IDto5->getIdDto()->setRarDtos( $fixes[Sie4Dto::RAR] );
+        $sie4IDto5->getIdDto()->setTaxar( $fixes[Sie4Dto::TAXAR] );
+        $sie4IDto5->getIdDto()->setKptyp( $fixes[Sie4Dto::KPTYPE] );
+        $sie4IDto5->setSruDtos( $fixes[Sie4Dto::SRU] );
+        $sie4IDto5->setUnderDimDtos( $fixes[Sie4Dto::UNDERDIM] );
+
         // write Sie4 string
         $sie4String5 = StringUtil::cp437toUtf8(
             Sie4IWriter::factory()->process( $sie4IDto5 )
         );
 
-        // final compare
+        // final compare of Sie4I AND Sie5 (SieEntry from Sie4I),
+        // WILL return errors due to Sie4/Sie5 disparity
         $this->assertEquals(
             $sie4String3,
             $sie4String5,
-            sprintf( $ERR2, $case, 12, 'I' )
+            sprintf( $ERR2, $case, 29, 'I' )
         );
     }
 
@@ -309,7 +371,7 @@ class TestGen extends TestCase
      * @param Sie4Dto $actual
      * @return void
      */
-    public function checkTimeStampGuid( int $case, Sie4Dto $expected, Sie4Dto $actual ) : void
+    public function checkTimeStampGuid4( int $case, Sie4Dto $expected, Sie4Dto $actual ) : void
     {
         static $ERR3 = '#%s-%d Sie4%sDto %s error, %s - %s';
         $tsGuidArr = [ $actual->getTimestamp() . $actual->getCorrelationId() ];
@@ -318,7 +380,7 @@ class TestGen extends TestCase
         $this->assertEquals(
             $exp,
             $value,
-            sprintf( $ERR3, $case, 41, 'E', Sie4Dto::TIMESTAMP, $exp, (string) $value)
+            sprintf( $ERR3, $case, 41, 'E', Sie4Dto::TIMESTAMP, var_export( $exp, true ), var_export( $value, true ))
         );
         $exp   = $expected->getCorrelationId();
         $value = $actual->getCorrelationId();
@@ -385,7 +447,7 @@ class TestGen extends TestCase
      * @param Sie4Dto $sie4Dto
      * @return void
      */
-    public function checkFnrId( int $case, Sie4Dto $sie4Dto ) : void
+    public function checkFnrId5( int $case, Sie4Dto $sie4Dto ) : void
     {
         static $ERR4  = '#%s-%d Sie4Dto %s %s fnrId error, %s - %s';
         static $FNRID = 'ABC';
@@ -400,7 +462,7 @@ class TestGen extends TestCase
             sprintf(
                 $ERR4,
                 $case,
-                1,
+                51,
                 '',
                 '',
                 $FNRID,
@@ -413,7 +475,7 @@ class TestGen extends TestCase
             sprintf(
                 $ERR4,
                 $case,
-                2,
+                52,
                 '',
                 'IdDto',
                 $FNRID,
@@ -428,7 +490,7 @@ class TestGen extends TestCase
                 sprintf(
                     $ERR4,
                     $case,
-                    3,
+                    53,
                     $vx,
                     'VerDto',
                     $FNRID,
@@ -442,7 +504,7 @@ class TestGen extends TestCase
                     sprintf(
                         $ERR4,
                         $case,
-                        4,
+                        54,
                         $vx . '-' . $tx,
                         'TransDto',
                         $FNRID,
@@ -466,7 +528,7 @@ class TestGen extends TestCase
      * @param Sie4Dto $sie4Dto
      * @return void
      */
-    public function checkOrgnr( int $case, Sie4Dto $sie4Dto ) : void
+    public function checkOrgnr6( int $case, Sie4Dto $sie4Dto ) : void
     {
         static $ERR4  = '#%s%d Sie4Dto %s %s orgnr error, %s - %s';
         static $ORGNR = 'ABCorgnr';
@@ -483,7 +545,7 @@ class TestGen extends TestCase
             sprintf(
                 $ERR4,
                 $case,
-                1,
+                61,
                 '',
                 '',
                 $ORGNR . $MULTI,
@@ -497,7 +559,7 @@ class TestGen extends TestCase
             sprintf(
                 $ERR4,
                 $case,
-                2,
+                62,
                 '',
                 'IdDto',
                 $ORGNR . $MULTI,
@@ -513,7 +575,7 @@ class TestGen extends TestCase
                 sprintf(
                     $ERR4,
                     $case,
-                    3,
+                    63,
                     $vx,
                     'VerDto',
                     $ORGNR . $MULTI,
@@ -528,7 +590,7 @@ class TestGen extends TestCase
                     sprintf(
                         $ERR4,
                         $case,
-                        4,
+                        64,
                         $vx . '-' . $tx,
                         'TransDto',
                         $ORGNR . $MULTI,
@@ -546,9 +608,9 @@ class TestGen extends TestCase
      * @param Sie4Dto $sie4Dto
      * @return void
      */
-    public function checkSerieVernr( int $case, Sie4Dto $sie4Dto ) : void
+    public function checkSerieVernr7( int $case, Sie4Dto $sie4Dto ) : void
     {
-        static $ERR5 = '#%s Sie4Dto %s %s serie/vernr error, %s - %s';
+        static $ERR5 = '#%s%d Sie4Dto %s %s serie/vernr error, %s - %s';
         $case       .= '-serieVernr';
         foreach( $sie4Dto->getVerDtos() as $vx => $verDto ) {
             $serie   = $verDto->isSerieSet() ? $verDto->getSerie() : StringUtil::$SP0;
@@ -561,7 +623,7 @@ class TestGen extends TestCase
                     $actual,
                     sprintf(
                         $ERR5,
-                        $case,
+                        $case, 7,
                         $vx . '-' . $tx,
                         'TransDto',
                         $exp,

@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -27,6 +27,7 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk;
 
+use Exception;
 use InvalidArgumentException;
 use Kigkonsult\Asit\It;
 use Kigkonsult\Sie4Sdk\Dto\AdressDto;
@@ -222,6 +223,7 @@ class Sie4Parser implements Sie4Interface
      * @return Sie4Dto
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws Exception
      * @deprecated
      */
     public function parse4I( null|string|array $source = null ) : Sie4Dto
@@ -236,10 +238,11 @@ class Sie4Parser implements Sie4Interface
      * @return Sie4Dto
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws Exception
      */
     public function process( null|string|array $source = null ) : Sie4Dto
     {
-        static $FMT1      = 'Input error (#%d) on post %s';
+        static $FMT1      = 'Input error (#%d) on post %s:%s';
         static $GROUP12   = [ 1, 2 ];
         static $GROUP23   = [ 2, 3 ];
         static $GROUP234  = [ 2, 3, 4 ];
@@ -247,20 +250,13 @@ class Sie4Parser implements Sie4Interface
         if( ! empty( $source )) {
             $this->setInput( $source );
         }
-        $this->sie4Dto  = new Sie4Dto();
+        $this->sie4Dto  = new Sie4Dto( $this->readIdData());
         $this->input->rewind();
         $currentGroup   = 0;
         $kSummaCounter  = 0;
         $prevLabel      = null;
         $this->postGroupActions = [];
-        while( $this->input->valid()) {
-            $row = (string) $this->input->current();
-            if( empty( $row )) {
-                $this->input->next();
-                continue;
-            }
-            $row = StringUtil::cp437toUtf8( $row );
-            [ $label, $rowData ] = StringUtil::splitPost( $row );
+        while( [ $label, $rowData ] = $this->getNextInputRow()) {
             switch( true ) {
                 case (( 0 === $currentGroup ) && ( self::FLAGGA === $label )) :
                     ArrayUtil::assureArrayLength( $rowData, 1 );
@@ -278,18 +274,16 @@ class Sie4Parser implements Sie4Interface
                 case ( in_array( $currentGroup, $GROUP12, true )
                     && in_array( $label, self::$IDLABELS, true )) :
                     $currentGroup = 2;
-                    $this->readIdData( $label, $rowData );
                     break;
                 case (( 2 === $currentGroup ) && empty( $label )) :
                     // data content for previous Label
-                    $this->readIdData( $prevLabel, $rowData );
                     break;
 
                 case ( in_array( $currentGroup, $GROUP23, true )
                     && in_array( $label, self::$ACCOUNTLABELS, true )) :
                     if( 2 === $currentGroup ) {
                         // finish off opt group 2 actions
-                        $this->postReadGroupAction();
+//                      $this->postReadGroupAction();
                         $currentGroup = 3;
                     }
                     $this->readAccountData( $label, $rowData );
@@ -324,7 +318,7 @@ class Sie4Parser implements Sie4Interface
                     break;
 
                 default :
-                    throw new RuntimeException( sprintf( $FMT1, 1, $row ), 1411 );
+                    throw new RuntimeException( sprintf( $FMT1, 1, $label, $rowData ), 1411 );
             } // end switch
             if( ! empty( $label )) {
                 $prevLabel = $label;
@@ -339,79 +333,111 @@ class Sie4Parser implements Sie4Interface
     }
 
     /**
+     * @return bool|array
+     */
+    private function getNextInputRow() : bool|array
+    {
+        while( $this->input->valid()) {
+            $row = (string) $this->input->current();
+            if( empty( $row )) {
+                $this->input->next();
+                continue;
+            }
+            $row = StringUtil::cp437toUtf8( $row );
+            return StringUtil::splitPost( $row );// [ $label, $rowData ]
+        }
+        return false;
+    }
+
+    /**
      * Manage Sie4 'Identifikationsposter'
      *
      * Note för #GEN
      *   if 'sign' is missing, '#PROGRAM programnamn' will be used in Sie4IWriter
      *
-     * @param string $label
-     * @param string[] $rowData
-     * @return void
+     * @return IdDto
      * @throws RuntimeException
      */
-    private function readIdData( string $label, array $rowData ) : void
+    private function readIdData() : IdDto
     {
-        if( ! $this->sie4Dto->isIdDtoSet()) {
-            $this->sie4Dto->setIdDto( new IdDto());
-        }
-        $idDto = $this->sie4Dto->getIdDto();
-        switch( $label ) {
-            case self::PROGRAM :
-                self::processProgram( $rowData, $idDto );
-                break;
-            /**
-             * Vilken teckenuppsättning som använts
-             *
-             * Obligatorisk men auto-set
-             * #FORMAT PC8
-             * SKA vara IBM PC 8-bitars extended ASCII (Codepage 437)
-             * https://en.wikipedia.org/wiki/Code_page_437
-             */
-            case self::FORMAT :
-                break;
-            case self::GEN :
-                self::processGen( $rowData, $idDto );
-                break;
-            case self::SIETYP :
-                self::processSieTyp( $rowData, $idDto );
-                break;
-            case self::PROSA :
-                self::processProsa( $rowData, $idDto );
-                break;
-            case self::FTYP :
-                self::processFtyp( $rowData, $idDto );
-                break;
-            case self::FNR :
-                self::processFnr( $rowData, $idDto );
-                break;
-            case self::ORGNR :
-                self::processOrgnr( $rowData, $idDto );
-                break;
-            case self::BKOD :
-                self::processBkod( $rowData, $idDto );
-                break;
-            case self::ADRESS :
-                self::processAdress( $rowData, $idDto );
-                break;
-            case self::FNAMN :
-                self::processFnamn( $rowData, $idDto );
-                break;
-            case self::RAR :
-                self::processRar( $rowData, $idDto );
-                break;
-            case self::TAXAR :
-                self::processTaxar( $rowData, $idDto );
-                break;
-            case self::OMFATTN :
-                self::processOmfattn( $rowData, $idDto );
-                break;
-            case self::KPTYP :
-                self::processKtyp( $rowData, $idDto );
-                break;
-            case self::VALUTA :
-                self::processValuta( $rowData, $idDto );
-                break;
-        } // end switch
+        $idDto = new IdDto();
+        $found = false;
+        $this->input->rewind();
+        while( [ $label, $rowData ] = $this->getNextInputRow()) {
+            switch( true ) {
+                case ( ! $found && empty( $label )) : // skio empty line
+                    $this->input->next();
+                    continue 2;
+                case ( $found && empty( $label )) : // accepted label found
+                    break;
+                case in_array( $label, self::$IDLABELS, true ) :
+                    $found = true;
+                    break;
+                default : // skip
+                    $this->input->next();
+                    continue 2;
+            } // end switch
+            switch( $label ) {
+                case self::PROGRAM :
+                    self::processProgram( $rowData, $idDto );
+                    break;
+                /**
+                 * Vilken teckenuppsättning som använts
+                 *
+                 * Obligatorisk men auto-set
+                 * #FORMAT PC8
+                 * SKA vara IBM PC 8-bitars extended ASCII (Codepage 437)
+                 * https://en.wikipedia.org/wiki/Code_page_437
+                 */
+                case self::FORMAT :
+                    break;
+                case self::GEN :
+                    self::processGen( $rowData, $idDto );
+                    break;
+                case self::SIETYP :
+                    self::processSieTyp( $rowData, $idDto );
+                    break;
+                case self::PROSA :
+                    self::processProsa( $rowData, $idDto );
+                    break;
+                case self::FTYP :
+                    self::processFtyp( $rowData, $idDto );
+                    break;
+                case self::FNR :
+                    self::processFnr( $rowData, $idDto );
+                    break;
+                case self::ORGNR :
+                    self::processOrgnr( $rowData, $idDto );
+                    break;
+                case self::BKOD :
+                    self::processBkod( $rowData, $idDto );
+                    break;
+                case self::ADRESS :
+                    self::processAdress( $rowData, $idDto );
+                    break;
+                case self::FNAMN :
+                    self::processFnamn( $rowData, $idDto );
+                    break;
+                case self::RAR :
+                    self::processRar( $rowData, $idDto );
+                    break;
+                case self::TAXAR :
+                    self::processTaxar( $rowData, $idDto );
+                    break;
+                case self::OMFATTN :
+                    self::processOmfattn( $rowData, $idDto );
+                    break;
+                case self::KPTYP :
+                    self::processKtyp( $rowData, $idDto );
+                    break;
+                case self::VALUTA :
+                    self::processValuta( $rowData, $idDto );
+                    break;
+            } // end switch
+            $this->input->next();
+        } // end while
+
+        return $idDto;
     }
 
     /**
@@ -449,13 +475,7 @@ class Sie4Parser implements Sie4Interface
     private static function processGen( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
-        $idDto->setGenDate(
-            DateTimeUtil::getDateTime(
-                $rowData[0],
-                self::GEN,
-                1511
-            )
-        );
+        $idDto->setGenDate( DateTimeUtil::getDateTime( $rowData[0], self::GEN, 1511 ));
         if( ! empty( $rowData[1] )) {
             $idDto->setSign( $rowData[1] );
         }
@@ -541,11 +561,7 @@ class Sie4Parser implements Sie4Interface
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
         $idDto->setOrgnr( $rowData[0] );
-        $idDto->setMultiple(
-            ( ! empty( $rowData[1] ))
-                ? (int)$rowData[1] :
-                1
-        );
+        $idDto->setMultiple( ( ! empty( $rowData[1] )) ? (int)$rowData[1] : 1 );
     }
 
     /**
@@ -617,16 +633,8 @@ class Sie4Parser implements Sie4Interface
         $idDto->addRarDto(
             RarDto::factory(
                 $rowData[0],
-                DateTimeUtil::getDateTime(
-                    $rowData[1],
-                    self::RAR,
-                    1517
-                ),
-                DateTimeUtil::getDateTime(
-                    $rowData[2],
-                    self::RAR,
-                    1518
-                )
+                DateTimeUtil::getDateTime( $rowData[1], self::RAR, 1517 ),
+                DateTimeUtil::getDateTime( $rowData[2], self::RAR, 1518 )
             )
         );
     }
@@ -661,11 +669,7 @@ class Sie4Parser implements Sie4Interface
     {
         ArrayUtil::assureArrayLength( $rowData, 1 );
         $idDto->setOmfattn(
-            DateTimeUtil::getDateTime(
-                $rowData[0],
-                self::OMFATTN,
-                1519
-            )
+            DateTimeUtil::getDateTime( $rowData[0], self::OMFATTN, 1519 )
         );
     }
 
@@ -750,15 +754,9 @@ class Sie4Parser implements Sie4Interface
     private function processKonto( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions,
-            self::KONTO
-        );
+        ArrayUtil::assureIsArray( $this->postGroupActions, self::KONTO );
         [ $kontonr, $kontonamn ] = $rowData;
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions[self::KONTO],
-            $kontonr
-        );
+        ArrayUtil::assureIsArray( $this->postGroupActions[self::KONTO], $kontonr );
         $this->postGroupActions[self::KONTO][$kontonr][0] = $kontonamn;
     }
 
@@ -774,15 +772,9 @@ class Sie4Parser implements Sie4Interface
     private function processKontotyp( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions,
-            self::KONTO
-        );
+        ArrayUtil::assureIsArray( $this->postGroupActions, self::KONTO );
         [ $kontonr, $kontotyp ] = $rowData;
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions[self::KONTO],
-            $kontonr
-        );
+        ArrayUtil::assureIsArray( $this->postGroupActions[self::KONTO], $kontonr );
         $this->postGroupActions[self::KONTO][$kontonr][1] = $kontotyp;
     }
 
@@ -798,15 +790,9 @@ class Sie4Parser implements Sie4Interface
     private function processEnhet( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions,
-            self::KONTO
-        );
+        ArrayUtil::assureIsArray( $this->postGroupActions, self::KONTO );
         [ $kontonr, $enhet ] = $rowData;
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions[self::KONTO],
-            $kontonr
-        );
+        ArrayUtil::assureIsArray( $this->postGroupActions[self::KONTO], $kontonr );
         $this->postGroupActions[self::KONTO][$kontonr][2] = $enhet;
     }
 
@@ -837,15 +823,9 @@ class Sie4Parser implements Sie4Interface
     private function processDim( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions,
-            self::DIM
-        );
+        ArrayUtil::assureIsArray( $this->postGroupActions, self::DIM );
         [ $dimensionsnr, $namn ] = $rowData;
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions[self::DIM],
-            $dimensionsnr
-        );
+        ArrayUtil::assureIsArray( $this->postGroupActions[self::DIM], $dimensionsnr );
         $this->postGroupActions[self::DIM][$dimensionsnr][0] = $namn;
     }
 
@@ -861,19 +841,10 @@ class Sie4Parser implements Sie4Interface
     private function processUnderDim( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 3 );
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions,
-            self::DIM
-        );
+        ArrayUtil::assureIsArray($this->postGroupActions, self::DIM );
         [ $dimensionsnr, $namn, $superDimNr ] = $rowData;
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions[self::DIM],
-            $superDimNr
-        );
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions[self::DIM][$superDimNr],
-            self::UNDERDIM
-        );
+        ArrayUtil::assureIsArray( $this->postGroupActions[self::DIM], $superDimNr );
+        ArrayUtil::assureIsArray( $this->postGroupActions[self::DIM][$superDimNr], self::UNDERDIM );
         $this->postGroupActions[self::DIM][$superDimNr][self::UNDERDIM][$dimensionsnr] = $namn;
     }
 
@@ -889,21 +860,11 @@ class Sie4Parser implements Sie4Interface
     private function processObject( array $rowData ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 3 );
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions,
-            self::DIM
-        );
+        ArrayUtil::assureIsArray( $this->postGroupActions, self::DIM );
         [ $dimensionsnr, $objektnr, $objeknamn ] = $rowData;
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions[self::DIM],
-            $dimensionsnr
-        );
-        ArrayUtil::assureIsArray(
-            $this->postGroupActions[self::DIM][$dimensionsnr],
-            self::OBJEKT
-        );
-        $this->postGroupActions[self::DIM][$dimensionsnr][self::OBJEKT][$objektnr] =
-            $objeknamn;
+        ArrayUtil::assureIsArray( $this->postGroupActions[self::DIM], $dimensionsnr );
+        ArrayUtil::assureIsArray($this->postGroupActions[self::DIM][$dimensionsnr], self::OBJEKT );
+        $this->postGroupActions[self::DIM][$dimensionsnr][self::OBJEKT][$objektnr] = $objeknamn;
     }
 
     /**
@@ -1221,7 +1182,7 @@ class Sie4Parser implements Sie4Interface
     }
 
     /**
-     * Due to labels in group are NOT required to be in order, aggregate or opt fix read missing parts here
+     * Due to labels in group, NOT required to be in order, aggregate or opt fix read missing parts here
      *
      * @throws InvalidArgumentException
      * @throws RuntimeException
@@ -1232,7 +1193,7 @@ class Sie4Parser implements Sie4Interface
         if( empty( $this->postGroupActions )) {
             return;
         }
-        foreach($this->postGroupActions as $groupActionKey => $values ) {
+        foreach( $this->postGroupActions as $groupActionKey => $values ) {
             switch( $groupActionKey ) {
                 case self::DIM :
                     $this->postDimActions( $values );
@@ -1260,29 +1221,18 @@ class Sie4Parser implements Sie4Interface
         foreach(  $dimValues as $dimensionId => $dimensionData ) {
             if( isset( $dimensionData[0] )) {
                 // #DIM namn
-                $this->sie4Dto->addDim(
-                    $dimensionId,
-                    $dimensionData[0]
-                );
+                $this->sie4Dto->addDim( $dimensionId, $dimensionData[0] );
             }
             if( isset( $dimensionData[self::UNDERDIM] )) {
                 // #UNDERDIM
                 foreach( $dimensionData[self::UNDERDIM] as $underDimNr => $underDimNamn ) {
-                    $this->sie4Dto->addUnderDim(
-                        $underDimNr,
-                        $underDimNamn,
-                        $dimensionId
-                    );
+                    $this->sie4Dto->addUnderDim( $underDimNr, $underDimNamn, $dimensionId );
                 }
             }
             if( isset( $dimensionData[self::OBJEKT] )) {
                 // #OBJEKT
                 foreach( $dimensionData[self::OBJEKT] as $objektNr => $objektNamn ) {
-                    $this->sie4Dto->addDimObjekt(
-                        $dimensionId,
-                        (string) $objektNr,
-                        $objektNamn
-                    );
+                    $this->sie4Dto->addDimObjekt( $dimensionId, (string) $objektNr, $objektNamn );
                 } // end foreach
             } // end if
         } // end foreach

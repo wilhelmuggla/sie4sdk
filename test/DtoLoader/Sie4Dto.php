@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -39,13 +39,11 @@ class Sie4Dto
     {
         $faker = Faker\Factory::create();
 
-        $dto = new Dto();
+        $dto = new Dto( IdDto::load());
 
         if( 1 === $faker->randomElement( [ 1, 2, 3 ] )) {
             $dto->setKsumma( 1 );
         }
-
-        $dto->setIdDto( IdDto::load());
 
         /**
          * AccountDto[]  #KONTO/#KTYP/#ENHET, saved for later use

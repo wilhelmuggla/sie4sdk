@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -40,7 +40,7 @@ use function usort;
 /**
  * Class IdDto
  *
- * Company name required fo Sie4I
+ * Company name required for Sie4I
  *
  * genDate  default 'now'
  * programnamn/version default set
@@ -140,17 +140,23 @@ class IdDto implements DtoInterface
 
 
     /**
-     * Class factory method, fnrId/orgnr
+     * Class factory method, fname (,fnrId/orgnr)
      *
-     * @param string $fnrId
-     * @param string $orgnr
+     * @param string $fnamn
+     * @param null|string $fnrId
+     * @param null|string $orgnr
      * @return self
      */
-    public static function factory( string $fnrId, string $orgnr ) : self
+    public static function factory( string $fnamn, ? string $fnrId = null, ? string $orgnr = null ) : self
     {
         $instance = new self();
-        $instance->setFnrId( $fnrId );
-        $instance->setOrgnr( $orgnr );
+        $instance->setFnamn( $fnamn );
+        if( ! empty( $fnrId )) {
+            $instance->setFnrId( $fnrId );
+        }
+        if( ! empty( $orgnr )) {
+            $instance->setOrgnr( $orgnr );
+        }
         return $instance;
     }
 
@@ -328,7 +334,7 @@ class IdDto implements DtoInterface
     /**
      * @return AdressDto|null
      */
-    public function getAdress() : ?AdressDto
+    public function getAdress() : ? AdressDto
     {
         return $this->adress;
     }

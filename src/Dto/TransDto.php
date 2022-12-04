@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -45,8 +45,8 @@ use function sprintf;
  *
  * Inherit timestamp, guid, fnrId and orgnr(+multiple) properties from BaseId,
  * to uniquely identify instance
- * The properties and serie and vernr are populated down from 'parent' verDto
- * trandsdat also (from verdtum), s missing
+ * These properties and serie and vernr are populated down from 'parent' verDto
+ * trandsdat also (from verdtum), if missing
  *
  * kontonr and belopp required,
  *   in objektlista (if set), pairs of dimension and objektnr required
@@ -97,7 +97,7 @@ class TransDto extends BaseId implements KontoNrInterface
     use FnrIdOrgnr2Trait;
 
     /**
-     * Class factory method, kontoNr/belopp
+     * Class factory method, kontoNr/belopp, opt transType but #TRANS default
      *
      * @param int|string $kontoNr
      * @param float $belopp

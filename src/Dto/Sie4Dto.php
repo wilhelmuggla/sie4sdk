@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -27,6 +27,7 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
+use Exception;
 use InvalidArgumentException;
 
 use function usort;
@@ -54,9 +55,9 @@ class Sie4Dto extends BaseId
     private int $ksumma = 0;
 
     /**
-     * @var IdDto|null
+     * @var IdDto
      */
-    private ?IdDto $idDto = null;
+    private IdDto $idDto;
 
     /**
      * @var AccountDto[]  #KONTO/#KTYP/#ENHET
@@ -124,16 +125,36 @@ class Sie4Dto extends BaseId
     private array $verDtos = [];
 
     /**
-     * Class factory method, set idDto
+     * Class constructor
      *
      * @param IdDto $idDto
-     * @return self
+     * @throws Exception
      */
-    public static function factory( IdDto $idDto ) : self
+    public function __construct( IdDto $idDto )
     {
-        $instance = new self();
-        $instance->setIdDto( $idDto );
-        return $instance;
+        parent::__construct();
+        $this->setIdDto( $idDto );
+    }
+
+    /**
+     * Class factory method, set idDto from arg or idDto::Fnamn(/fnrId/orgnr)
+     *
+     * @param string|IdDto $idDto (fnamn)
+     * @param null|string $fnrId
+     * @param null|string $orgnr
+     * @return self
+     * @throws Exception
+     */
+    public static function factory(
+        string|IdDto $idDto,
+        ? string $fnrId = null,
+        ? string $orgnr = null
+    ) : self
+    {
+        if( is_string( $idDto )) {
+            $idDto = IdDto::factory( $idDto, $fnrId, $orgnr );
+        }
+        return new self( $idDto );
     }
 
     /**
@@ -190,21 +211,11 @@ class Sie4Dto extends BaseId
     /**
      * Return IdDto
      *
-     * @return IdDto|null
+     * @return IdDto
      */
-    public function getIdDto() : ?IdDto
+    public function getIdDto() : IdDto
     {
         return $this->idDto;
-    }
-
-    /**
-     * Return bool true if IdDto is set
-     *
-     * @return bool
-     */
-    public function isIdDtoSet() : bool
-    {
-        return ( null !== $this->idDto );
     }
 
     /**
@@ -218,21 +229,14 @@ class Sie4Dto extends BaseId
      */
     public function setIdDto( IdDto $idDto ) : self
     {
-        if( $this->isFnrIdSet()) {
-            $idDto->setFnrId( $this->getFnrId());
-        }
-        elseif( $idDto->isFnrIdSet()) {
+        $this->idDto = $idDto;
+        if( $idDto->isFnrIdSet()) {
             $this->setFnrId( $idDto->getFnrId());
         }
-        if( $this->isOrgnrSet()) {
-            $idDto->setOrgnr( $this->getOrgnr());
-            $idDto->setMultiple( $this->getMultiple());
-        }
-        elseif( $idDto->isOrgnrSet()) {
+        if( $idDto->isOrgnrSet()) {
             $this->setOrgnr( $idDto->getOrgnr());
             $this->setMultiple( $idDto->getMultiple());
         }
-        $this->idDto = $idDto;
         return $this;
     }
 
@@ -1112,9 +1116,7 @@ class Sie4Dto extends BaseId
     public function setFnrId( string $fnrId ) : self
     {
         $this->fnrId = $fnrId;
-        if( $this->isIdDtoSet()) {
-            $this->idDto->setFnrId( $fnrId );
-        }
+        $this->idDto->setFnrId( $fnrId );
         $this->setVerDtosFnrId( $fnrId );
         return $this;
     }
@@ -1128,9 +1130,7 @@ class Sie4Dto extends BaseId
     public function setOrgnr( string $orgnr ) : self
     {
         $this->orgnr = $orgnr;
-        if( $this->isIdDtoSet()) {
-            $this->idDto->setOrgnr( $orgnr );
-        }
+        $this->idDto->setOrgnr( $orgnr );
         $this->setVerDtosOrgnr( $orgnr );
         return $this;
     }
@@ -1144,9 +1144,7 @@ class Sie4Dto extends BaseId
     public function setMultiple( int $multiple ) : self
     {
         $this->multiple = $multiple;
-        if( $this->isIdDtoSet()) {
-            $this->idDto->setMultiple( $multiple );
-        }
+        $this->idDto->setMultiple( $multiple );
         $this->setVerDtosMultiple( $multiple );
         return $this;
     }

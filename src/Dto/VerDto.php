@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -282,7 +282,7 @@ class VerDto extends BaseId
     }
 
     /**
-     * Add single transDto, kontoNr, belopp, #TRANS (default)
+     * Add single transDto using kontoNr, belopp, #TRANS (default)
      *
      * @param int|string $kontoNr
      * @param float  $belopp

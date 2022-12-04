@@ -11,6 +11,27 @@ __*Sie4Sdk*__ supports convert/transform of accounting data from / to
 
 #### Usage
 
+Simple Sie4 import (file-)string __create__ :
+```php
+<?php
+namespace Kigkonsult\Sie4Sdk;
+
+use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
+use Kigkonsult\Sie4Sdk\Dto\VerDto;
+
+$sie4String = Sie4IWriter::factory()->process(
+    Sie4Dto::factory( 'Acme Corp', '123', '556334-3689' )
+        ->addVerDto(
+            VerDto::factory( 123, 'Porto' )
+                ->addTransKontoNrBelopp( 1910, -2000.00 )
+                ->addTransKontoNrBelopp( 2640, 400.00 )
+                ->addTransKontoNrBelopp( 6250, 1600.00 )
+            )
+);
+```
+
+__Parse__ Sie-source
+
 The Sie4EDto (Sie4E, export) usage corresponds to Sie4IDto (Sie4I, import) usage, described below. 
 
 First, load a Sie4IDto instance (if not used as input)
@@ -23,9 +44,12 @@ use Kigkonsult\Sie4Sdk\Api\Array2Sie4Dto;
 use Kigkonsult\Sie4Sdk\Api\Json2Sie4Dto;
 use Kigkonsult\Sie5Sdk\XMLParse\Sie5Parser;
 
-// Parse a Sie4 file/string into a Sie4IDto instance
+// Load resource
+$sie4I_string = ...
+// Parse a Sie4 string (or file) into a Sie4IDto instance
 $sie4IDto = Sie4Parser::factory()->process( $sie4I_string );
-$sie4IDto = Sie4Parser::factory()->process( $sie4I_file );
+// $sie4IDto = Sie4Parser::factory()->process( $sie4I_file );
+
 
 // Transform a (HTTP, $_REQUEST) input array to a Sie4IDto instance
 $sie4IDto = Array2Sie4Dto::process( $sie4I_array );
@@ -43,10 +67,9 @@ $sie4Dto  = Sie4ILoader::factory( $sieEntry )->getSie4IDto();
 // Transform a SieEntry (Sie5) XML file into Sie4IDto instance
 $sieEntry = Sie5Parser::factory()->parseXmlFromFile( $sieEntryFile );
 $sie4IDto = Sie4ILoader::factory( $sieEntry )->getSie4IDto();
-
 ```
 
-Second, validate the Sie4IDto instance
+Second, __validate__ the Sie4IDto instance
 
 ```php
 <?php
@@ -55,6 +78,10 @@ namespace Kigkonsult\Sie4Sdk;
 // Assert mandatory sie4Dto properties
 Sie4Validator::assertSie4IDto( $sie4Dto );
 ```
+
+
+__Format__ Sie-output
+
 
 Last, process the output:
 
@@ -84,7 +111,6 @@ $sieEntry    = Sie5EntryLoader::factory( $sie4Dto )->getSieEntry();
 // Transform the Sie4IDto instance to a SieEntry (Sie5) XML string
 $sieEntry    = Sie5EntryLoader::factory( $sie4Dto )->getSieEntry();
 $sieEntryXML = Sie5Writer::factory()->write( $sieEntry );
-
 ```
 
 #### Info
@@ -99,8 +125,8 @@ all other PHP inbounding encoding (UTF-8)
 - _Sie4Dto_, _VerDto_ and _TransDto_ are equipped with<br>
   unique time/guid properties - _timestamp_ (float) / _correlationId_ (string)<br>
   auto populated at instance create
-- _VerDto_ and _TransDto_ 'inherit' _fnr_/_orgnr_ property values from _Sie4Dto_
-- _TransDto_ 'inherit' _serie_/_vernr_ property values from _VerDto_, opt _transdat_ from regdatum 
+- _VerDto_ and _TransDto_ 'inherit' _fnr_ / _orgnr_ property values from _Sie4Dto_
+- _TransDto_ 'inherit' _serie_ / _vernr_ property values from _VerDto_, opt _transdat_ from regdatum 
 - usefull constants are found in the Sie4Interface
 - review mapping.txt for
   - Dto class and property structure
@@ -184,8 +210,8 @@ Test contributions, Sie4-/Sie-/SieEntry-files, are welcome!
 
 
 #### Sponsorship
-Donation using [paypal.me/kigkonsult] are appreciated.
-For invoice, please [e-mail]</a>.
+Donations using _[buy me a coffee]_ or _[paypal me]_ are appreciated.
+For invoice, please e-mail.
 
 
 #### Support
@@ -200,15 +226,15 @@ For Sie4/Sie5 ([XSD]) issues, go to [Sie] homepage.
 This project is licensed under the LGPLv3 License
 
 
+[buy me a coffee]:https://www.buymeacoffee.com/kigkonsult
+[paypal me]:https://paypal.me/kigkonsult
 [Composer]:https://getcomposer.org/
 [Comet]:https://github.com/gotzmann/comet
 [DsigSdk]:https://github.com/iCalcreator/dsigsdk
-[e-mail]:mailto:ical@kigkonsult.se
 [Faker]:https://github.com/fzaninotto/Faker
 [Github]:https://github.com/iCalcreator/Sie4Sdk/issues
 [Sie5Sdk]:https://github.com/iCalcreator/SieSdk
 [page]:https://sie.se/format/
-[paypal.me/kigkonsult]:https://paypal.me/kigkonsult
 [Sie]:http://www.sie.se
 [XSD]:http://www.sie.se/sie5.xsd
 

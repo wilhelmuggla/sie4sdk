@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -34,13 +34,11 @@ use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 use Kigkonsult\Sie4Sdk\Dto\TransDto;
 use Kigkonsult\Sie4Sdk\Dto\VerDto;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
-use Kigkonsult\Sie5Sdk\Dto\AccountingCurrencyType;
 use Kigkonsult\Sie5Sdk\Dto\AccountsTypeEntry;
 use Kigkonsult\Sie5Sdk\Dto\AccountTypeEntry;
 use Kigkonsult\Sie5Sdk\Dto\CompanyTypeEntry;
 use Kigkonsult\Sie5Sdk\Dto\DimensionsTypeEntry;
 use Kigkonsult\Sie5Sdk\Dto\DimensionTypeEntry;
-use Kigkonsult\Sie5Sdk\Dto\FileCreationType;
 use Kigkonsult\Sie5Sdk\Dto\FileInfoTypeEntry;
 use Kigkonsult\Sie5Sdk\Dto\JournalEntryTypeEntry;
 use Kigkonsult\Sie5Sdk\Dto\JournalTypeEntry;
@@ -49,7 +47,6 @@ use Kigkonsult\Sie5Sdk\Dto\ObjectReferenceType;
 use Kigkonsult\Sie5Sdk\Dto\ObjectType;
 use Kigkonsult\Sie5Sdk\Dto\OriginalEntryInfoType;
 use Kigkonsult\Sie5Sdk\Dto\SieEntry;
-use Kigkonsult\Sie5Sdk\Dto\SoftwareProductType;
 
 /**
  * Class Sie5EntryLoader
@@ -61,7 +58,7 @@ use Kigkonsult\Sie5Sdk\Dto\SoftwareProductType;
  *   FileCreationType : (time + by)
  *   CompanyTypeEntry :  (organizationId)
  */
-class Sie5EntryLoader implements Sie4Interface
+class Sie5EntryLoader extends Sie5LoaderBase
 {
     /**
      * @var Sie4Dto|null
@@ -103,26 +100,26 @@ class Sie5EntryLoader implements Sie4Interface
     private static function newSieEntry() : SieEntry
     {
         return sieEntry::factory()
-                       ->setXMLattribute(
-                           SieEntry::XMLNS,
-                           SieEntry::SIE5URI
-                       )
-                       ->setXMLattribute(
-                           SieEntry::XMLNS_XSI,
-                           SieEntry::XMLSCHEMAINSTANCE
-                       )
-                       ->setXMLattribute(
-                           SieEntry::XMLNS_XSD,
-                           SieEntry::XMLSCHEMA
-                       )
-                       ->setXMLattribute(
-                           SieEntry::XSI_SCHEMALOCATION,
-                           SieEntry::SIE5SCHEMALOCATION
-                       )
-                       ->setFileInfo(
-                           FileInfoTypeEntry::factory()
-                                            ->setCompany( CompanyTypeEntry::factory())
-                       );
+            ->setXMLattribute(
+                SieEntry::XMLNS,
+                SieEntry::SIE5URI
+            )
+            ->setXMLattribute(
+                SieEntry::XMLNS_XSI,
+                SieEntry::XMLSCHEMAINSTANCE
+            )
+            ->setXMLattribute(
+                SieEntry::XMLNS_XSD,
+                SieEntry::XMLSCHEMA
+            )
+            ->setXMLattribute(
+                SieEntry::XSI_SCHEMALOCATION,
+                SieEntry::SIE5SCHEMALOCATION
+            )
+            ->setFileInfo(
+                FileInfoTypeEntry::factory()
+                    ->setCompany( CompanyTypeEntry::factory() )
+            );
     }
 
     /**
@@ -137,77 +134,17 @@ class Sie5EntryLoader implements Sie4Interface
             $this->setSie4IDto( $sie4IDto );
         }
 
-        $this->processIdDto();
+        self::processIdDto(
+            true,
+            $this->sie4IDto->getIdDto(),    // IdDto always set
+            $this->sieEntry->getFileInfo()  // FileInfoTypeEntry, always set
+        );
         $this->processAccountDtos();
         $this->processDimDtos();
         $this->processDimObjektDtos();
         $this->processVerDtos();
 
         return $this->sieEntry;
-    }
-
-    /**
-     * Process Sie4 idDto into SieEntry
-     *
-     * genSign logic also used in processVerDtos
-     *
-     * @return void
-     */
-    private function processIdDto() : void
-    {
-        $idDto    = $this->sie4IDto->getIdDto();
-        $fileInfo = $this->sieEntry->getFileInfo();
-        $name     = $idDto->getProgramnamn();
-        $version  = $idDto->getVersion();
-        switch( true ) {
-            case ( empty( $name ) || ( self::PRODUCTNAME === $name )) :
-                $name    = SoftwareProductType::PRODUCTNAME;
-                $version = SoftwareProductType::PRODUCTVERSION;
-                break;
-            case ( str_contains( $name, self::PRODUCTNAME ) ) :
-                $name    = trim( str_replace( self::PRODUCTNAME, StringUtil::$SP0, $name ));
-                $version = trim( str_replace( self::PRODUCTVERSION, StringUtil::$SP0, $version ));
-                break;
-            default :
-                break;
-        } // end switch
-        // required
-        $fileInfo->setSoftwareProduct(
-            SoftwareProductType::factoryNameVersion(
-                $name,
-                $version
-            )
-        );
-
-        // required
-        $genSign = $idDto->isSignSet()
-            ? $idDto->getSign()
-            : SieEntry::PRODUCTNAME;
-        $fileInfo->setFileCreation(
-            FileCreationType::factoryByTime(
-                $genSign,
-                $idDto->getGenDate()
-            )
-        );
-
-        // required
-        $company = $fileInfo->getCompany();
-        if( $idDto->isFnrIdSet()) {
-            $company->setClientId( $idDto->getFnrId());
-        }
-
-        if( $idDto->isOrgnrSet()) {
-            $company->setOrganizationId( $idDto->getOrgnr());
-            $company->setMultiple( $idDto->getMultiple());
-        }
-
-        $company->setName( $idDto->getFnamn());
-
-        if( $idDto->isValutakodSet()) {
-            $fileInfo->setAccountingCurrency(
-                AccountingCurrencyType::factoryCurrency( $idDto->getValutakod())
-            );
-        }
     }
 
     /**

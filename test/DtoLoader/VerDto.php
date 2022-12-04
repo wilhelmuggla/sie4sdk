@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -57,12 +57,12 @@ class VerDto
             $dateTime->modify( '-1 day' );
             $dto->setVerdatum( $dateTime );
         }
+        $dto->setVertext((string) $faker->words( 4, true ));
         if( 1 === $faker->randomElement( [ 1, 2 ] )) {
             $dateTime = clone $dateTime;
             $dto->setRegdatum( $dateTime->modify( '-1 day' ));
         }
-
-        $dto->setVertext((string) $faker->words( 4, true ));
+        $dto->setSign( $faker->randomLetter() . $faker->randomDigitNotNull());
 
         $max         = $faker->numberBetween( 2, 7 );
         $kontoNrs2    = [];

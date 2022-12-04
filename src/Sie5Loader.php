@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -36,7 +36,6 @@ use Kigkonsult\Sie4Sdk\Dto\TransDto;
 use Kigkonsult\Sie4Sdk\Dto\VerDto;
 use Kigkonsult\Sie4Sdk\Util\DateTimeUtil;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
-use Kigkonsult\Sie5Sdk\Dto\AccountingCurrencyType;
 use Kigkonsult\Sie5Sdk\Dto\AccountsType;
 use Kigkonsult\Sie5Sdk\Dto\AccountType;
 use Kigkonsult\Sie5Sdk\Dto\BaseBalanceType;
@@ -45,10 +44,8 @@ use Kigkonsult\Sie5Sdk\Dto\CompanyType;
 use Kigkonsult\Sie5Sdk\Dto\DimensionsType;
 use Kigkonsult\Sie5Sdk\Dto\DimensionType;
 use Kigkonsult\Sie5Sdk\Dto\EntryInfoType;
-use Kigkonsult\Sie5Sdk\Dto\FileCreationType;
 use Kigkonsult\Sie5Sdk\Dto\FileInfoType;
 use Kigkonsult\Sie5Sdk\Dto\FiscalYearsType;
-use Kigkonsult\Sie5Sdk\Dto\FiscalYearType;
 use Kigkonsult\Sie5Sdk\Dto\JournalEntryType;
 use Kigkonsult\Sie5Sdk\Dto\JournalType;
 use Kigkonsult\Sie5Sdk\Dto\LedgerEntryType;
@@ -56,11 +53,8 @@ use Kigkonsult\Sie5Sdk\Dto\ObjectReferenceType;
 use Kigkonsult\Sie5Sdk\Dto\ObjectType;
 use Kigkonsult\Sie5Sdk\Dto\OriginalEntryInfoType;
 use Kigkonsult\Sie5Sdk\Dto\Sie;
-use Kigkonsult\Sie5Sdk\Dto\SoftwareProductType;
 
-use function str_replace;
 use function strcmp;
-use function trim;
 
 /**
  * Class Sie5Loader
@@ -76,7 +70,7 @@ use function trim;
  * AccountsType : ( but AccountType minOccurs="0")
  * SignatureType !!
  */
-class Sie5Loader implements Sie4Interface
+class Sie5Loader extends Sie5LoaderBase
 {
     /**
      * @var Sie4Dto|null
@@ -153,91 +147,17 @@ class Sie5Loader implements Sie4Interface
             $this->setSie4EDto( $sie4Idata );
         }
 
-        $this->processIdDto();
+        self::processIdDto(
+            false,
+            $this->sie4EDto->getIdDto(), // IdDto always set
+            $this->sie->getFileInfo()    // FileInfoTypeEntry, always set
+        );
         $this->processAccountDtos();
         $this->processDimDtos();
         $this->processDimObjektDtos();
         $this->processVerDtos();
 
         return $this->sie;
-    }
-
-    /**
-     * Process Sie4 idDto into Sie
-     *
-     * genSign logic also used in processVerDtos
-     *
-     * @return void
-     */
-    private function processIdDto() : void
-    {
-        $idDto    = $this->sie4EDto->getIdDto();
-        $fileInfo = $this->sie->getFileInfo();
-        $name     = $idDto->getProgramnamn();
-        $version  = $idDto->getVersion();
-        switch( true ) {
-            case ( empty( $name ) || ( self::PRODUCTNAME === $name )) :
-                $name    = SoftwareProductType::PRODUCTNAME;
-                $version = SoftwareProductType::PRODUCTVERSION;
-                break;
-            case str_contains( $name, self::PRODUCTNAME ) :
-                $name    = trim( str_replace( self::PRODUCTNAME, StringUtil::$SP0, $name ));
-                $version = trim( str_replace( self::PRODUCTVERSION, StringUtil::$SP0, $version ));
-                break;
-            default :
-                break;
-        } // end switch
-        // required
-        $fileInfo->setSoftwareProduct(
-            SoftwareProductType::factoryNameVersion(
-                $name,
-                $version
-            )
-        );
-
-        // required
-        $genSign = $idDto->isSignSet()
-            ? $idDto->getSign()
-            : Sie::PRODUCTNAME;
-        $fileInfo->setFileCreation(
-            FileCreationType::factoryByTime(
-                $genSign,
-                $idDto->getGenDate()
-            )
-        );
-
-        // required
-        $company = $fileInfo->getCompany();
-        if( $idDto->isFnrIdSet()) {
-            $company->setClientId( $idDto->getFnrId());
-        }
-
-        if( $idDto->isOrgnrSet()) {
-            $company->setOrganizationId( $idDto->getOrgnr());
-            $company->setMultiple( $idDto->getMultiple());
-        }
-
-        // required
-        $company->setName( $idDto->getFnamn());
-
-        // required (min 1)
-        if( 0 < $idDto->countRarDtos()) {
-            $fiscalYearsType = $fileInfo->getFiscalYears();
-            foreach( $idDto->getRarDtos() as $rarDto ) {
-                $fiscalYearsType->addFiscalYear(
-                    FiscalYearType::factory()
-                        ->setStart( DateTimeUtil::gYearMonthFromDateTime( $rarDto->getStart()))
-                        ->setEnd( DateTimeUtil::gYearMonthFromDateTime( $rarDto->getSlut()))
-                        ->setPrimary( ( 0 === $rarDto->getArsnr()))
-                );
-            } // end foreach
-        }
-
-        if( $idDto->isValutakodSet()) {
-            $fileInfo->setAccountingCurrency(
-                AccountingCurrencyType::factoryCurrency( $idDto->getValutakod())
-            );
-        }
     }
 
     /**

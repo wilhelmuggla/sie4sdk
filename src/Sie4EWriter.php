@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -28,13 +28,7 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk;
 
 use InvalidArgumentException;
-use Kigkonsult\Asit\It;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
-use Kigkonsult\Sie4Sdk\Util\ArrayUtil;
-use Kigkonsult\Sie4Sdk\Util\FileUtil;
-
-use function implode;
-use function sprintf;
 
 class Sie4EWriter extends Sie4WriterBase
 {
@@ -53,56 +47,6 @@ class Sie4EWriter extends Sie4WriterBase
         ? bool $writeKsumma = null
     ) : string
     {
-        if( $sie4Dto !== null ) {
-            $this->setSie4Dto( $sie4Dto );
-        }
-        if( ! empty( $outputfile )) {
-            FileUtil::assertWriteFile( $outputfile, 5201 );
-        }
-        $this->writeKsumma = ( $this->sie4Dto->isKsummaSet() || ( $writeKsumma ?? false ));
-        $this->output      = new It();
-        $this->output->append(
-            sprintf( self::$SIEENTRYFMT1, self::FLAGGA, $this->sie4Dto->getFlagga())
-        );
-        if( $this->sie4Dto->isKsummaSet() || ( $writeKsumma ?? false )) {
-            $this->output->append( self::KSUMMA );
-        }
-        $this->writeProgram();
-        $this->writeFormat();
-        $this->writeGen();
-        $this->writeSietyp();
-        $this->writeProsa();
-        $this->writeFtyp();
-        $this->writeFnr();
-        $this->writeOrgnr();
-        $this->writeBkod();
-        $this->writeAdress();
-        $this->writeFnamn();
-        $this->writeRar();
-        $this->writeTaxar();
-        $this->writeOmfattn();
-        $this->writeKptyp();
-        $this->writeValuta();
-
-        $this->writeKonto();
-        $this->writeSRU();
-        $this->writeDim();
-        $this->writeUnderDim();
-        $this->writeObjekt();
-        $this->writeIbUb();
-        $this->writeOibOub();
-        $this->writeRes();
-        $this->writePsaldoPbudget();
-
-        $this->writeVerDtos();
-
-        if( $this->writeKsumma ) {
-            $this->computeAndWriteKsumma();
-        }
-        $output = ArrayUtil::eolEndElements( $this->output->get());
-        if( ! empty( $outputfile )) {
-            FileUtil::writeFile( $outputfile, $output, 5205 );
-        }
-        return implode( $output );
+        return $this->write( true, $sie4Dto, $outputfile, $writeKsumma );
     }
 }

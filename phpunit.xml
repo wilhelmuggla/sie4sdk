@@ -5,7 +5,7 @@
  This file is a part of Sie4Sdk
 
  author    Kjell-Inge Gustafsson, kigkonsult
- copyright 2021 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  link      https://kigkonsult.se
  license   Subject matter of licence is the software Sie4Sdk.
            The above package, copyright, link and this licence notice shall be
@@ -33,6 +33,9 @@
          processIsolation="false"
          bootstrap="autoload.php">
     <testsuites>
+        <testsuite name="Demo Sie4Dto Tests">
+            <file>test/TestDemo.php</file>
+        </testsuite>
         <testsuite name="Generated Sie4Dto Tests">
             <file>test/TestGen.php</file>
         </testsuite>
@@ -47,50 +50,7 @@
               disableCodeCoverageIgnore="true">
         <!-- ... -->
         <include>
-            <file>src/Sie4ELoader.php</file>
-            <file>src/Sie4EWriter.php</file>
-            <file>src/Sie4ILoader.php</file>
-            <file>src/Sie4Interface.php</file>
-            <file>src/Sie4IWriter.php</file>
-            <file>src/Sie4Parser.php</file>
-            <file>src/Sie4Validator.php</file>
-            <file>src/Sie4WriterBase.php</file>
-            <file>src/Sie5EntryLoader.php</file>
-            <file>src/Sie5Loader.php</file>
-            <file>src/Api/ArrayBase.php</file>
-            <file>src/Api/Array2Sie4Dto.php</file>
-            <file>src/Api/Json2Sie4Dto.php</file>
-            <file>src/Api/Sie4Dto2Array.php</file>
-            <file>src/Api/Sie4Dto2Json.php</file>
-            <file>src/Dto/AccountDto.php</file>
-            <file>src/Dto/AdressDto.php</file>
-            <file>src/Dto/BalansDto.php</file>
-            <file>src/Dto/BalansObjektDto.php</file>
-            <file>src/Dto/BaseId.php</file>
-            <file>src/Dto/DimDto.php</file>
-            <file>src/Dto/DimObjektDto.php</file>
-            <file>src/Dto/IdDto.php</file>
-            <file>src/Dto/Period.php</file>
-            <file>src/Dto/RarDto.php</file>
-            <file>src/Dto/Sie4Dto.php</file>
-            <file>src/Dto/SruDto.php</file>
-            <file>src/Dto/TransDto.php</file>
-            <file>src/Dto/VerDto.php</file>
-            <file>src/Dto/Traits/ArsnrTrait.php</file>
-            <file>src/Dto/Traits/DimensionNrTrait.php</file>
-            <file>src/Dto/Traits/FnrIdOrgnrTrait.php</file>
-            <file>src/Dto/Traits/FnrIdOrgnr2Trait.php</file>
-            <file>src/Dto/Traits/KontoNrTrait.php</file>
-            <file>src/Dto/Traits/KvantitetTrait.php</file>
-            <file>src/Dto/Traits/ObjektNrTrait.php</file>
-            <file>src/Dto/Traits/SerieVernrTrait.php</file>
-            <file>src/Dto/Traits/SignTrait.php</file>
-            <file>src/Util/Assert.php</file>
-            <file>src/Util/ArrayUtil.php</file>
-            <file>src/Util/DateTimeUtil.php</file>
-            <file>src/Util/FileUtil.php</file>
-            <file>src/Util/GuidUtil.php</file>
-            <file>src/Util/StringUtil.php</file>
+            <directory>./src</directory>
         </include>
         <!-- Require the PHP Xdebug (2.7.0 or later) and tokenizer extensions-->
         <!-- Remove or comment after your own choice-->
