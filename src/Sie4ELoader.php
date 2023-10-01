@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -52,14 +52,14 @@ use function reset;
 class Sie4ELoader extends Sie4LoaderBase
 {
     /**
-     * @var Sie4Dto|null
+     * @var Sie4Dto
      */
-    private ?Sie4Dto $sie4EDto;
+    private Sie4Dto $sie4EDto;
 
     /**
-     * @var Sie|null
+     * @var Sie
      */
-    private ?Sie $sie = null;
+    private Sie $sie;
 
     /**
      * @param null|Sie|SieEntry $sie
@@ -306,7 +306,7 @@ class Sie4ELoader extends Sie4LoaderBase
      */
     public function isSieSet() : bool
     {
-        return ( null !== $this->sie );
+        return isset( $this->sie );
     }
 
     /**

@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -62,6 +62,7 @@ abstract class Sie5LoaderBase  implements Sie4Interface
         [ $name, $version ] = self::processNameVersion( $idDto );
         // required
         $fileInfo->setSoftwareProduct( SoftwareProductType::factoryNameVersion( $name, $version ));
+
         // required
         $genSign = $idDto->isSignSet() ? $idDto->getSign() : Sie::PRODUCTNAME;
         $fileInfo->setFileCreation( FileCreationType::factoryByTime( $genSign, $idDto->getGenDate()));
@@ -88,17 +89,25 @@ abstract class Sie5LoaderBase  implements Sie4Interface
     }
 
     /**
+     * Return array, ( name, version )
+     *
      * @param IdDto $idDto
-     * @return array
+     * @return string[]
      */
     protected static function processNameVersion( IdDto $idDto ) : array
     {
+        static $PARNAME = '(' . self::PRODUCTNAME . ')';
+        static $PARVRSN = '(' . self::PRODUCTVERSION . ')';
         $name     = $idDto->getProgramnamn();
         $version  = $idDto->getVersion();
         switch( true ) {
             case ( empty( $name ) || ( self::PRODUCTNAME === $name )) :
                 $name    = SoftwareProductType::PRODUCTNAME;
                 $version = SoftwareProductType::PRODUCTVERSION;
+                break;
+            case str_contains( $name, $PARNAME ) :
+                $name    = trim( str_replace( $PARNAME, StringUtil::$SP0, $name ));
+                $version = trim( str_replace( $PARVRSN, StringUtil::$SP0, $version ));
                 break;
             case str_contains( $name, self::PRODUCTNAME ) :
                 $name    = trim( str_replace( self::PRODUCTNAME, StringUtil::$SP0, $name ));

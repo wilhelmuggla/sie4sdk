@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -38,6 +38,7 @@ abstract class ArrayBase implements Sie4Interface
         self::TRANS => [
             self::TRANSTIMESTAMP   => self::TRANSTIMESTAMP,
             self::TRANSGUID        => self::TRANSGUID,
+            self::TRANSPARENTGUID  => self::TRANSPARENTGUID,
             self::TRANSKONTONR     => self::TRANSKONTONR,
             self::TRANSDIMENSIONNR => self::TRANSDIMENSIONNR,
             self::TRANSOBJEKTNR    => self::TRANSOBJEKTNR,
@@ -50,6 +51,7 @@ abstract class ArrayBase implements Sie4Interface
         self::RTRANS => [
             self::TRANSTIMESTAMP   => self::RTRANSTIMESTAMP,
             self::TRANSGUID        => self::RTRANSGUID,
+            self::TRANSPARENTGUID  => self::RTRANSPARENTGUID,
             self::TRANSKONTONR     => self::RTRANSKONTONR,
             self::TRANSDIMENSIONNR => self::RTRANSDIMENSIONNR,
             self::TRANSOBJEKTNR    => self::RTRANSOBJEKTNR,
@@ -62,6 +64,7 @@ abstract class ArrayBase implements Sie4Interface
         self::BTRANS => [
             self::TRANSTIMESTAMP   => self::BTRANSTIMESTAMP,
             self::TRANSGUID        => self::BTRANSGUID,
+            self::TRANSPARENTGUID  => self::BTRANSPARENTGUID,
             self::TRANSKONTONR     => self::BTRANSKONTONR,
             self::TRANSDIMENSIONNR => self::BTRANSDIMENSIONNR,
             self::TRANSOBJEKTNR    => self::BTRANSOBJEKTNR,

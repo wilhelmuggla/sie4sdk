@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -29,9 +29,9 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use DateTime;
 use Exception;
+use Kigkonsult\Sie4Sdk\Dto\Traits\ParentCorrelationIdTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SerieVernrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
-use Kigkonsult\Sie4Sdk\Util\Assert;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 use function count;
@@ -51,6 +51,11 @@ class VerDto extends BaseId
      * Serie and vernr
      */
     use SerieVernrTrait;
+
+    /**
+     * Parent CorrelationId
+     */
+    use ParentCorrelationIdTrait;
 
     /**
      * @var DateTime
@@ -77,7 +82,7 @@ class VerDto extends BaseId
     /**
      * @var callable
      */
-    public static $SORTER = [ VerDto::class, 'verSorter' ];
+    public static $SORTER = [ VerDto::class, 'verDtoSorter'];
 
     /**
      * Sort VerDto[] on serie and vernr
@@ -86,7 +91,7 @@ class VerDto extends BaseId
      * @param VerDto $b
      * @return int
      */
-    public static function verSorter( VerDto $a, VerDto $b ) : int
+    public static function verDtoSorter( VerDto $a, VerDto $b ) : int
     {
         if( 0 !== ( $res = StringUtil::strSort((string) $a->getSerie(),(string) $b->getSerie()))) {
             return $res;
@@ -97,7 +102,7 @@ class VerDto extends BaseId
     /**
      * VerDto constructor
      *
-     * Sets unique timestamp, guid and verdatum
+     * Sets unique timestamp, guid and verdatum (opt overload later)
      *
      * @throws Exception
      */
@@ -142,7 +147,6 @@ class VerDto extends BaseId
      */
     public function setSerie( int | string $serie ) : self
     {
-        Assert::isIntOrString( self::VERSERIE, $serie );
         $this->serie = (string) $serie;
         foreach( $this->transDtos as $transDto ) {
             $transDto->setSerie( $this->serie );
@@ -176,7 +180,7 @@ class VerDto extends BaseId
     }
 
     /**
-     * Return bool true if verdatum is set
+     * Return bool true if verdatum is set (always...)
      *
      * @return bool
      */
@@ -262,27 +266,42 @@ class VerDto extends BaseId
     }
 
     /**
-     * Return int count transDtos #TRANS (default) / #RTRANS / #BTRANS
+     * Return int, count of transDtos #TRANS (default) / #RTRANS / #BTRANS
      *
+     * @param null|string $transType
      * @return int
      */
-    public function countTransDtos() : int
+    public function countTransDtos( ? string $transType = null ) : int
     {
-        return count( $this->transDtos );
+        $transType = $transType ?? self::TRANS;
+        $count     = 0;
+        foreach( $this->transDtos as $transDto ) {
+            if( $transType === $transDto->getTransType()) {
+                ++$count;
+            }
+        }
+        return $count;
     }
 
     /**
-     * Return transDtos, array TransDto[] #TRANS (default) / #RTRANS / #BTRANS
+     * Return array, TransDto[], #TRANS / #RTRANS / #BTRANS  (all default)
      *
+     * @param null|string $transType
      * @return TransDto[]
      */
-    public function getTransDtos() : array
+    public function getTransDtos( ? string $transType = null ) : array
     {
-        return $this->transDtos;
+        $output = [];
+        foreach( $this->transDtos as $transDto ) {
+            if(( null === $transType ) || ( $transType === $transDto->getTransType())) {
+                $output[] = $transDto;
+            }
+        }
+        return $output;
     }
 
     /**
-     * Add single transDto using kontoNr, belopp, #TRANS (default)
+     * Add single transDto using kontoNr, belopp, #TRANS default
      *
      * @param int|string $kontoNr
      * @param float  $belopp
@@ -303,9 +322,11 @@ class VerDto extends BaseId
      *
      * @param TransDto $transDto
      * @return self
+     * @since 1.8.4 20230925
      */
     public function addTransDto( TransDto $transDto ) : self
     {
+        $transDto->setParentCorrelationId( $this->getCorrelationId());
         if( $this->isFnrIdSet()) {
             $transDto->setFnrId( $this->getFnrId());
         }

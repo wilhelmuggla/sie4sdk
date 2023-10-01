@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -73,9 +73,9 @@ use function strcmp;
 class Sie5Loader extends Sie5LoaderBase
 {
     /**
-     * @var Sie4Dto|null
+     * @var Sie4Dto
      */
-    private ?Sie4Dto $sie4EDto = null;
+    private Sie4Dto $sie4EDto;
 
     /**
      * @var Sie
@@ -84,24 +84,25 @@ class Sie5Loader extends Sie5LoaderBase
 
     /**
      * Sie5EntryLoader constructor
+     *
+     * @param Sie4Dto|null $sie4EDto
      */
-    public function __construct()
+    public function __construct( ? Sie4Dto $sie4EDto = null )
     {
         $this->sie = self::newSie();
+        if( $sie4EDto !== null ) {
+            $this->setSie4EDto( $sie4EDto );
+        }
     }
 
     /**
-     * @param Sie4Dto|null $sie4EDto
+     * @param Sie4Dto $sie4EDto
      * @return self
      * @throws InvalidArgumentException
      */
-    public static function factory( ? Sie4Dto $sie4EDto = null ): self
+    public static function factory( Sie4Dto $sie4EDto ): self
     {
-        $instance = new self();
-        if( $sie4EDto !== null ) {
-            $instance->setSie4EDto( $sie4EDto );
-        }
-        return $instance;
+        return new self( $sie4EDto );
     }
 
     /**
@@ -142,9 +143,13 @@ class Sie5Loader extends Sie5LoaderBase
      */
     public function getSie( ? Sie4Dto $sie4Idata = null ) : Sie
     {
+        static $FMT1 = 'No input';
         if( $sie4Idata !== null ) {
             $this->sie = self::newSie();
             $this->setSie4EDto( $sie4Idata );
+        }
+        elseif( ! isset( $this->sie4EDto )) {
+            throw new InvalidArgumentException( $FMT1 );
         }
 
         self::processIdDto(

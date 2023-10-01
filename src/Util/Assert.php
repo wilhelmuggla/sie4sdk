@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -28,11 +28,8 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Util;
 
 use InvalidArgumentException;
+use RuntimeException;
 
-use function gettype;
-use function is_int;
-use function is_scalar;
-use function is_string;
 use function sprintf;
 use function strlen;
 use function substr;
@@ -41,24 +38,6 @@ use function var_export;
 
 class Assert
 {
-    /**
-     * Assert value is int or string value
-     *
-     * @param string $label
-     * @param int|string $value
-     * @return void
-     */
-    public static function isIntOrString( string $label, int | string $value ) : void
-    {
-        static $ERR = '%s expects int or string, got %s';
-        if( ! ( is_int( $value ) || is_string( $value ))) {
-            throw new InvalidArgumentException(
-                sprintf( $ERR, $label, gettype( $value )),
-                3711
-            );
-        }
-    }
-
     /**
      * Assert value is non positive int
      *
@@ -71,7 +50,7 @@ class Assert
     {
         static $ERR = '%s integer <= 0 förväntas, nu %s';
         self::isIntegerish( $label, $value );
-        if( 0 < (int)$value ) {
+        if( 0 < (int) $value ) {
             throw new InvalidArgumentException(
                 sprintf( $ERR, $label, (int) $value ),
                 3721
@@ -90,10 +69,44 @@ class Assert
     public static function isIntegerish( string $label, int | string $value ) : void
     {
         static $ERR = '%s integer förväntas, nu %s';
-        if( ! is_scalar( $value ) || ( $value != (int)$value )) { // Note !=
+        if( $value != (int)$value ) { // Note !=
             throw new InvalidArgumentException(
                 sprintf( $ERR, $label, var_export( $value, true )),
                 3731
+            );
+        }
+    }
+
+    /**
+     * Assert value is a YYYY-date
+     *
+     * @param string $label
+     * @param int|string $value
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public static function isYYYYDate( string $label, int | string $value ) : void
+    {
+        static $MMDD = '0101';
+        static $ERR  = '%s (#%d) YYYY-datum förväntas, nu %s';
+        $value  = trim((string) $value );
+        $valueI = (int) $value;
+        if(( 4 !== strlen( $value )) ||
+            ( 1900 > $valueI ) ||
+            ( 2099 < $valueI )) {
+            throw new InvalidArgumentException(
+                sprintf( $ERR, $label, 1, var_export( $value, true )),
+                3741
+            );
+        }
+        try {
+            DateTimeUtil::getDateTime( $value . $MMDD, $label, 3742 );
+        }
+        catch( RuntimeException $e ) {
+            throw new InvalidArgumentException(
+                sprintf( $ERR, $label, 3, var_export( $value, true )),
+                3743,
+                $e
             );
         }
     }
@@ -112,21 +125,24 @@ class Assert
         static $ERR = '%s (#%d) YYYYMM-datum förväntas, nu %s';
         $value = trim( (string)$value );
         $yyxx  = (int) substr( $value, 0, 2 );
-        if( (6 !== strlen( $value )) ||
-            (19 > $yyxx ) ||
-            (20 < $yyxx ) ||
-            (12 < (int) substr( $value, 4, 2 ))) {
+        $mm    = (int) substr( $value, -2 );
+        if(( 6 !== strlen( $value )) ||
+            ( 19 > $yyxx ) ||
+            ( 20 < $yyxx ) ||
+            (  0 === $mm ) ||
+            ( 12 < $mm )) {
             throw new InvalidArgumentException(
                 sprintf( $ERR, $label, 1, var_export( $value, true )),
-                3741
+                3751
             );
         }
         try {
-            DateTimeUtil::getDateTime( $value . $ONE, $label, 3742 );
-        } catch( InvalidArgumentException $e ) {
+            DateTimeUtil::getDateTime( $value . $ONE, $label, 3752 );
+        }
+        catch( RuntimeException $e ) {
             throw new InvalidArgumentException(
                 sprintf( $ERR, $label, 3, var_export( $value, true )),
-                3743,
+                3753,
                 $e
             );
         }

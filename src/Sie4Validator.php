@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -91,38 +91,39 @@ class Sie4Validator implements Sie4Interface
         $flaggaExist = $sieType4Exist = $orgNrExist = $verExist = false;
         $ksummaCnt   = 0;
         while( $sie4Input->valid()) {
-            $post = $sie4Input->current();
+            $row     = (string) $sie4Input->current();
             switch( true ) {
-                case empty( $post ) :
+                case empty( $row ) :
                     break;
-                case StringUtil::startsWith( $post, self::FLAGGA ) :
+                case str_starts_with( $row, self::FLAGGA ) :
                     $flaggaExist = true;
                     break;
-                case StringUtil::startsWith( $post, self::KSUMMA ) :
+                case str_starts_with( $row, self::KSUMMA ) :
                     ++$ksummaCnt;
                     break;
                 case ( $flaggaExist &&
-                    StringUtil::startsWith( $post, self::SIETYP ) &&
-                    str_contains( StringUtil::after( self::SIETYP, $post ), self::$FOUR )) :
+                    str_starts_with( $row, self::SIETYP ) &&
+                    str_contains( StringUtil::after( self::SIETYP, $row ), self::$FOUR )) :
                     $sieType4Exist = true;
                     break;
                 case ( $sieType4Exist &&
                     $flaggaExist &&
-                    StringUtil::startsWith( $post, self::ORGNR )) :
+                    str_starts_with( $row, self::ORGNR )) :
                     $orgNrExist = true;
                     break;
                 case ( $orgNrExist &&
                     $sieType4Exist &&
                     $flaggaExist &&
-                    StringUtil::startsWith( $post, self::VER )) :
+                    str_starts_with( $row, self::VER )) :
                     $verExist = true;
                     break;
+                    /*
                 case ( $verExist &&
                     $orgNrExist &&
                     $sieType4Exist &&
                     $flaggaExist ) :
-                    // leave while if all ok
                     break;
+                    */
             } // end switch
             $sie4Input->next();
         } // end while
@@ -407,7 +408,7 @@ class Sie4Validator implements Sie4Interface
     /**
      * Validate mandatory properties in AccountDto
      *
-     * KontoNr/namn/typ required
+     * KontoNr/namn required, typ/enhet opt
      *
      * @param int        $x
      * @param AccountDto $accountDto
@@ -418,8 +419,7 @@ class Sie4Validator implements Sie4Interface
     {
         static $FMT1 = '#%d KontoNr/namn/typ förväntas';
         if( ! $accountDto->isKontoNrSet() ||
-            ! $accountDto->isKontonamnSet() ||
-            ! $accountDto->isKontotypSet()) {
+            ! $accountDto->isKontonamnSet()) {
             throw new InvalidArgumentException( sprintf( $FMT1, $x ),3611 );
         }
     }
@@ -669,7 +669,7 @@ class Sie4Validator implements Sie4Interface
                 3705
             );
         }
-        if( empty( $verDto->countTransDtos())) {
+        if( empty( $verDto->countTransDtos( self::TRANS ))) {
             throw new InvalidArgumentException(
                 sprintf( $FMT2, $verNr, $x ),
                 3706
@@ -677,10 +677,10 @@ class Sie4Validator implements Sie4Interface
         }
         $balans = 0.00;
         foreach( $verDto->getTransDtos() as $kx => $transDto ) {
+            self::assertTransDto( $verNr, $x, $kx, $transDto );
             if( self::TRANS === $transDto->getTransType()) {
                 $balans += $transDto->getBelopp() ?? 0.00;
             }
-            self::assertTransDto( $verNr, $x, $kx, $transDto );
         } // end foreach
         if( 0.00 != (float) number_format( $balans, 2, StringUtil::$DOT, $SP0 )) { // Note !=
             throw new InvalidArgumentException(
@@ -733,7 +733,7 @@ class Sie4Validator implements Sie4Interface
                             $errKey,
                             $x,
                             ( $dimObjekt->isDimensionsNrSet() ? (string) $dimObjekt->getDimensionNr() : StringUtil::$SP1 ),
-                            ( $dimObjekt->getObjektNr() ?? StringUtil::$SP1 )
+                            ( $dimObjekt->isObjektNrSet() ? $dimObjekt->getObjektNr() : StringUtil::$SP1 )
                         ),
                         3713
                     );

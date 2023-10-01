@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -32,9 +32,11 @@ use RuntimeException;
 
 use function explode;
 use function iconv;
+use function ord;
 use function sprintf;
 use function str_contains;
 use function str_replace;
+use function str_starts_with;
 use function strcmp;
 use function strlen;
 use function strpos;
@@ -92,12 +94,12 @@ class StringUtil
     private static string $CP437    = 'CP437';
 
     /**
-     * @var string
+     * @  var string
      */
     // private static $TRANSLIT = '//TRANSLIT';
 
     /**
-     * @var string
+     * @  var string
      */
     // private static $IGNORE   = '//IGNORE';
 
@@ -180,7 +182,7 @@ class StringUtil
         static $CRLFs = [ "\r\n", "\n\r", "\n", "\r" ];
         static $EOL2  = PHP_EOL . PHP_EOL;
         /* fix eol chars */
-        $string = str_replace( $CRLFs, PHP_EOL, $string );
+        $string     = str_replace( $CRLFs, PHP_EOL, $string );
         while( str_contains( $string, $EOL2 ) ) {
             $string = str_replace( $EOL2, PHP_EOL, $string );
         } // end while
@@ -271,12 +273,12 @@ class StringUtil
      * Split post on label and label data, on missing leading #, all is content
      *
      * @param string $post
-     * @return array       [ string, string[] ]  i.e. [ label, contentParts[] ]
+     * @return string[]|string[][]   [ string, string[] ]  i.e. [ label, contentParts[] ]
      */
     public static function splitPost( string $post ) : array
     {
         static $HASH = '#';
-        if( ! self::startsWith( $post, $HASH )) {
+        if( ! str_starts_with( $post, $HASH )) {
             return [ null, self::splitContent( $post ) ];
         }
         if( ! str_contains( $post, self::$SP1 )) {
@@ -369,7 +371,7 @@ class StringUtil
     }
 
     /**
-     * Skip skip control characters and alter '\"' to SEP
+     * Skip control characters and alter '\"' to SEP
      *
      * @param string $input
      * @return string
@@ -377,10 +379,10 @@ class StringUtil
     private static function prePrepInput( string $input ) : string
     {
         static $BS = "\\";
-        $input  = trim( $input );
-        $output = self::$SP0;
-        $len    = strlen( $input );
-        for ($x = 0; $x < $len; $x++) {
+        $input     = trim( $input );
+        $output    = self::$SP0;
+        $len       = strlen( $input );
+        for( $x = 0; $x < $len; $x++ ) {
             $byteInt = ord( $input[$x] );
             if (( $byteInt < 32 ) || ( 127 === $byteInt )) {
                 // skip control characters
@@ -464,6 +466,8 @@ class StringUtil
     }
 
     /**
+     * Return -1 (a < b), 0 (a equal b ), 1 (a < b)
+     *
      * @param string $a
      * @param string $b
      * @return int
@@ -606,55 +610,7 @@ class StringUtil
     public static function strrevpos( string $haystack, string $needle ) : bool | int
     {
         return ( false !== ( $rev_pos = strpos( strrev( $haystack ), strrev( $needle ))))
-            ? ( strlen( $haystack ) - $rev_pos - strlen( $needle ))
+            ? (int)( strlen( $haystack ) - $rev_pos - strlen( $needle ))
             : false;
-    }
-
-    /**
-     * Return bool true if haystack starts with needle, false on not found or to large
-     *
-     * Case-sensitive search for needle (first) in haystack
-     *
-     * @param string $haystack
-     * @param string $needle
-     * @param null|int $len       if found contains length of needle
-     * @return bool
-     */
-    public static function startsWith( string $haystack, string $needle, ? int & $len = null ) : bool
-    {
-        $len       = null;
-        $needleLen = strlen( $needle );
-        if( $needleLen > strlen( $haystack )) {
-            return false;
-        }
-        if( str_starts_with( $haystack, $needle ) ) {
-            $len = $needleLen;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Return bool true if haystack ends with needle, false on not found or to large
-     *
-     * Case-sensitive search for needle in haystack
-     *
-     * @param string    $haystack
-     * @param string    $needle
-     * @param null|int  $len       if found contains length of needle
-     * @return bool
-     */
-    public static function endsWith( string $haystack, string $needle, ? int & $len = null ) : bool
-    {
-        $len       = null;
-        $needleLen = strlen( $needle );
-        if( $needleLen > strlen( $haystack )) {
-            return false;
-        }
-        if( $needle === substr( $haystack, ( 0 - $needleLen ))) {
-            $len = $needleLen;
-            return true;
-        }
-        return false;
     }
 }

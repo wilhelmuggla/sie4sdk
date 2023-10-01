@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -103,6 +103,8 @@ class TestGen extends TestCase
     /**
      * @test
      * @dataProvider genTestProvider
+     *
+     * Will most likely fail due to kontoTyp may not exist
      *
      * @param int $case
      * @param Sie4Dto $sie4Dto
@@ -348,13 +350,24 @@ class TestGen extends TestCase
         $sie4IDto5->setSruDtos( $fixes[Sie4Dto::SRU] );
         $sie4IDto5->setUnderDimDtos( $fixes[Sie4Dto::UNDERDIM] );
 
+        // Remove non-mandatory #KTYP
+        foreach( $sie4Dto3->getAccountDtos() as $accountDto ) {
+            $accountDto->setKontoTyp();
+        }
+        $sie4String3 = StringUtil::cp437toUtf8(
+            Sie4IWriter::factory()->process( $sie4Dto3 )
+        );
+        // Remove non-mandatory #KTYP
+        foreach( $sie4IDto5->getAccountDtos() as $accountDto ) {
+            $accountDto->setKontoTyp();
+        }
         // write Sie4 string
         $sie4String5 = StringUtil::cp437toUtf8(
             Sie4IWriter::factory()->process( $sie4IDto5 )
         );
 
         // final compare of Sie4I AND Sie5 (SieEntry from Sie4I),
-        // WILL return errors due to Sie4/Sie5 disparity
+        // WILL return errors due to Sie4/Sie5 disparity, ex non-mandatory #KTYP
         $this->assertEquals(
             $sie4String3,
             $sie4String5,

@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -61,35 +61,36 @@ use Kigkonsult\Sie5Sdk\Dto\SieEntry;
 class Sie5EntryLoader extends Sie5LoaderBase
 {
     /**
-     * @var Sie4Dto|null
+     * @var Sie4Dto
      */
-    private ?Sie4Dto $sie4IDto = null;
+    private Sie4Dto $sie4IDto;
 
     /**
-     * @var SieEntry|null
+     * @var SieEntry
      */
-    private ?SieEntry $sieEntry;
+    private SieEntry $sieEntry;
 
     /**
      * Sie5EntryLoader constructor
+     *
+     * @param Sie4Dto|null $sie4IDto
      */
-    public function __construct()
+    public function __construct( ? Sie4Dto $sie4IDto = null )
     {
         $this->sieEntry = self::newSieEntry();
+        if( $sie4IDto !== null ) {
+            $this->setSie4IDto( $sie4IDto );
+        }
     }
 
     /**
-     * @param Sie4Dto|null $sie4IDto
+     * @param Sie4Dto $sie4IDto
      * @return self
      * @throws InvalidArgumentException
      */
-    public static function factory( ? Sie4Dto $sie4IDto = null ): self
+    public static function factory(  Sie4Dto $sie4IDto ): self
     {
-        $instance = new self();
-        if( $sie4IDto !== null ) {
-            $instance->setSie4IDto( $sie4IDto );
-        }
-        return $instance;
+        return new self( $sie4IDto );
     }
 
     /**
@@ -129,9 +130,13 @@ class Sie5EntryLoader extends Sie5LoaderBase
      */
     public function getSieEntry( ? Sie4Dto $sie4IDto = null ) : SieEntry
     {
+        static $FMT1 = 'No input';
         if( $sie4IDto !== null ) {
             $this->sieEntry = self::newSieEntry();
             $this->setSie4IDto( $sie4IDto );
+        }
+        elseif( ! isset( $this->sie4IDto )) {
+            throw new InvalidArgumentException( $FMT1 );
         }
 
         self::processIdDto(
@@ -164,10 +169,14 @@ class Sie5EntryLoader extends Sie5LoaderBase
             $this->sieEntry->setAccounts( $accounts );
         }
         foreach( $accountDtos as $accountDto ) {
+            $kontoNr  = $accountDto->getKontoNr();
+            $kontoTyp = $accountDto->isKontotypSet()
+                ? $accountDto->getKontoTyp()
+                : AccountDto::findOutKontoTyp( $kontoNr );
             $accountTypeEntry = AccountTypeEntry::factoryIdNameType(
                 $accountDto->getKontoNr(),
                 $accountDto->getKontoNamn(),
-                (string) AccountDto::getKontoType( $accountDto->getKontoTyp(), false )
+                (string) AccountDto::getKontoType( $kontoTyp, false )
             );
             if( $accountDto->isEnhetSet()) {
                 $accountTypeEntry->setUnit( $accountDto->getEnhet());

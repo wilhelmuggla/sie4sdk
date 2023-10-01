@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -44,7 +44,7 @@ class Sie4Dto2Json
      */
     public static function process( Sie4Dto $sie4IDto ) : string
     {
-        static $ERR1 = 'array to json string error, ';
+        static $ERR1  = 'array to json string error, ';
         static $FLAGS = JSON_THROW_ON_ERROR;
         try {
             $string = json_encode( Sie4Dto2Array::process( $sie4IDto ), $FLAGS );

@@ -1,0 +1,955 @@
+1010,Utvecklingsutgifter,T
+1011,Balanserade utgifter för forskning och utveckling,T
+1012,Balanserade utgifter för programvaror,T
+1018,Ackumulerade nedskrivningar på balanserade utgifter,T
+1019,Ackumulerade avskrivningar på balanserade utgifter,T
+1028,Ackumulerade nedskrivningar på koncessioner m.m.,T
+1029,Ackumulerade avskrivningar på koncessioner m.m.,T
+1038,Ackumulerade nedskrivningar på patent,T
+1039,Ackumulerade avskrivningar på patent,T
+1048,Ackumulerade nedskrivningar på licenser,T
+1049,Ackumulerade avskrivningar på licenser,T
+1058,Ackumulerade nedskrivningar på varumärken,T
+1059,Ackumulerade avskrivningar på varumärken,T
+1068,"Ackumulerade nedskrivningar på hyresrätter, tomträtter och liknande",T
+1069,"Ackumulerade avskrivningar på hyresrätter, tomträtter och liknande",T
+1078,Ackumulerade nedskrivningar på goodwill,T
+1079,Ackumulerade avskrivningar på goodwill,T
+1081,Pågående projekt för immateriella anläggningstillgångar,T
+1088,Förskott för immateriella anläggningstillgångar,T
+1110,Byggnader,T
+1111,Byggnader på egen mark,T
+1112,Byggnader på annans mark,T
+1118,Ackumulerade nedskrivningar på byggnader,T
+1119,Ackumulerade avskrivningar på byggnader,T
+1129,Ackumulerade avskrivningar på förbättringsutgifter på annans fastighet,T
+1140,Tomter och obebyggda markområden,T
+1158,Ackumulerade nedskrivningar på markanläggningar,T
+1159,Ackumulerade avskrivningar på markanläggningar,T
+1181,"Pågående ny-, till- och ombyggnad",T
+1188,Förskott för byggnader och mark,T
+1211,Maskiner,T
+1213,Andra tekniska anläggningar,T
+1218,Ackumulerade nedskrivningar på maskiner och andra tekniska anläggningar,T
+1219,Ackumulerade avskrivningar på maskiner och andra tekniska anläggningar,T
+1221,Inventarier,T
+1222,Byggnadsinventarier,T
+1223,Markinventarier,T
+1225,Verktyg,T
+1228,Ackumulerade nedskrivningar på inventarier och verktyg,T
+1229,Ackumulerade avskrivningar på inventarier och verktyg,T
+1231,Installationer på egen fastighet,T
+1232,Installationer på annans fastig het,T
+1238,Ackumulerade nedskrivningar på installationer,T
+1239,Ackumulerade avskrivningar på installationer,T
+1241,Personbilar,T
+1242,Lastbilar,T
+1243,Truckar,T
+1244,Arbetsmaskiner,T
+1245,Traktorer,T
+1246,"Motorcyklar, mopeder och skotrar",T
+1247,"Båtar, flygplan och helikoptrar",T
+1248,Ackumulerade nedskrivningar på bilar och andra transportmedel,T
+1249,Ackumulerade avskrivningar på bilar och andra transportmedel,T
+1251,"Datorer, företaget",T
+1257,"Datorer, personal",T
+1258,Ackumulerade nedskrivningar på datorer,T
+1259,Ackumulerade avskrivningar på datorer,T
+1269,Ackumulerade avskrivningar på leasade tillgångar,T
+1281,"Pågående nyanläggningar, maskiner och inventarier",T
+1288,Förskott för maskiner och inventarier,T
+1291,Konst och liknande tillgångar,T
+1292,Djur som klassificeras som anläggningstillgång,T
+1298,Ackumulerade nedskrivningar på övriga materiella anläggningstillgångar,T
+1299,Ackumulerade avskrivningar på övriga materiella anläggningstillgångar,T
+1311,Aktier i noterade svenska koncernföretag,T
+1312,Aktier i onoterade svenska koncernföretag,T
+1313,Aktier i noterade utländska koncernföretag,T
+1314,Aktier i onoterade utländska koncernföretag,T
+1316,Övriga andelar i koncernföretag,T
+1318,Ackumulerade nedskrivningar av andelar i koncernföretag,T
+1321,Långfristiga fordringar hos moderföretag,T
+1322,Långfristiga fordringar hos dotterföretag,T
+1323,Långfristiga fordringar hos andra koncernföretag,T
+1328,Ackumulerade nedskrivningar av långfristiga fordringar hos koncernföretag,T
+1331,Andelar i intresseföretag,T
+1332,Ackumulerade nedskrivningar av andelar i intresseföretag,T
+1333,Andelar i gemensamt styrda företag,T
+1334,Ackumulerade nedskrivningar av andelar i gemensamt styrda företag,T
+1336,Andelar i övriga företag som det finns ett ägarintresse i,T
+1337,Ackumulerade nedskrivningar av andelar i övriga företag som det finns ett ägarintresse i,T
+1338,"Ackumulerade nedskrivningar av andelar i intresseföretag, gemensamt styrda företag och övriga företag som det finns ett ägarintresse i",T
+1341,Långfristiga fordringar hos intresseföretag,T
+1342,Ackumulerade nedskrivningar av långfristiga fordringar hos intresseföretag,T
+1343,Långfristiga fordringar hos gemensamt styrda företag,T
+1344,Ackumulerade nedskrivningar av långfristiga fordringar hos gemensamt styrda företag,T
+1346,Långfristiga fordringar hos övriga företag som det finns ett ägarintresse i,T
+1347,Ackumulerade nedskrivningar av långfristiga fordringar hos övriga företag som det finns ett ägarintresse i,T
+1348,"Ackumulerade nedskrivningar av långfristiga fordringar hos intresseföretag, gemensamt styrda företag och övriga företag som det finns ett ägarintresse i",T
+1351,Andelar i noterade företag,T
+1352,Andra andelar,T
+1353,Andelar i bostadsrättsföreningar,T
+1354,Obligationer,T
+1356,"Andelar i ekonomiska föreningar, övriga företag",T
+1357,"Andelar i handelsbolag, andra företag",T
+1358,Ackumulerade nedskrivningar av andra andelar och värdepapper,T
+1369,"Ackumulerade nedskrivningar av lån till delägare eller närstående enligt ABL, långfristig del",T
+1381,Långfristiga reversfordringar,T
+1382,Långfristiga fordringar hos anställda,T
+1383,"Lämnade depositioner, långfristiga",T
+1384,Derivat,T
+1385,Värde av kapitalförsäkring,T
+1386,"Förutbetalda leasingavgifter, långfristig del",T
+1387,Långfristiga kontraktsfordringar,T
+1388,Långfristiga kundfordringar,T
+1389,Ackumulerade nedskrivningar av andra långfristiga fordringar,T
+1419,Förändring av lager av råvaror,T
+1429,Förändring av lager av tillsatsmaterial och förnödenheter,T
+1449,Förändring av produkter i arbete,T
+1459,Förändring av lager av färdiga varor,T
+1465,Lager av varor VMB,T
+1466,Nedskrivning av varor VMB,T
+1467,Lager av varor VMB förenklad,T
+1469,Förändring av lager av handelsvaror,T
+1471,"Pågående arbeten, nedlagda kostnader",T
+1478,"Pågående arbeten, fakturering",T
+1479,Förändring av pågående arbeten,T
+1481,Remburser,T
+1489,Övriga förskott till leverantörer,T
+1491,Lager av värdepapper,T
+1492,Lager av fastigheter,T
+1493,Djur som klassificeras som omsättningstillgång,T
+1511,Kundfordringar,T
+1512,Belånade kundfordringar (factoring),T
+1513,Kundfordringar – delad faktura,T
+1516,Tvistiga kundfordringar,T
+1518,Ej reskontraförda kundfordringar,T
+1519,Nedskrivning av kundfordringar,T
+1525,Osäkra växelfordringar,T
+1529,Nedskrivning av växelfordringar,T
+1531,Kontraktsfordringar,T
+1532,Belånade kontraktsfordringar,T
+1536,Tvistiga kontraktsfordringar,T
+1539,Nedskrivning av kontraktsfordringar,T
+1561,Kundfordringar hos moderföretag,T
+1562,Kundfordringar hos dotterföretag,T
+1563,Kundfordringar hos andra koncernföretag,T
+1568,Ej reskontraförda kundfordringar hos koncernföretag,T
+1569,Nedskrivning av kundfordringar hos koncernföretag,T
+1571,Kundfordringar hos intresseföretag,T
+1572,Kundfordringar hos gemensamt styrda företag,T
+1573,Kundfordringar hos övriga företag som det finns ett ägarintresse i,T
+1580,Fordringar för kontokort och kuponger,T
+1611,Reseförskott,T
+1612,Kassaförskott,T
+1613,Övriga förskott,T
+1614,Tillfälliga lån till anställda,T
+1619,Övriga fordringar hos anställda,T
+1620,Upparbetad men ej fakturerad intäkt,T
+1630,Avräkning för skatter och avgifter (skattekonto),T
+1640,Skattefordringar,T
+1661,Kortfristiga fordringar hos moderföretag,T
+1662,Kortfristiga fordringar hos dotterföretag,T
+1663,Kortfristiga fordringar hos andra koncernföretag,T
+1671,Kortfristiga fordringar hos intresseföretag,T
+1672,Kortfristiga fordringar hos gemensamt styrda företag,T
+1673,Kortfristiga fordringar hos övriga företag som det finns ett ägarintresse i,T
+1681,Utlägg för kunder,T
+1682,Kortfristiga lånefordringar,T
+1683,Derivat,T
+1684,Kortfristiga fordringar hos leverantörer,T
+1685,Kortfristiga fordringar hos delägare eller närstående,T
+1687,Kortfristig del av långfristiga fordringar,T
+1688,Fordran arbetsmarknadsförsäkringar,T
+1689,Övriga kortfristiga fordringar,T
+1710,Förutbetalda hyreskostnader,T
+1720,"Förutbetalda leasingavgifter, kortfristig del",T
+1730,Förutbetalda försäkringspremier,T
+1740,Förutbetalda räntekostnader,T
+1750,Upplupna hyresintäkter,T
+1760,Upplupna ränteintäkter,T
+1770,Tillgångar av kostnadsnatur,T
+1780,Upplupna avtalsintäkter,T
+1790,Övriga förutbetalda kostnader och upplupna intäkter,T
+1810,Andelar i börsnoterade företag,T
+1820,Obligationer,T
+1830,Konvertibla skuldebrev,T
+1869,Nedskrivning av andelar i koncernföretag,T
+1886,Derivat,T
+1889,Andelar i övriga företag,T
+1911,Huvudkassa,T
+1912,Kassa 2,T
+1913,Kassa 3,T
+1920,PlusGiro,T
+1930,Företagskonto/checkkonto/affärskonto,T
+1940,Övriga bankkonton,T
+1950,Bankcertifikat,T
+1960,Koncernkonto moderföretag,T
+1972,Upphovsmannakonto,T
+1973,Skogskonto,T
+1974,Spärrade bankmedel,T
+1979,Övriga särskilda bankkonton,T
+1980,Valutakonton,T
+1990,Redovisningsmedel,T
+2011,Egna varuuttag,S
+2013,Övriga egna uttag,S
+2017,Årets kapitaltillskott,S
+2018,Övriga egna insättningar,S
+2019,"Årets resultat, delägare 1",S
+2050,Avsättning till expansionsfond,S
+2061,Eget kapital/stiftelsekapital/grundkapital,S
+2065,Förändring i fond för verkligt värde,S
+2066,Värdesäkringsfond,S
+2067,Balanserad vinst eller förlust/balanserat kapital,S
+2068,Vinst eller förlust från föregående år,S
+2069,Årets resultat,S
+2071,Ändamål 1,S
+2072,Ändamål 2,S
+2081,Aktiekapital,S
+2082,Ej registrerat aktiekapital,S
+2083,Medlemsinsatser,S
+2084,Förlagsinsatser,S
+2085,Uppskrivningsfond,S
+2086,Reservfond,S
+2087,Insatsemission,S
+2088,Fond för yttre underhåll,S
+2089,Fond för utvecklingsutgifter,S
+2091,Balanserad vinst eller förlust,S
+2092,Mottagna/lämnade koncernbidrag,S
+2093,Erhållna aktieägartillskott,S
+2094,Egna aktier,S
+2095,Fusionsresultat,S
+2096,Fond för verkligt värde,S
+2097,Överkursfond,S
+2098,Vinst eller förlust från föregående år,S
+2099,Årets resultat,S
+2113,Periodiseringsfond vid 2013 års taxering,S
+2123,Periodiseringsfond 2013,S
+2124,Periodiseringsfond 2014,S
+2125,Periodiseringsfond 2015,S
+2126,Periodiseringsfond 2016,S
+2127,Periodiseringsfond 2017,S
+2128,Periodiseringsfond 2018 ,S
+2129,Periodiseringsfond 2019,S
+2130,Periodiseringsfond 2020 – nr 2,S
+2131,Periodiseringsfond 2021 – nr 2,S
+2132,Periodiseringsfond 2022 – nr 2,S
+2133,Periodiseringsfond 2023 – nr 2,S
+2134,Periodiseringsfond 2024 – nr 2,S
+2135,Periodiseringsfond 2015 – nr 2,S
+2136,Periodiseringsfond 2016 – nr 2,S
+2137,Periodiseringsfond 2017 – nr 2,S
+2138,Periodiseringsfond 2018 – nr 2,S
+2139,Periodiseringsfond 2019 – nr 2,S
+2151,Ackumulerade överavskrivningar på immateriella anläggningstillgångar,S
+2152,Ackumulerade överavskrivningar på byggnader och markanläggningar,S
+2153,Ackumulerade överavskrivningar på maskiner och inventarier,S
+2161,Ersättningsfond maskiner och inventarier,S
+2162,Ersättningsfond byggnader och markanläggningar,S
+2164,Ersättningsfond för djurlager i jordbruk och renskötsel,S
+2196,Lagerreserv,S
+2199,Övriga obeskattade reserver,S
+2210,Avsättningar för pensioner enligt tryggandelagen,S
+2220,Avsättningar för garantier,S
+2230,Övriga avsättningar för pensioner och liknande förpliktelser,S
+2240,Avsättningar för uppskjutna skatter,S
+2252,Avsättningar för tvistiga skatter,S
+2253,"Avsättningar särskild löneskatt, deklarationspost",S
+2290,Övriga avsättningar,S
+2310,Obligations- och förlagslån,S
+2321,Konvertibla lån,S
+2322,Lån förenade med optionsrätt,S
+2323,Vinstandelslån,S
+2324,Kapitalandelslån,S
+2331,Utnyttjad checkräkningskredit 1,S
+2332,Utnyttjad checkräkningskredit 2,S
+2335,Beviljad checkräkningskredit 1,S
+2336,Beviljad checkräkningskredit 2,S
+2340,Byggnadskreditiv,S
+2351,"Fastighetslån, långfristig del",S
+2355,Långfristiga lån i utländsk valuta från kreditinstitut,S
+2359,Övriga långfristiga lån från kreditinstitut,S
+2361,Långfristiga skulder till moderföretag,S
+2362,Långfristiga skulder till dotterföretag,S
+2363,Långfristiga skulder till andra koncernföretag,S
+2371,Långfristiga skulder till intresseföretag,S
+2372,Långfristiga skulder till gemensamt styrda företag,S
+2373,Långfristiga skulder till övriga företag som det finns ett ägarintresse i,S
+2391,"Avbetalningskontrakt, långfristig del",S
+2392,Villkorliga långfristiga skulder,S
+2393,"Lån från närstående personer, långfristig del",S
+2394,Långfristiga leverantörskrediter,S
+2395,Andra långfristiga lån i utländsk valuta,S
+2396,Derivat,S
+2397,"Mottagna depositioner, långfristiga",S
+2399,Övriga långfristiga skulder,S
+2411,Kortfristiga lån från kreditinstitut,S
+2417,Kortfristig del av långfristiga skulder till kreditinstitut,S
+2419,Övriga kortfristiga skulder till kreditinstitut,S
+2421,Ej inlösta presentkort,S
+2429,Övriga förskott från kunder,S
+2431,"Pågående arbeten, fakturering",S
+2438,"Pågående arbeten, nedlagda kostnader",S
+2439,Beräknad förändring av pågående arbeten,S
+2441,Leverantörsskulder,S
+2443,Konsignationsskulder,S
+2445,Tvistiga leverantörsskulder,S
+2448,Ej reskontraförda leverantörsskulder,S
+2450,Fakturerad men ej upparbetad intäkt,S
+2461,Leverantörsskulder till moderföretag,S
+2462,Leverantörsskulder till dotterföretag,S
+2463,Leverantörsskulder till andra koncernföretag,S
+2471,Leverantörsskulder till intresseföretag,S
+2472,Leverantörsskulder till gemensamt styrda företag,S
+2473,Leverantörsskulder till övriga företag som det finns ett ägarintresse i,S
+2480,"Checkräkningskredit, kortfristig",S
+2491,Avräkning spelarrangörer,S
+2492,Växelskulder,S
+2499,Andra övriga kortfristiga skulder,S
+2512,Beräknad inkomstskatt,S
+2513,Beräknad fastighetsskatt/fastighetsavgift,S
+2514,Beräknad särskild löneskatt på pensionskostnader,S
+2515,Beräknad avkastningsskatt,S
+2517,Beräknad utländsk skatt,S
+2518,Betald F-skatt,S
+2611,"Utgående moms på försäljning inom Sverige, 25 %",S
+2612,"Utgående moms på egna uttag, 25 %",S
+2613,"Utgående moms för uthyrning, 25 %",S
+2614,"Utgående moms omvänd skattskyldighet, 25 %",S
+2615,"Utgående moms import av varor, 25 %",S
+2616,Utgående moms VMB 25 %,S
+2618,"Vilande utgående moms, 25 %",S
+2621,"Utgående moms på försäljning inom Sverige, 12 %",S
+2622,"Utgående moms på egna uttag, 12 %",S
+2623,"Utgående moms för uthyrning, 12 %",S
+2624,"Utgående moms omvänd skattskyldighet, 12 %",S
+2625,"Utgående moms import av varor, 12 %",S
+2626,Utgående moms VMB 12 %,S
+2628,"Vilande utgående moms, 12 %",S
+2631,"Utgående moms på försäljning inom Sverige, 6 %",S
+2632,"Utgående moms på egna uttag, 6 %",S
+2633,"Utgående moms för uthyrning, 6 %",S
+2634,"Utgående moms omvänd skattskyldighet, 6 %",S
+2635,"Utgående moms import av varor, 6 %",S
+2636,Utgående moms VMB 6 %,S
+2638,"Vilande utgående moms, 6 %",S
+2641,Debiterad ingående moms,S
+2642,Debiterad ingående moms i anslutning till frivillig skattskyldighet,S
+2645,Beräknad ingående moms på förvärv från utlandet,S
+2646,Ingående moms på uthyrning,S
+2647,Ingående moms omvänd skattskyldighet varor och tjänster i Sverige,S
+2648,Vilande ingående moms,S
+2649,"Ingående moms, blandad verksamhet",S
+2650,Redovisningskonto för moms,S
+2661,Reklamskatt,S
+2669,Övriga punktskatter,S
+2710,Personalskatt,S
+2731,Avräkning lagstadgade sociala avgifter,S
+2732,Avräkning särskild löneskatt,S
+2761,Avräkning semesterlöner,S
+2762,Semesterlönekassa,S
+2791,Personalens intressekonto,S
+2792,Lönsparande,S
+2793,Gruppförsäkringspremier,S
+2794,Fackföreningsavgifter,S
+2795,Mätnings- och granskningsarvoden,S
+2799,Övriga löneavdrag,S
+2811,Avräkning för factoring,S
+2812,Avräkning för belånade kontraktsfordringar,S
+2821,Löneskulder,S
+2822,Reseräkningar,S
+2823,"Tantiem, gratifikationer",S
+2829,Övriga kortfristiga skulder till anställda,S
+2830,Avräkning för annans räkning,S
+2841,Kortfristig del av långfristiga skulder,S
+2849,Övriga kortfristiga låneskulder,S
+2861,Kortfristiga skulder till moderföretag,S
+2862,Kortfristiga skulder till dotterföretag,S
+2863,Kortfristiga skulder till andra koncernföretag,S
+2871,Kortfristiga skulder till intresseföretag,S
+2872,Kortfristiga skulder till gemensamt styrda företag,S
+2873,Kortfristiga skulder till övriga företag som det finns ett ägarintresse i,S
+2880,Skuld erhållna bidrag,S
+2891,Skulder under indrivning,S
+2892,Inre reparationsfond/underhållsfond,S
+2893,"Skulder till närstående personer, kortfristig del",S
+2895,Derivat (kortfristiga skulder),S
+2897,"Mottagna depositioner, kortfristiga",S
+2898,Outtagen vinstutdelning,S
+2899,Övriga kortfristiga skulder,S
+2911,Löneskulder,S
+2912,Ackordsöverskott,S
+2919,Övriga upplupna löner,S
+2931,Upplupna pensionsutbetalningar,S
+2941,Beräknade upplupna lagstadgade sociala avgifter,S
+2942,Beräknad upplupen särskild löneskatt,S
+2943,"Beräknad upplupen särskild löneskatt på pensionskostnader, deklarationspost",S
+2944,Beräknad upplupen avkastningsskatt på pensionskostnader,S
+2951, Upplupna avtalade arbetsmarknadsförsäkringar,S
+2959,"Upplupna avtalade pensionsförsäkringsavgifter, deklarationspost",S
+2971,Förutbetalda hyresintäkter,S
+2972,Förutbetalda medlemsavgifter,S
+2979,Övriga förutbetalda intäkter,S
+2991,Beräknat arvode för bokslut,S
+2992,Beräknat arvode för revision,S
+2993,Ospecificerad skuld till leverantörer,S
+2998,Övriga upplupna kostnader och förutbetalda intäkter,S
+2999,OBS-konto,S
+3001,"Försäljning inom Sverige, 25 % moms",I
+3002,"Försäljning inom Sverige, 12 % moms",I
+3003,"Försäljning inom Sverige, 6 % moms",I
+3004,"Försäljning inom Sverige, momsfri",I
+3105,Försäljning varor till land utanför EU,I
+3106,"Försäljning varor till annat EU-land, momspliktig",I
+3108,"Försäljning varor till annat EU-land, momsfri",I
+3211,Försäljning positiv VMB 25 %,I
+3212,Försäljning negativ VMB 25 %,I
+3231,"Försäljning inom byggsektorn, omvänd skattskyldighet moms",I
+3305,Försäljning tjänster till land utanför EU,I
+3308,Försäljning tjänster till annat EU-land,I
+3401,"Egna uttag momspliktiga, 25 %",I
+3402,"Egna uttag momspliktiga, 12 %",I
+3403,"Egna uttag momspliktiga, 6 %",I
+3404,"Egna uttag, momsfria",I
+3511,Fakturerat emballage,I
+3518,Returnerat emballage,I
+3521,"Fakturerade frakter, EU-land",I
+3522,"Fakturerade frakter, export",I
+3530,Fakturerade tull- och speditionskostnader m.m.,I
+3541,"Faktureringsavgifter, EU-land",I
+3542,"Faktureringsavgifter, export",I
+3550,Fakturerade resekostnader,I
+3561,Fakturerade kostnader till moderföretag,I
+3562,Fakturerade kostnader till dotterföretag,I
+3563,Fakturerade kostnader till andra koncernföretag,I
+3570,"Fakturerade kostnader till intresseföretag, gemensamt styrda företag och övriga företag som det finns ett ägarintresse i",I
+3611,Försäljning av råmaterial,I
+3612,Försäljning av skrot,I
+3613,Försäljning av förbrukningsmaterial,I
+3619,Försäljning av övrigt material,I
+3671,Försäljning av värdepapper,I
+3672,Utdelning från värdepapper,I
+3679,Övriga intäkter från värdepapper,I
+3680,Management fees,I
+3690,Övriga sidointäkter,I
+3710,Ofördelade intäktsreduktioner,I
+3731,Lämnade kassarabatter,I
+3732,Lämnade mängdrabatter,I
+3751,Intäktsförda punktskatter (kreditkonto),I
+3752,Skuldförda punktskatter (debetkonto),I
+3790,Övriga intäktskorrigeringar,I
+3840,Aktiverat arbete (material),I
+3850,Aktiverat arbete (omkostnader),I
+3870,Aktiverat arbete (personal),I
+3911,Hyresintäkter,I
+3912,Arrendeintäkter,I
+3913,Frivilligt momspliktiga hyresintäkter,I
+3914,Övriga momspliktiga hyresintäkter,I
+3921,Provisionsintäkter,I
+3922,Licensintäkter och royalties,I
+3925,Franchiseintäkter,I
+3940,Orealiserade negativa/positiva värdeförändringar på säkringsinstrument,I
+3950,"Återvunna, tidigare avskrivna kundfordringar",I
+3960,Valutakursvinster på fordringar och skulder av rörelsekaraktär,I
+3971,Vinst vid avyttring av immateriella anläggningstillgångar,I
+3972,Vinst vid avyttring av byggnader och mark,I
+3973,Vinst vid avyttring av maskiner och inventarier,I
+3981,Erhållna EU-bidrag,I
+3985,Erhållna statliga bidrag,I
+3987,Erhållna kommunala bidrag,I
+3988,Erhållna bidrag och ersättningar för personal,I
+3989,Övriga erhållna bidrag,I
+3991,Konfliktersättning,I
+3992,Erhållna skadestånd,I
+3993,Erhållna donationer och gåvor,I
+3994,Försäkringsersättningar,I
+3995,Erhållet ackord på skulder av rörelsekaraktär,I
+3996,Erhållna reklambidrag,I
+3997,Sjuklöneersättning,I
+3999,Övriga rörelseintäkter,I
+4000,Inköp av varor från Sverige,K
+4211,Sålda varor positiv VMB 25 %,K
+4212,Sålda varor negativ VMB 25 %,K
+4415,"Inköpta varor i Sverige, omvänd skattskyldighet, 25 % moms",K
+4416,"Inköpta varor i Sverige, omvänd skattskyldighet, 12 % moms",K
+4417,"Inköpta varor i Sverige, omvänd skattskyldighet, 6 % moms",K
+4425,"Inköpta tjänster i Sverige, omvänd skattskyldighet, 25 % moms",K
+4426,"Inköpta tjänster i Sverige, omvänd skattskyldighet, 12 %",K
+4427,"Inköpta tjänster i Sverige, omvänd skattskyldighet, 6 %",K
+4515,"Inköp av varor från annat EU-land, 25 %",K
+4516,"Inköp av varor från annat EU-land, 12 %",K
+4517,"Inköp av varor från annat EU-land, 6 %",K
+4518,"Inköp av varor från annat EU-land, momsfri",K
+4531,"Inköp av tjänster från ett land utanför EU, 25 % moms",K
+4532,"Inköp av tjänster från ett land utanför EU, 12 % moms",K
+4533,"Inköp av tjänster från ett land utanför EU, 6 % moms",K
+4535,"Inköp av tjänster från annat EU-land, 25 %",K
+4536,"Inköp av tjänster från annat EU-land, 12 %",K
+4537,"Inköp av tjänster från annat EU-land, 6 %",K
+4538,"Inköp av tjänster från annat EU-land, momsfri",K
+4545,"Import av varor, 25 % moms",K
+4546,"Import av varor, 12 % moms",K
+4547,"Import av varor, 6 % moms",K
+4600,Legoarbeten och underentreprenader (gruppkonto),K
+4700,Reduktion av inköpspriser (gruppkonto),K
+4731,Erhållna kassarabatter,K
+4732,Erhållna mängdrabatter (inkl. bonus),K
+4733,Erhållet aktivitetsstöd,K
+4790,Övriga reduktioner av inköpspriser,K
+4910,Förändring av lager av råvaror,K
+4920,Förändring av lager av tillsatsmaterial och förnödenheter,K
+4944,"Förändring av produkter i arbete, material och utlägg",K
+4945,"Förändring av produkter i arbete, omkostnader",K
+4947,"Förändring av produkter i arbete, personalkostnader",K
+4950,Förändring av lager av färdiga varor,K
+4960,Förändring av lager av handelsvaror,K
+4974,"Förändring av pågående arbeten, material och utlägg",K
+4975,"Förändring av pågående arbeten, omkostnader",K
+4977,"Förändring av pågående arbeten, personalkostnader",K
+4981,Sålda värdepappers anskaffningsvärde,K
+4987,Nedskrivning av värdepapper,K
+4988,Återföring av nedskrivning av värdepapper,K
+5011,Hyra för kontorslokaler,K
+5012,Hyra för garage,K
+5013,Hyra för lagerlokaler,K
+5020,El för belysning,K
+5030,Värme,K
+5040,Vatten och avlopp,K
+5050,Lokaltillbehör,K
+5061,Städning,K
+5062,Sophämtning,K
+5063,Hyra för sopcontainer,K
+5064,Snöröjning,K
+5065,Trädgårdsskötsel,K
+5070,Reparation och underhåll av lokaler,K
+5098,"Övriga lokalkostnader, avdragsgilla",K
+5099,"Övriga lokalkostnader, ej avdragsgilla",K
+5110,Tomträttsavgäld/arrende,K
+5120,El för belysning,K
+5131,Uppvärmning,K
+5132,Sotning,K
+5161,Städning,K
+5162,Sophämtning,K
+5163,Hyra för sopcontainer,K
+5164,Snöröjning,K
+5165,Trädgårdsskötsel,K
+5191,Fastighetsskatt/fastighetsavgift,K
+5192,Fastighetsförsäkringspremier,K
+5193,Fastighetsskötsel och förvaltning,K
+5198,"Övriga fastighetskostnader, avdragsgilla",K
+5199,"Övriga fastighetskostnader, ej avdragsgilla",K
+5211,Korttidshyra av maskiner och andra tekniska anläggningar,K
+5212,Leasing av maskiner och andra tekniska anläggningar,K
+5221,Korttidshyra av inventarier och verktyg,K
+5222,Leasing av inventarier och verktyg,K
+5251,Korttidshyra av datorer,K
+5252,Leasing av datorer,K
+5310,El för drift,K
+5320,Gas,K
+5330,Eldningsolja,K
+5340,Stenkol och koks,K
+5350,"Torv, träkol, ved och annat träbränsle",K
+5360,"Bensin, fotogen och motorbrännolja",K
+5370,"Fjärrvärme, kyla och ånga",K
+5380,Vatten,K
+5390,Övriga energikostnader,K
+5411,Förbrukningsinventarier med en livslängd på mer än ett år,K
+5412,Förbrukningsinventarier med en livslängd på ett år eller mindre,K
+5420,Programvaror,K
+5430,Transportinventarier,K
+5440,Förbrukningsemballage,K
+5460,Förbrukningsmaterial,K
+5480,Arbetskläder och skyddsmaterial,K
+5491, Övriga förbrukningsinventarier med en livslängd på mer än ett år,K
+5492,Övriga förbrukningsinventarier med en livslängd på ett år eller mindre,K
+5493,Övrigt förbrukningsmaterial,K
+5510,Reparation och underhåll av maskiner och andra tekniska anläggningar,K
+5520,"Reparation och underhåll av inventarier, verktyg och datorer m.m.",K
+5530,Reparation och underhåll av installationer,K
+5550,Reparation och underhåll av förbrukningsinventarier,K
+5580,Underhåll och tvätt av arbetskläder,K
+5590,Övriga kostnader för reparation och underhåll,K
+5611,Drivmedel för personbilar,K
+5612,Försäkring och skatt för personbilar,K
+5613,Reparation och underhåll av personbilar,K
+5615,Leasing av personbilar,K
+5616,"Trängselskatt, avdragsgill",K
+5619,Övriga personbilskostnader,K
+5620,Lastbilskostnader,K
+5630,Truckkostnader,K
+5640,Kostnader för arbetsmaskiner,K
+5650,Traktorkostnader,K
+5660,"Motorcykel-, moped- och skoterkostnader",K
+5670,"Båt-, flygplans- och helikopterkostnader",K
+5690,Övriga kostnader för transportmedel,K
+5710,"Frakter, transporter och försäkringar vid varudistribution",K
+5720,Tull- och speditionskostnader m.m.,K
+5730,Arbetstransporter,K
+5790,Övriga kostnader för frakter och transporter,K
+5810,Biljetter,K
+5820,Hyrbilskostnader,K
+5831,Kost och logi i Sverige,K
+5832,Kost och logi i utlandet,K
+5890,Övriga resekostnader,K
+5910,Annonsering,K
+5920,Utomhus- och trafikreklam,K
+5930,Reklamtrycksaker och direktreklam,K
+5940,Utställningar och mässor,K
+5950,Butiksreklam och återförsäljarreklam,K
+5960,"Varuprover, reklamgåvor, presentreklam och tävlingar",K
+5970,"Film-, radio-, TV- och Internetreklam",K
+5980,"PR, institutionell reklam och sponsring",K
+5990,Övriga kostnader för reklam och PR,K
+6010,"Kataloger, prislistor m.m.",K
+6020,Egna facktidskrifter,K
+6030,Speciella orderkostnader,K
+6040,Kontokortsavgifter,K
+6055,Franchisekostnader o.dyl.,K
+6061,Kreditupplysning,K
+6062,Inkasso och KFM-avgifter,K
+6063,Kreditförsäkringspremier,K
+6064,Factoringavgifter,K
+6069,Övriga kreditförsäljningskostnader,K
+6071,"Representation, avdragsgill",K
+6072,"Representation, ej avdragsgill",K
+6110,Kontorsmateriel,K
+6150,Trycksaker,K
+6211,Fast telefoni,K
+6212,Mobiltelefon,K
+6213,Mobilsökning,K
+6214,Fax,K
+6215,Telex,K
+6230,Datakommunikation,K
+6250,Postbefordran,K
+6310,Företagsförsäkringar,K
+6320,Självrisker vid skada,K
+6330,Förluster i pågående arbeten,K
+6341,"Lämnade skadestånd, avdragsgilla",K
+6342,"Lämnade skadestånd, ej avdragsgilla",K
+6351,Konstaterade förluster på kundfordringar,K
+6352,Befarade förluster på kundfordringar,K
+6361,Förändring av garantiavsättning,K
+6362,Faktiska garantikostnader,K
+6370,Kostnader för bevakning och larm,K
+6380,Förluster på övriga kortfristiga fordringar,K
+6390,Övriga riskkostnader,K
+6410,Styrelsearvoden som inte är lön,K
+6421,Revision,K
+6422,Revisonsverksamhet utöver revision,K
+6423,Skatterådgivning – revisor,K
+6424,Övriga tjänster – revisor,K
+6430,Management fees,K
+6440,Årsredovisning och delårsrapporter,K
+6450,Bolagsstämma/års- eller föreningsstämma,K
+6490,Övriga förvaltningskostnader,K
+6510,Mätningskostnader,K
+6520,Ritnings- och kopieringskostnader,K
+6530,Redovisningstjänster,K
+6540,IT-tjänster,K
+6550,Konsultarvoden,K
+6560,Serviceavgifter till branschorganisationer,K
+6570,Bankkostnader,K
+6580,Advokat- och rättegångskostnader,K
+6590,Övriga externa tjänster,K
+6810,Inhyrd produktionspersonal,K
+6820,Inhyrd lagerpersonal,K
+6830,Inhyrd transportpersonal,K
+6840,Inhyrd kontors- och ekonomipersonal,K
+6850,Inhyrd IT-personal,K
+6860,Inhyrd marknads- och försäljningspersonal,K
+6870,Inhyrd restaurang- och butikspersonal,K
+6880,Inhyrda företagsledare,K
+6890,Övrig inhyrd personal,K
+6900,Övriga externa kostnader (gruppkonto),K
+6910,Licensavgifter och royalties,K
+6920,Kostnader för egna patent,K
+6930,Kostnader för varumärken m.m.,K
+6940,"Kontroll-, provnings- och stämpelavgifter",K
+6950,Tillsynsavgifter myndigheter,K
+6970,"Tidningar, tidskrifter och facklitteratur",K
+6981,"Föreningsavgifter, avdragsgilla",K
+6982,"Föreningsavgifter, ej avdragsgilla",K
+6991,"Övriga externa kostnader, avdragsgilla",K
+6992,"Övriga externa kostnader, ej avdragsgilla",K
+6993,Lämnade bidrag och gåvor,K
+6996,Betald utländsk inkomstskatt,K
+6997,Obetald utländsk inkomstskatt,K
+6998,Utländsk moms,K
+6999,"Ingående moms, blandad verksamhet",K
+7011,Löner till kollektivanställda,K
+7012,Vinstandelar till kollektivanställda,K
+7013,"Lön växa-stöd kollektivanställda 10,21 %",K
+7014,"Löner till kollektivanställda 16,36 %",K
+7015,"Löner till kollektivanställda 6,15 %",K
+7016,"Vinstandelar till kollektivanställda 6,15 %",K
+7017,Avgångsvederlag till kollektivanställda,K
+7018,"Bruttolöneavdrag, kollektivanställda",K
+7019,Upplupna löner och vinstandelar till kollektivanställda,K
+7031,Löner till kollektivanställda (utlandsanställda),K
+7032,Vinstandelar till kollektivanställda (utlandsanställda),K
+7034,"Löner kollektivanställda 16,36 %",K
+7035,"Löner till kollektivanställda 6,15 %",K
+7036,"Vinstandelar till kollektivanställda 6,15 % (utlandsanställda)",K
+7037,Avgångsvederlag till kollektivanställda (utlandsanställda),K
+7038,"Bruttolöneavdrag, kollektivanställda (utlandsanställda)",K
+7039,Upplupna löner och vinstandelar till kollektivanställda (utlandsanställda),K
+7081,Sjuklöner till kollektivanställda,K
+7082,Semesterlöner till kollektivanställda,K
+7083,Föräldraersättning till kollektivanställda,K
+7089,Övriga löner till kollektivanställda för ej arbetad tid,K
+7090,Förändring av semesterlöneskuld,K
+7211,Löner till tjänstemän,K
+7212,Vinstandelar till tjänstemän,K
+7213,"Lön växa-stöd tjänstemän 10,21 %",K
+7214,"Löner till tjänstemän 16,36 %",K
+7215,"Löner till tjänstemän 6,15 %",K
+7216,"Vinstandelar till tjänstemän 6,15 %",K
+7217,Avgångsvederlag till tjänstemän,K
+7218,"Bruttolöneavdrag, tjänstemän",K
+7219,Upplupna löner och vinstandelar till tjänstemän,K
+7221,Löner till företagsledare,K
+7222,Tantiem till företagsledare,K
+7224,"Löner till företagsledare 16,36 %",K
+7225,"Löner till företagsledare 6,15 %",K
+7227,Avgångsvederlag till företagsledare,K
+7228,"Bruttolöneavdrag, företagsledare",K
+7229,Upplupna löner och tantiem till företagsledare,K
+7231,Löner till tjänstemän och ftgsledare (utlandsanställda),K
+7232,Vinstandelar till tjänstemän och ftgsledare (utlandsanställda),K
+7234,"Löner till tjänstemän och ftgsledare 16,36 % (utlandsanställda)",K
+7235,"Löner till tjänstemän och ftgsledare 6,15 % (utlandsanställda)",K
+7236,"Vinstandelar till tjänstemän och ftgsledare 6,15 % (utlandsanställda)",K
+7237,Avgångsvederlag till tjänstemän och ftgsledare (utlandsanställda),K
+7238,"Bruttolöneavdrag, tjänstemän och ftgsledare (utlandsanställda)",K
+7239,Upplupna löner och vinstandelar till tjänstemän och ftgsledare (utlandsanställda),K
+7240,Styrelsearvoden,K
+7281,Sjuklöner till tjänstemän,K
+7282,Sjuklöner till företagsledare,K
+7283,Föräldraersättning till tjänstemän,K
+7284,Föräldraersättning till företagsledare,K
+7285,Semesterlöner till tjänstemän,K
+7286,Semesterlöner till företagsledare,K
+7288,Övriga löner till tjänstemän för ej arbetad tid,K
+7289,Övriga löner till företagsledare för ej arbetad tid,K
+7291,Förändring av semesterlöneskuld till tjänstemän,K
+7292,Förändring av semesterlöneskuld till företagsledare,K
+7311,Ersättningar för sammanträden m.m.,K
+7312,Ersättningar för förslagsverksamhet och uppfinningar,K
+7313,Ersättningar för/bidrag till bostadskostnader,K
+7314,Ersättningar för/bidrag till måltidskostnader,K
+7315,Ersättningar för/bidrag till resor till och från arbetsplatsen,K
+7316,Ersättningar för/bidrag till arbetskläder,K
+7317,Ersättningar för/bidrag till arbetsmaterial och arbetsverktyg,K
+7318,Felräkningspengar,K
+7319,Övriga kontanta extraersättningar,K
+7321,"Skattefria traktamenten, Sverige",K
+7322,"Skattepliktiga traktamenten, Sverige",K
+7323,"Skattefria traktamenten, utlandet",K
+7324,"Skattepliktiga traktamenten, utlandet",K
+7331,Skattefria bilersättningar,K
+7332,Skattepliktiga bilersättningar,K
+7333,"Ersättning för trängselskatt, skattefri",K
+7350,Ersättningar för föreskrivna arbetskläder,K
+7370,Representationsersättningar,K
+7381,Kostnader för fri bostad,K
+7382,Kostnader för fria eller subventionerade måltider,K
+7383,Kostnader för fria resor till och från arbetsplatsen,K
+7384,Kostnader för fria eller subventionerade arbetskläder,K
+7385,Kostnader för fri bil,K
+7386,Subventionerad ränta,K
+7387,Kostnader för lånedatorer,K
+7388,Anställdas ersättning för erhållna förmåner,K
+7389,Övriga kostnader för förmåner,K
+7391,Kostnad för trängselskatteförmån,K
+7392,Kostnad för förmån av hushållsnära tjänster,K
+7411,Premier för kollektiva pensionsförsäkringar,K
+7412,Premier för individuella pensionsförsäkringar,K
+7418,Återbäring från försäkringsföretag,K
+7420,Förändring av pensionsskuld,K
+7430,Avdrag för räntedel i pensionskostnad,K
+7441,Avsättning till pensionsstiftelse,K
+7448,Gottgörelse från pensionsstiftelse,K
+7461,Pensionsutbetalningar till f.d. kollektivanställda,K
+7462,Pensionsutbetalningar till f.d. tjänstemän,K
+7463,Pensionsutbetalningar till f.d. företagsledare,K
+7511,Arbetsgivaravgifter för löner och ersättningar,K
+7512,Arbetsgivaravgifter för förmånsvärden,K
+7515,Arbetsgivaravgifter på skattepliktiga kostnadsersättningar,K
+7516,Arbetsgivaravgifter på arvoden,K
+7518,Arbetsgivaravgifter på bruttolöneavdrag m.m.,K
+7519,Arbetsgivaravgifter för semester- och löneskulder,K
+7521,Avgifter för löner och ersättningar,K
+7522,Avgifter för förmånsvärden,K
+7525,Avgifter på skattepliktiga kostnadsersättningar,K
+7526,Avgifter på arvoden,K
+7528,Avgifter på bruttolöneavdrag m.m.,K
+7529,Avgifter för semester- och löneskulder,K
+7531,Särskild löneskatt för vissa försäkringsersättningar m.m.,K
+7532,"Särskild löneskatt pensionskostnader, deklarationspost",K
+7533,Särskild löneskatt för pensionskostnader,K
+7534,"Särskild löneskatt förvärvsinkomster 6,15 %",K
+7551,Avkastningsskatt 15 % försäkringsföretag m.fl. samt avsatt till pensioner,K
+7552,Avkastningsskatt 15 % utländska pensionsförsäkringar,K
+7553,Avkastningsskatt 30 % utländska försäkringsföretag m.fl.,K
+7554,Avkastningsskatt 30 % utländska kapitalförsäkringar,K
+7571,Arbetsmarknadsförsäkringar,K
+7572,"Arbetsmarknadsförsäkringar pensionsförsäkringspremier, deklarationspost",K
+7581,Grupplivförsäkringspremier,K
+7582,Gruppsjukförsäkringspremier,K
+7583,Gruppolycksfallsförsäkringspremier,K
+7589,Övriga gruppförsäkringspremier,K
+7610,Utbildning,K
+7621,"Sjuk- och hälsovård, avdragsgill",K
+7622,"Sjuk- och hälsovård, ej avdragsgill",K
+7623,"Sjukvårdsförsäkring, ej avdragsgill",K
+7631,"Personalrepresentation, avdragsgill",K
+7632,"Personalrepresentation, ej avdragsgill",K
+7671,Avsättning till personalstiftelse,K
+7678,Gottgörelse från personalstiftelse,K
+7691,Personalrekrytering,K
+7692,Begravningshjälp,K
+7693,Fritidsverksamhet,K
+7699,Övriga personalkostnader,K
+7710,Nedskrivningar av immateriella anläggningstillgångar,K
+7720,Nedskrivningar av byggnader och mark,K
+7730,Nedskrivningar av maskiner och inventarier,K
+7740,Nedskrivningar av vissa omsättningstillgångar,K
+7760,Återföring av nedskrivningar av immateriella anläggningstillgångar,K
+7770,Återföring av nedskrivningar av byggnader och mark,K
+7780,Återföring av nedskrivningar av maskiner och inventarier,K
+7790,Återföring av nedskrivningar av vissa omsättningstillgångar,K
+7811,Avskrivningar på balanserade utgifter,K
+7812,Avskrivningar på koncessioner m.m.,K
+7813,Avskrivningar på patent,K
+7814,Avskrivningar på licenser,K
+7815,Avskrivningar på varumärken,K
+7816,Avskrivningar på hyresrätter,K
+7817,Avskrivningar på goodwill,K
+7819,Avskrivningar på övriga immateriella anläggningstillgångar,K
+7821,Avskrivningar på byggnader,K
+7824,Avskrivningar på markanläggningar,K
+7829,Avskrivningar på övriga byggnader,K
+7831,Avskrivningar på maskiner och andra tekniska anläggningar,K
+7832,Avskrivningar på inventarier och verktyg,K
+7833,Avskrivningar på installationer,K
+7834,Avskrivningar på bilar och andra transportmedel,K
+7835,Avskrivningar på datorer,K
+7836,Avskrivningar på leasade tillgångar,K
+7839,Avskrivningar på övriga maskiner och inventarier,K
+7940,Orealiserade positiva/negativa värdeförändringar på säkringsinstrument,K
+7960,Valutakursförluster på fordringar och skulder av rörelsekaraktär,K
+7971,Förlust vid avyttring av immateriella anläggningstillgångar,K
+7972,Förlust vid avyttring av byggnader och mark,K
+7973,Förlust vid avyttring av maskiner och inventarier,K
+8012,Utdelning på andelar i dotterföretag,K
+8016,"Emissionsinsats, koncernföretag",K
+8022,Resultat vid försäljning av andelar i dotterföretag,K
+8072,Nedskrivningar av andelar i dotterföretag,K
+8076,Nedskrivningar av långfristiga fordringar hos moderföretag,K
+8077,Nedskrivningar av långfristiga fordringar hos dotterföretag,K
+8082,Återföringar av nedskrivningar av andelar i dotterföretag,K
+8086,Återföringar av nedskrivningar av långfristiga fordringar hos moderföretag,K
+8087,Återföringar av nedskrivningar av långfristiga fordringar hos dotterföretag,K
+8111,Utdelningar på andelar i intresseföretag,K
+8112,Utdelningar på andelar i gemensamt styrda företag,K
+8113,Utdelningar på andelar i övriga företag som det finns ett ägarintresse i,K
+8116,"Emissionsinsats, intresseföretag",K
+8117,"Emissionsinsats, gemensamt styrda företag",K
+8118,"Emissionsinsats, övriga företag som det finns ett ägarintresse i",K
+8121,Resultat vid försäljning av andelar i intresseföretag,K
+8122,Resultat vid försäljning av andelar i gemensamt styrda företag,K
+8123,Resultat vid försäljning av andelar i övriga företag som det finns ett ägarintresse i,K
+8131,Resultatandelar från handelsbolag (intresseföretag),K
+8132,Resultatandelar från handelsbolag (gemensamt styrda företag),K
+8133,Resultatandelar från handelsbolag (övriga företag som det finns ett ägarintresse i),K
+8171,Nedskrivningar av andelar i intresseföretag,K
+8172,Nedskrivningar av långfristiga fordringar hos intresseföretag,K
+8173,Nedskrivningar av andelar i gemensamt styrda företag,K
+8174,Nedskrivningar av långfristiga fordringar hos gemensamt styrda företag,K
+8176,Nedskrivningar av andelar i övriga företag som det finns ett ägarintresse i,K
+8177,Nedskrivningar av långfristiga fordringar hos övriga företag som det finns ett ägarintresse i,K
+8181,Återföringar av nedskrivningar av andelar i intresseföretag,K
+8182,Återföringar av nedskrivningar av långfristiga fordringar hos intresseföretag,K
+8183,Återföringar av nedskrivningar av andelar i gemensamt styrda företag,K
+8184,Återföringar av nedskrivningar av långfristiga fordringar hos gemensamt styrda företag,K
+8186,Återföringar av nedskrivningar av andelar i övriga företag som det finns ett ägarintresse i,K
+8187,Återföringar av nedskrivningar av långfristiga fordringar hos övriga företag som det finns ett ägarintresse i,K
+8212,"Utdelningar, övriga företag",K
+8216,"Insatsemissioner, övriga företag",K
+8221,Resultat vid försäljning av andelar i andra företag,K
+8222,Resultat vid försäljning av långfristiga fordringar hos andra företag,K
+8223,Resultat vid försäljning av derivat (långfristiga värdepappersinnehav),K
+8231,Valutakursvinster på långfristiga fordringar,K
+8236,Valutakursförluster på långfristiga fordringar,K
+8251,Ränteintäkter från långfristiga fordringar,K
+8252,Ränteintäkter från övriga värdepapper,K
+8254,"Skattefria ränteintäkter, långfristiga tillgångar",K
+8255,Avkastningsskatt kapitalplacering,K
+8261,Ränteintäkter från långfristiga fordringar hos moderföretag,K
+8262,Ränteintäkter från långfristiga fordringar hos dotterföretag,K
+8263,Ränteintäkter från långfristiga fordringar hos andra koncernföretag,K
+8271,Nedskrivningar av andelar i andra företag,K
+8272,Nedskrivningar av långfristiga fordringar hos andra företag,K
+8273,Nedskrivningar av övriga värdepapper hos andra företag,K
+8281,Återföringar av nedskrivningar av andelar i andra företag,K
+8282,Återföringar av nedskrivningar av långfristiga fordringar hos andra företag,K
+8283,Återföringar av nedskrivningar av övriga värdepapper i andra företag,K
+8291,Orealiserade värdeförändringar på anläggningstillgångar,K
+8295,Orealiserade värdeförändringar på derivatinstrument,K
+8311,Ränteintäkter från bank,K
+8312,Ränteintäkter från kortfristiga placeringar,K
+8313,Ränteintäkter från kortfristiga fordringar,K
+8314,Skattefria ränteintäkter,K
+8317,Ränteintäkter för dold räntekompensation,K
+8319,Övriga ränteintäkter från omsättningstillgångar,K
+8321,Orealiserade värdeförändringar på omsättningstillgångar,K
+8325,Orealiserade värdeförändringar på derivatinstrument (oms.-tillg.),K
+8331,Valutakursvinster på kortfristiga fordringar och placeringar,K
+8336,Valutakursförluster på kortfristiga fordringar och placeringar,K
+8340,Utdelningar på kortfristiga placeringar,K
+8350,Resultat vid försäljning av kortfristiga placeringar,K
+8361,Övriga ränteintäkter från moderföretag,K
+8362,Övriga ränteintäkter från dotterföretag,K
+8363,Övriga ränteintäkter från andra koncernföretag,K
+8370,Nedskrivningar av kortfristiga placeringar,K
+8380,Återföringar av nedskrivningar av kortfristiga placeringar,K
+8390,Övriga finansiella intäkter,K
+8411,"Räntekostnader för obligations-, förlags- och konvertibla lån",K
+8412,Räntedel i årets pensionskostnad,K
+8413,Räntekostnader för checkräkningskredit,K
+8415,Räntekostnader för andra skulder till kreditinstitut,K
+8417,Räntekostnader för dold räntekompensation m.m.,K
+8418,Avdragspost för räntesubventioner,K
+8419,Övriga räntekostnader för långfristiga skulder,K
+8421,Räntekostnader till kreditinstitut,K
+8422,Dröjsmålsräntor för leverantörsskulder,K
+8423,Räntekostnader för skatter och avgifter,K
+8424,Räntekostnader byggnadskreditiv,K
+8429,Övriga räntekostnader för kortfristiga skulder,K
+8431,Valutakursvinster på skulder,K
+8436,Valutakursförluster på skulder,K
+8451,Orealiserade värdeförändringar på skulder,K
+8455,Orealiserade värdeförändringar på säkringsinstrument,K
+8461,Räntekostnader till moderföretag,K
+8462,Räntekostnader till dotterföretag,K
+8463,Räntekostnader till andra koncernföretag,K
+8491,Erhållet ackord på skulder till kreditinstitut m.m.,K
+8811,Avsättning till periodiseringsfond,K
+8819,Återföring från periodiseringsfond,K
+8851,"Förändring av överavskrivningar, immateriella anläggningstillgångar",K
+8852,"Förändring av överavskrivningar, byggnader och markanläggningar",K
+8853,"Förändring av överavskrivningar, maskiner och inventarier",K
+8861,Avsättning till ersättningsfond för inventarier,K
+8862,Avsättning till ersättningsfond för byggnader och markanläggningar,K
+8864,Avsättning till ersättningsfond för djurlager i jordbruk och renskötsel,K
+8865,Ianspråktagande av ersättningsfond för avskrivningar,K
+8866,Ianspråktagande av ersättningsfond för annat än avskrivningar,K
+8869,Återföring från ersättningsfond,K
+8892,Nedskrivningar av konsolideringskaraktär av anläggningstillgångar,K
+8896,Förändring av lagerreserv,K
+8899,Övriga bokslutsdispositioner,K
+8910,Skatt som belastar årets resultat,K
+8920,Skatt på grund av ändrad beskattning,K
+8930,Restituerad skatt,K
+8940,Uppskjuten skatt,K
+8999,Årets resultat,K

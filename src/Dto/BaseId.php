@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -36,7 +36,7 @@ use function microtime;
 
 /**
  * Baseclass for Sie4Dto, VerDto and TransDto, provides unique timestamp and guid
- * as well as FnrId and orgnr, used with timstamp and guid to uniquely identify instance
+ * as well as FnrId and orgnr, used with timestamp and guid to uniquely identify instance
  */
 abstract class BaseId implements DtoInterface
 {
@@ -50,7 +50,7 @@ abstract class BaseId implements DtoInterface
     /**
      * Unique (random) guid, default set at instance create
      *
-     * Auto-loaded guid without surrounding brackets
+     * Autoloaded guid without surrounding brackets
      * using GuidUtil::getGuid()
      *
      * @var string

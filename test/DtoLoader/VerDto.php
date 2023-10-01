@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -28,20 +28,19 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
 use DateTime;
-use Faker;
 use Kigkonsult\Sie4Sdk\Dto\VerDto as Dto;
 
-class VerDto
+class VerDto extends LoaderBase
 {
     /**
      * @param int[] $kontoNrs
      * @return Dto
+     * @since 1.8.3 2023-09-20
      */
     public static function load( array $kontoNrs ) : Dto
     {
-        $faker = Faker\Factory::create();
-
-        $dto = new Dto();
+        $faker = self::getFaker();
+        $dto   = new Dto();
 
         static $serie = 0;
         $dto->setSerie( ++$serie );
@@ -64,9 +63,9 @@ class VerDto
         }
         $dto->setSign( $faker->randomLetter() . $faker->randomDigitNotNull());
 
-        $max         = $faker->numberBetween( 2, 7 );
-        $kontoNrs2    = [];
-        $balans      = 0;
+        $max       = $faker->numberBetween( 2, 7 );
+        $kontoNrs2 = [];
+        $balans    = 0;
         while( $max > count( $kontoNrs2 )) {
             $kontoNr = $faker->randomElement( $kontoNrs );
             if ( ! isset( $kontoNrs2[$kontoNr] )) {

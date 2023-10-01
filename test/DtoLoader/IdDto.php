@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -28,22 +28,16 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
 use DateTime;
-use Faker;
 use Kigkonsult\Sie4Sdk\Dto\IdDto as Dto;
 
-class IdDto
+class IdDto extends LoaderBase
 {
     /**
      * @return Dto
+     * @since 1.8.3 2023-09-20
      */
     public static function load() : Dto
     {
-        $faker = Faker\Factory::create();
-
-        $dto = new Dto();
-
-        $dto->setProsa((string) $faker->words( 4, true ));
-
         static $FTYPS = [
             'AB'  => 'Aktiebolag',
             'E'   => 'Enskild näringsidkare',
@@ -68,6 +62,13 @@ class IdDto
             'TSF' => 'Trossamfund',
             'X'   => 'Annan företagsform'
         ];
+        static $KPTYPS = ['BAS95', 'BAS96', 'EUBAS97', 'NE2007'];
+
+        $faker = self::getFaker();
+        $dto   = new Dto();
+
+        $dto->setProsa((string) $faker->words( 4, true ));
+
         $dto->setFtyp((string) $faker->randomElement(array_keys( $FTYPS )));
 
         $dto->setFnrId((string) $faker->numberBetween( 10000000, 999999999999 ));
@@ -88,7 +89,6 @@ class IdDto
 
         $dto->setOmfattn( new DateTime());
 
-        static $KPTYPS = ['BAS95', 'BAS96', 'EUBAS97', 'NE2007'];
         $dto->setKptyp((string) $faker->randomElement( $KPTYPS ));
 
         $dto->setValutakod( $faker->currencyCode );

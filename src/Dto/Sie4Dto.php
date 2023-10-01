@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -30,6 +30,8 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 use Exception;
 use InvalidArgumentException;
 
+use function count;
+use function is_string;
 use function usort;
 
 /**
@@ -37,6 +39,8 @@ use function usort;
  *
  * Inherit timestamp, guid, fnrId and orgnr properties from BaseId
  * to uniquely identify instance
+ *
+ * @since 1.8.3 2023-09-20
  */
 class Sie4Dto extends BaseId
 {
@@ -262,19 +266,20 @@ class Sie4Dto extends BaseId
     }
 
     /**
-     * Add single AccountDto using kontoNr/namn/typ, enhet opt
+     * Add single AccountDto using kontoNr/namn, typ/enhet opt
      *
-     * @param int|string $kontoNr
-     * @param string $kontoNamn
-     * @param string $kontoTyp
-     * @param string|null $enhet
+     * @param int|string  $kontoNr
+     * @param string      $kontoNamn
+     * @param null|string $kontoTyp
+     * @param null|string $enhet
      * @return self
+     * @since 1.8.3 2023-09-20
      */
     public function addAccount(
         int | string $kontoNr,
         string       $kontoNamn,
-        string       $kontoTyp,
-        string       $enhet = null
+        ? string     $kontoTyp = null,
+        ? string     $enhet = null
     ) : self
     {
         return $this->addAccountDto(
@@ -1081,14 +1086,23 @@ class Sie4Dto extends BaseId
     }
 
     /**
-     * Add single VerDto
+     * Add single VerDto, fnrId and orgnr(+multiple) are added from idDto
      *
      * @param VerDto $verDto
      *
      * @return self
+     * @since 1.8.4 20230925
      */
     public function addVerDto( VerDto $verDto ) : self
     {
+        $verDto->setParentCorrelationId( $this->getCorrelationId());
+        if( $this->idDto->isFnrIdSet()) {
+            $verDto->setFnrId( $this->idDto->getFnrId());
+        }
+        if( $this->idDto->isOrgnrSet()) {
+            $verDto->setOrgnr( $this->idDto->getOrgnr());
+            $verDto->setMultiple( $this->idDto->getMultiple());
+        }
         $this->verDtos[] = $verDto;
         return $this;
     }

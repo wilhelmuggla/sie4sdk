@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -46,8 +46,6 @@ use Kigkonsult\Sie4Sdk\Util\StringUtil;
 use RuntimeException;
 
 use function array_map;
-use function array_slice;
-use function current;
 use function count;
 use function explode;
 use function implode;
@@ -62,6 +60,8 @@ use function trim;
  * Class Sie4Parser
  *
  * Parse Sie4 file/string into Sie4IDto
+ *
+ * @since 1.8.6 2023-09-29
  */
 class Sie4Parser implements Sie4Interface
 {
@@ -142,26 +142,34 @@ class Sie4Parser implements Sie4Interface
     /**
      * Input file rows, managed by Asit\It
      *
-     * @var It|null
+     * @var It
      */
-    private ?It $input = null;
+    private It $input;
 
     /**
-     * @var Sie4Dto|null
+     * @var Sie4Dto
      */
-    private ?Sie4Dto $sie4Dto = null;
+    private Sie4Dto $sie4Dto;
 
     /**
      * Current VerDto, 'parent' for TransDto's
      *
-     * @var VerDto|null
+     * @var VerDto
      */
-    private ?VerDto $currentVerDto = null;
+    private VerDto $currentVerDto;
 
     /**
-     * @var array
+     * @var string[][]|string[][][]
      */
     private array $postGroupActions = [];
+
+    /**
+     * Class contructor
+     */
+    public function __construct()
+    {
+        $this->input = new It();
+    }
 
     /**
      * Return instance
@@ -198,7 +206,7 @@ class Sie4Parser implements Sie4Interface
                 throw new InvalidArgumentException( $FMT1, 1111 );
             }
             $source = trim( $source );
-            if( ! StringUtil::startsWith( $source, self::FLAGGA )) {
+            if( ! str_starts_with( $source, self::FLAGGA )) {
                 FileUtil::assertReadFile( $source, 1112 );
                 $input = FileUtil::readFile( $source, 1113 );
             }
@@ -212,7 +220,7 @@ class Sie4Parser implements Sie4Interface
             array_map( $TRIM, array_map( $TAB2SPACE, $input ))
         );
         Sie4Validator::assertSie4Input( $fileRows );
-        $this->input     = $fileRows;
+        $this->input = $fileRows;
         return $this;
     }
 
@@ -242,13 +250,17 @@ class Sie4Parser implements Sie4Interface
      */
     public function process( null|string|array $source = null ) : Sie4Dto
     {
-        static $FMT1      = 'Input error (#%d) on post %s:%s';
+        static $FMT1      = 'Input error (#%d) no or empty input';
+        static $FMT2      = 'Input error (#%d) on post %s:%s';
         static $GROUP12   = [ 1, 2 ];
         static $GROUP23   = [ 2, 3 ];
         static $GROUP234  = [ 2, 3, 4 ];
         static $GROUP2345 = [ 2, 3, 4, 5 ];
         if( ! empty( $source )) {
             $this->setInput( $source );
+        }
+        if( 0 === $this->input->count()) {
+            throw new RuntimeException( sprintf( $FMT1, 1 ), 1411 );
         }
         $this->sie4Dto  = new Sie4Dto( $this->readIdData());
         $this->input->rewind();
@@ -271,16 +283,16 @@ class Sie4Parser implements Sie4Interface
                     }
                     break;
 
-                case ( in_array( $currentGroup, $GROUP12, true )
-                    && in_array( $label, self::$IDLABELS, true )) :
+                case ( in_array( $currentGroup, $GROUP12, true ) &&
+                    in_array( $label, self::$IDLABELS, true )) :
                     $currentGroup = 2;
                     break;
                 case (( 2 === $currentGroup ) && empty( $label )) :
                     // data content for previous Label
                     break;
 
-                case ( in_array( $currentGroup, $GROUP23, true )
-                    && in_array( $label, self::$ACCOUNTLABELS, true )) :
+                case ( in_array( $currentGroup, $GROUP23, true ) &&
+                    in_array( $label, self::$ACCOUNTLABELS, true )) :
                     if( 2 === $currentGroup ) {
                         // finish off opt group 2 actions
 //                      $this->postReadGroupAction();
@@ -293,8 +305,8 @@ class Sie4Parser implements Sie4Interface
                     $this->readAccountData( $prevLabel, $rowData );
                     break;
 
-                case ( in_array( $currentGroup, $GROUP234, true )
-                    && in_array( $label, self::$SUMMARYLABELS, true )) :
+                case ( in_array( $currentGroup, $GROUP234, true ) &&
+                    in_array( $label, self::$SUMMARYLABELS, true )) :
                     if( in_array( $currentGroup, $GROUP23, true )) {
                         // finish off opt group (2-)3 actions
                         $this->postReadGroupAction();
@@ -303,8 +315,8 @@ class Sie4Parser implements Sie4Interface
                     $this->readSummaryData( $label, $rowData );
                     break;
 
-                case ( in_array( $currentGroup, $GROUP2345, true )
-                    && in_array( $label, self::$LEDGERENTRYLABELS, true )) :
+                case ( in_array( $currentGroup, $GROUP2345, true ) &&
+                    in_array( $label, self::$LEDGERENTRYLABELS, true )) :
                     if( in_array( $currentGroup, $GROUP234, true )) {
                         // finish off opt group (2-3-)4 actions
                         $this->postReadGroupAction();
@@ -318,7 +330,7 @@ class Sie4Parser implements Sie4Interface
                     break;
 
                 default :
-                    throw new RuntimeException( sprintf( $FMT1, 1, $label, $rowData ), 1411 );
+                    throw new RuntimeException( sprintf( $FMT2, 2, $label, $rowData ), 1412 );
             } // end switch
             if( ! empty( $label )) {
                 $prevLabel = $label;
@@ -333,7 +345,7 @@ class Sie4Parser implements Sie4Interface
     }
 
     /**
-     * @return bool|array
+     * @return bool|string[]|string[][]
      */
     private function getNextInputRow() : bool|array
     {
@@ -365,7 +377,7 @@ class Sie4Parser implements Sie4Interface
         $this->input->rewind();
         while( [ $label, $rowData ] = $this->getNextInputRow()) {
             switch( true ) {
-                case ( ! $found && empty( $label )) : // skio empty line
+                case ( ! $found && empty( $label )) : // skip empty line
                     $this->input->next();
                     continue 2;
                 case ( $found && empty( $label )) : // accepted label found
@@ -436,7 +448,6 @@ class Sie4Parser implements Sie4Interface
             } // end switch
             $this->input->next();
         } // end while
-
         return $idDto;
     }
 
@@ -446,19 +457,18 @@ class Sie4Parser implements Sie4Interface
      * Obligatorisk
      * #PROGRAM programnamn version
      *
-     * Rowdata kan ha fler än 2 element, isf ta sista som version,
+     * Rowdata kan ha fler än 2 element, namn är först, resten version
      *
      * @param string[] $rowData
      * @param IdDto    $idDto
      * @return void
+     * @since 1.9.6 20230929
      */
     private static function processProgram( array $rowData, IdDto $idDto ) : void
     {
         ArrayUtil::assureArrayLength( $rowData, 2 );
-        $version    = current( array_slice( $rowData, -1, 1 ));
-        $name       = implode( StringUtil::$SP1, array_slice( $rowData, 0, -1 ));
-        $idDto->setProgramnamn( $name );
-        $idDto->setVersion( $version );
+        $idDto->setProgramnamn( $rowData[0] );
+        $idDto->setVersion( implode( StringUtil::$SP1, array_slice( $rowData, 1 )));
     }
 
 
@@ -959,14 +969,10 @@ class Sie4Parser implements Sie4Interface
     private static function getBalansDto( array $rowData ) : BalansDto
     {
         ArrayUtil::assureArrayLength( $rowData, 4 );
-        $balansDto = new BalansDto();
-        $balansDto->setArsnr( $rowData[0] );
-        $balansDto->setKontoNr( $rowData[1] );
-        $balansDto->setSaldo( $rowData[2] );
-        if( null !== $rowData[3] ) {
-            $balansDto->setKvantitet( $rowData[3] );
+        if( null !== $rowData[3]  ) {
+            $rowData[3] = (float) $rowData[3];
         }
-        return $balansDto;
+        return BalansDto::factory( $rowData[0], $rowData[1], $rowData[2], $rowData[3] );
     }
 
     /**
@@ -1217,20 +1223,17 @@ class Sie4Parser implements Sie4Interface
     {
         // $dimensionData[0] = namn
         // $dimensionData[self::UNDERDIM][underDimNr] = underDimNamn
-        // $dimensionData[self::OBJEKT][objektnr]     = objektnamn
+        // $dimensionData[self::OBJEKT][objektnr]     = objektNamn
         foreach(  $dimValues as $dimensionId => $dimensionData ) {
-            if( isset( $dimensionData[0] )) {
-                // #DIM namn
+            if( isset( $dimensionData[0] )) { // #DIM namn
                 $this->sie4Dto->addDim( $dimensionId, $dimensionData[0] );
             }
-            if( isset( $dimensionData[self::UNDERDIM] )) {
-                // #UNDERDIM
+            if( isset( $dimensionData[self::UNDERDIM] )) { // #UNDERDIM
                 foreach( $dimensionData[self::UNDERDIM] as $underDimNr => $underDimNamn ) {
                     $this->sie4Dto->addUnderDim( $underDimNr, $underDimNamn, $dimensionId );
                 }
             }
-            if( isset( $dimensionData[self::OBJEKT] )) {
-                // #OBJEKT
+            if( isset( $dimensionData[self::OBJEKT] )) { // #OBJEKT
                 foreach( $dimensionData[self::OBJEKT] as $objektNr => $objektNamn ) {
                     $this->sie4Dto->addDimObjekt( $dimensionId, (string) $objektNr, $objektNamn );
                 } // end foreach
@@ -1245,6 +1248,7 @@ class Sie4Parser implements Sie4Interface
      * @return void
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @since 1.8.3 2023-09-20
      */
     private function postKontoActions( array $kontoValues ) : void
     {
@@ -1256,7 +1260,7 @@ class Sie4Parser implements Sie4Interface
             $this->sie4Dto->addAccount(
                 (string) $kontoNr,
                 $kontoData[0],
-                $kontoData[1],
+                ( $kontoData[1] ?? null ),
                 ( $kontoData[2] ?? null )
             );
         } // end foreach

@@ -5,7 +5,7 @@
  This file is a part of Sie4Sdk
 
  author    Kjell-Inge Gustafsson, kigkonsult
- copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  link      https://kigkonsult.se
  license   Subject matter of licence is the software Sie4Sdk.
            The above package, copyright, link and this licence notice shall be
@@ -33,6 +33,9 @@
          processIsolation="false"
          bootstrap="autoload.php">
     <testsuites>
+        <testsuite name="Util Tests">
+            <directory suffix=".php">./test/Util</directory>
+        </testsuite>
         <testsuite name="Demo Sie4Dto Tests">
             <file>test/TestDemo.php</file>
         </testsuite>
@@ -42,16 +45,21 @@
         <testsuite name="File parse/write Tests">
             <file>test/TestFiles.php</file>
         </testsuite>
+        <testsuite name="Rsc Tests">
+            <file>test/TestRsc.php</file>
+        </testsuite>
     </testsuites>
     <coverage includeUncoveredFiles="true"
               processUncoveredFiles="true"
               pathCoverage="false"
               ignoreDeprecatedCodeUnits="false"
               disableCodeCoverageIgnore="true">
-        <!-- ... -->
         <include>
             <directory>./src</directory>
         </include>
+        <exclude>
+            <file>src/Api/Server/sie4Server.php</file>
+        </exclude>
         <!-- Require the PHP Xdebug (2.7.0 or later) and tokenizer extensions-->
         <!-- Remove or comment after your own choice-->
         <!-- Note, all output in report/logging will be saved in 'testDocs' folder -->
@@ -59,7 +67,7 @@
             <!-- clover outputFile="testDocs/clover.xml"/ -->
             <!-- crap4j outputFile="testDocs/crap4j.xml" threshold="50"/ -->
             <html outputDirectory="testDocs/PHPUnitCoverage" lowUpperBound="60" highLowerBound="80"/>
-            <php outputFile="testDocs/coverage.php"/>
+            <!-- php outputFile="testDocs/coverage.php"/ -->
             <text outputFile="testDocs/coverage.txt" showUncoveredFiles="false" showOnlySummary="false"/>
             <!-- xml outputDirectory="testDocs/xml-coverage"/ -->
         </report>

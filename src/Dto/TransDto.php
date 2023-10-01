@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -32,9 +32,9 @@ use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnr2Trait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KvantitetTrait;
+use Kigkonsult\Sie4Sdk\Dto\Traits\ParentCorrelationIdTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SerieVernrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
-use Kigkonsult\Sie4Sdk\Util\Assert;
 
 use function in_array;
 use function count;
@@ -46,10 +46,12 @@ use function sprintf;
  * Inherit timestamp, guid, fnrId and orgnr(+multiple) properties from BaseId,
  * to uniquely identify instance
  * These properties and serie and vernr are populated down from 'parent' verDto
- * trandsdat also (from verdtum), if missing
+ * trandsdat also (from verdatum), if missing
  *
  * kontonr and belopp required,
  *   in objektlista (if set), pairs of dimension and objektnr required
+ *
+ * @since 1.8.4 20230925
  */
 class TransDto extends BaseId implements KontoNrInterface
 {
@@ -62,6 +64,11 @@ class TransDto extends BaseId implements KontoNrInterface
      * Serie and vernr
      */
     use SerieVernrTrait;
+
+    /**
+     * Parent CorrelationId
+     */
+    use ParentCorrelationIdTrait;
 
     /**
      * @var string  one of allowedTypes
@@ -128,7 +135,7 @@ class TransDto extends BaseId implements KontoNrInterface
     public function setTransType( string $transType ) : self
     {
         static $FMT = 'Fel trans-typ %s, #TRANS/#RTRANS/#BTRANS förväntas';
-        if( ! in_array( $transType, self::$allowedTypes )) {
+        if( ! in_array( $transType, self::$allowedTypes, true )) {
             throw new InvalidArgumentException(
                 sprintf( $FMT, $transType )
             );
@@ -145,7 +152,6 @@ class TransDto extends BaseId implements KontoNrInterface
      */
     public function setSerie( int | string $serie ) : self
     {
-        Assert::isIntOrString( self::VERSERIE, $serie );
         $this->serie = (string) $serie;
         return $this;
     }

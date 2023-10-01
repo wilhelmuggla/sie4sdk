@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -51,6 +51,11 @@ use function implode;
 use function rtrim;
 use function sprintf;
 
+/**
+ * Class Sie4WriterBase
+ *
+ * @since 1.8.2 2023-09-18
+ */
 abstract class Sie4WriterBase implements Sie4Interface
 {
     /**
@@ -98,14 +103,14 @@ abstract class Sie4WriterBase implements Sie4Interface
      *
      * Rows without eol
      *
-     * @var It|null
+     * @var It
      */
-    protected ?It $output = null;
+    protected It $output;
 
     /**
      * @var Sie4Dto|null
      */
-    protected ?Sie4Dto $sie4Dto = null;
+    protected Sie4Dto $sie4Dto;
 
     /**
      * If to write KSUMMA or not
@@ -163,6 +168,7 @@ abstract class Sie4WriterBase implements Sie4Interface
      * @param bool|null $writeKsumma
      * @return string
      * @throws InvalidArgumentException
+     * @since 1.8.2 2023-09-18
      */
     protected function write(
         bool $isSie4E,
@@ -208,9 +214,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         $this->writeValuta();
         $this->writeKonto();
         $this->writeSRU();
-        $this->writeDim();
-        $this->writeUnderDim();
-        $this->writeObjekt();
+        $this->writeDim(); // also UnderDim/Object
         $this->writeIbUb();
         $this->writeOibOub();
         $this->writeRes();
@@ -247,7 +251,7 @@ abstract class Sie4WriterBase implements Sie4Interface
                 self::$SIEFMT2,
                 self::PROGRAM,
                 StringUtil::quoteString( $programnamn ),
-                StringUtil::quoteString( $version )
+                $version
             )
         );
     }
@@ -564,13 +568,14 @@ abstract class Sie4WriterBase implements Sie4Interface
      * #KONTO/#KTYP/#ENHET
      *
      * @return void
+     * @since 1.8.2 2023-09-18
      */
     protected function writeKonto() : void
     {
         if( 0 < $this->sie4Dto->countAccountDtos()) {
-            // empty row before first #KONTO
-            $this->output->append( StringUtil::$SP0 );
             foreach( $this->sie4Dto->getAccountDtos() as $accountDto ) {
+                // empty row before each #KONTO
+                $this->output->append( StringUtil::$SP0 );
                 $this->writeKontoData( $accountDto );
             } // end foreach
         }
@@ -583,6 +588,7 @@ abstract class Sie4WriterBase implements Sie4Interface
      *
      * @param AccountDto $accountDto
      * @return void
+     * @since 1.8.3 2023-09-20
      */
     private function writeKontoData( AccountDto $accountDto ) : void
     {
@@ -597,16 +603,18 @@ abstract class Sie4WriterBase implements Sie4Interface
                 StringUtil::quoteString( $kontonamn )
             )
         );
-        $kontotyp = StringUtil::utf8toCP437((string) $accountDto->getKontoTyp());
-        $this->appendKsumma( self::KTYP, $kontoNr, $kontotyp );
-        $this->output->append(
-            sprintf(
-                self::$SIEFMT2,
-                self::KTYP,
-                $kontoNr,
-                $kontotyp
-            )
-        );
+        if( $accountDto->isKontotypSet()) {
+            $kontotyp = StringUtil::utf8toCP437((string)$accountDto->getKontoTyp());
+            $this->appendKsumma(self::KTYP, $kontoNr, $kontotyp);
+            $this->output->append(
+                sprintf(
+                    self::$SIEFMT2,
+                    self::KTYP,
+                    $kontoNr,
+                    $kontotyp
+                )
+            );
+        }
         if( $accountDto->isEnhetSet()) {
             $enhet = StringUtil::utf8toCP437((string) $accountDto->getEnhet());
             $this->appendKsumma( self::ENHET, $kontoNr, $enhet );
@@ -662,14 +670,21 @@ abstract class Sie4WriterBase implements Sie4Interface
      * #DIM
      *
      * @return void
+     * @since 1.8.2 2023-09-18
      */
     protected function writeDim() : void
     {
         if( 0 < $this->sie4Dto->countDimDtos()) {
-            // empty row before #DIMs
-            $this->output->append( StringUtil::$SP0 );
             foreach( $this->sie4Dto->getDimDtos() as $dimDto ) {
+                // empty row before each #DIM
+                $this->output->append( StringUtil::$SP0 );
                 $this->writeDimData( $dimDto );
+                $dimensionNr = $dimDto->getDimensionNr();
+                $dimensions = $this->writeUnderDim( $dimensionNr );
+                array_unshift( $dimensions, $dimensionNr );
+                foreach( $dimensions as $dimension ) {
+                    $this->writeObjekt( $dimension );
+                }
             } // end foreach
         }
     }
@@ -698,17 +713,22 @@ abstract class Sie4WriterBase implements Sie4Interface
     /**
      * #UNDERDIM
      *
-     * @return void
+     * @param int $superDim
+     * @return int[]
+     * @since 1.8.2 2023-09-18
      */
-    protected function writeUnderDim() : void
+    protected function writeUnderDim( int $superDim ) : array
     {
+        $dimensions = [];
         if( 0 < $this->sie4Dto->countUnderDimDtos()) {
-            // empty row before #UNDERDIMs
-            $this->output->append( StringUtil::$SP0 );
             foreach( $this->sie4Dto->getUnderDimDtos() as $underDimDto ) {
-                $this->writeUnderDimData( $underDimDto );
+                if( $superDim == $underDimDto->getSuperDimNr()) {
+                    $this->writeUnderDimData( $underDimDto );
+                    $dimensions[] = $underDimDto->getDimensionNr();
+                }
             } // end foreach
         }
+        return $dimensions;
     }
 
     /**
@@ -737,15 +757,17 @@ abstract class Sie4WriterBase implements Sie4Interface
     /**
      * #OBJEKT
      *
+     * @param int $superDim
      * @return void
+     * @since 1.8.2 2023-09-18
      */
-    protected function writeObjekt() : void
+    protected function writeObjekt( int $superDim ) : void
     {
         if( 0 < $this->sie4Dto->countDimObjektDtos()) {
-            // empty row before #OBJEKTs
-            $this->output->append( StringUtil::$SP0 );
             foreach( $this->sie4Dto->getDimObjektDtos() as $dimObjektDto ) {
-                $this->writeDimObjektData( $dimObjektDto );
+                if( $superDim == $dimObjektDto->getDimensionNr()) {
+                    $this->writeDimObjektData( $dimObjektDto );
+                }
             } // end foreach
         }
     }

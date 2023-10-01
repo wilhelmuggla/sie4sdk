@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -27,19 +27,18 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
-use Faker;
 use Kigkonsult\Sie4Sdk\Dto\AdressDto as Dto;
 
-class AdressDto
+class AdressDto extends LoaderBase
 {
     /**
      * @return Dto
+     * @since 1.8.3 2023-09-20
      */
     public static function load() : Dto
     {
-        $faker = Faker\Factory::create();
-
-        $dto = new Dto();
+        $faker = self::getFaker();
+        $dto   = new Dto();
 
         $dto->setKontakt( $faker->name );
         $dto->setUtdelningsadr( $faker->streetAddress );

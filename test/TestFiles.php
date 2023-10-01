@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -77,6 +77,52 @@ class TestFiles extends TestCase
     }
 
     /**
+     * Reading Sie4I file, parse, write and compare
+     *
+     * Expects error due to attributes with default value
+     *
+     * @test
+     * @dataProvider sie4IFileTestProvider
+     *
+     * @param int $case
+     * @param string $fileName
+     * @return void
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @throws Exception
+     */
+    public function sie4IFileTest1( int $case, string $fileName ) : void
+    {
+        $sie4Istring1Utf8 = file_get_contents( $fileName );
+        $isKsummaSet1     = str_contains( $sie4Istring1Utf8, Sie4Parser::KSUMMA );
+        $sie4Istring1     = StringUtil::utf8toCP437((string) $sie4Istring1Utf8 );
+        // convert file content to CP437, save into tempFile
+        $tempFile1 = tempnam( sys_get_temp_dir(), __FUNCTION__ . '_21_');
+        file_put_contents(
+            $tempFile1,
+            $sie4Istring1
+        );
+
+        // parse Sie4 file
+        $sie4IDto     = Sie4Parser::factory()->process( $tempFile1 );
+        unlink( $tempFile1 );
+
+        // test #KSUMMA the remove it, will NOT match
+        if( $isKsummaSet1 ) {
+            $this->assertTrue( $sie4IDto->isKsummaSet());
+        }
+
+        $sie4Istring3 = (new Sie4IWriter())->process( $sie4IDto, null, false );
+
+        // may result in diff due to string quotes and row ordering etc
+        $this->assertEquals(
+            rtrim( $sie4Istring1 ),
+            rtrim( $sie4Istring3 ),
+            __FUNCTION__ . ' ' . $case . '-23 ' . $fileName . ' file parse and write results in diff'
+        );
+    }
+
+    /**
      * Reading Sie4I file, parse, write SieEntry xml and convert back (twice) and compare
      *
      * Expects error due to attributes with default value
@@ -91,7 +137,7 @@ class TestFiles extends TestCase
      * @throws RuntimeException
      * @throws Exception
      */
-    public function sie4IFileTest( int $case, string $fileName ) : void
+    public function sie4IFileTest2( int $case, string $fileName ) : void
     {
         static $FMT1 = '%s (#%s) not valid%s%s%s';
 
@@ -100,7 +146,7 @@ class TestFiles extends TestCase
         $sie4Istring1Utf8 = file_get_contents( $fileName );
         $sie4Istring1     = StringUtil::utf8toCP437((string) $sie4Istring1Utf8 );
         // convert file content to CP437, save into tempFile
-        $tempFile1 = tempnam( sys_get_temp_dir(), __FUNCTION__ . '_1_');
+        $tempFile1 = tempnam( sys_get_temp_dir(), __FUNCTION__ . '_21_');
         file_put_contents(
             $tempFile1,
             $sie4Istring1
@@ -179,7 +225,7 @@ class TestFiles extends TestCase
         // echo 'passed \'var_export( $sieEntryX, true )\', OK'; // test ###
 
         // convert SieEntry (again) to Sie4 string and file
-        $tempFile3 = tempnam( sys_get_temp_dir(), __FUNCTION__ . '_2_');
+        $tempFile3 = tempnam( sys_get_temp_dir(), __FUNCTION__ . '_22_');
         $sie4IDto     = Sie4ILoader::factory( $sieEntry3 )->getSie4IDto();
         if( $isKsummaSet2 ) {
             $sie4Iwriter = Sie4IWriter::factory( $sie4IDto->setKsumma( 1 ));
@@ -213,6 +259,10 @@ class TestFiles extends TestCase
         */
         // echo PHP_EOL . 'sie4Istring3 (i utf8) :' . PHP_EOL . $sie4Istring3Utf8 . PHP_EOL;
 
+        /*
+        error_log( 'sie4Istring1Utf8 ' . PHP_EOL . var_export( $sie4Istring1Utf8, true ));
+        error_log( 'sie4Istring3Utf8 ' . PHP_EOL . var_export( $sie4Istring3Utf8, true ));
+        */
         // file strings diff but in PHP from http://www.holomind.de/phpnet/diff.php
         $diff = PHPDiff( $sie4Istring1Utf8, $sie4Istring3Utf8 );
         $this->assertEmpty(

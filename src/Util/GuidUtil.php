@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -48,7 +48,7 @@ class GuidUtil
      */
     public static function assertGuid( string $guid, int $errCode ) : void
     {
-        static $FMT3 = 'Ogiltig guid : ';
+        static $FMT3   = 'Ogiltig guid : ';
         static $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
         if( 36 !== strlen( $guid )) {
             throw new InvalidArgumentException( $FMT3 . $guid, $errCode );

@@ -41,3 +41,9 @@
 1.8    PHP 8.0
 
 1.8.1  Some code rewrite
+
+1.8.2  Dim/UnderDim/Object output order and some rewrites
+1.8.3  Konto upd
+1.8.4  Simpler (http) Comet API
+1.8.5  VerDto/TransDto parent guid, ext array output upd
+1.8.6  name/version parse mgnt upd

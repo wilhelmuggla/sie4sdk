@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -27,13 +27,25 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk;
 
+/**
+ * Interface Sie4Interface
+ *
+ * Konstanter med '#'-prefix förekommer endast som direktiv i en Sie4 fil (string)
+ * I stor sett övriga som nycklar i Sie4 array
+ *
+ * @since 1.8.6 20230929
+ */
 Interface Sie4Interface
 {
     /**
      * Product constants
      */
     public const PRODUCTNAME              = 'Kigkonsult\Sie4Sdk';
-    public const PRODUCTVERSION           = '1.8.1';
+    public const PRODUCTVERSION           = '1.8.6';
+
+    /**
+     * Unik timestamp/guid för varje Sie4 fil (string)
+     */
 
     public const TIMESTAMP                = 'TIMESTAMP';
     public const GUID                     = 'GUID';
@@ -83,6 +95,7 @@ Interface Sie4Interface
       * När och av vem som filen genererats
       * #GEN datum sign
       * Obligatorisk (sign opt) Sie4, båda obl. Sie5 SieEntry
+      * When using Sie4 array/json input, any PHP DateTime string Ymd-formats can be used for GENDATUM
       */
     public const GEN                      = '#GEN';
     public const GENDATUM                 = 'GENDATUM';
@@ -155,6 +168,7 @@ Interface Sie4Interface
      /**
       * Räkenskapsår från vilket exporterade data hämtats
       * valfri
+      * When using Sie4 array/json input, any PHP DateTime string Ymd-formats can be used for RARSTART/RARSLUT
       */
     public const RAR                      = '#RAR';
     public const RARARSNR                 = 'RARASRNR';
@@ -171,6 +185,7 @@ Interface Sie4Interface
     /**
      * Datum för periodsaldons omfattning
      * #OMFATTN datum
+     * When using Sie4 array/json input, any PHP DateTime string Ymd-formats can be used for OMFATTNDATUM
      */
     public const OMFATTN                  = '#OMFATTN';
     public const OMFATTNDATUM             = 'OMFATTNDATUM';
@@ -318,10 +333,12 @@ Interface Sie4Interface
       * #VER serie vernr verdatum vertext regdatum sign
       * Obligatorisk
       * Enbart verdatum obligatoriskt, auto-gen (now) om det saknas i Sie4
+      * When using Sie4 array/json input, any PHP DateTime string Ymd-formats can be used for VERDATUM/REGDATUM
       */
     public const VER                      = '#VER';
-    public const VERTIMESTAMP             = 'VERTIMESTAMP';
-    public const VERGUID                  = 'VERGUID';
+    public const VERTIMESTAMP             = 'VERTIMESTAMP';  // unik timestamp för varje verifiktion
+    public const VERGUID                  = 'VERGUID';       // unik guid för varje verifiktion
+    public const VERPARENTGUID            = 'VERPARENTGUID'; // guid för SieDto
     public const VERSERIE                 = 'VERSERIE';
     public const VERNR                    = 'VERNR';
     public const VERDATUM                 = 'VERDATUM';
@@ -335,12 +352,13 @@ Interface Sie4Interface
       * Borttagen transaktionspost #BTRANS
       * valfri enl Sie4-pdf, obl i importfil
       * #TRANS/#RTRANS/#BTRANS kontonr {objektlista} belopp transdat(opt) transtext(opt) kvantitet sign
-      * #RTRANS
       * Obligatoriskt : kontonr/belopp
+      * When using Sie4 array/json input, any PHP DateTime string Ymd-formats can be used for TRANSDAT/RTRANSDAT/BTRANSDAT
       */
     public const TRANS                    = '#TRANS';
-    public const TRANSTIMESTAMP           = 'TRANSTIMESTAMP';
-    public const TRANSGUID                = 'TRANSGUID';
+    public const TRANSTIMESTAMP           = 'TRANSTIMESTAMP';  // unik timestamp för varje transaktionspost
+    public const TRANSGUID                = 'TRANSGUID';       // unik guid för varje transaktionspost
+    public const TRANSPARENTGUID          = 'TRANSPARENTGUID'; // guid för Ver
     public const TRANSKONTONR             = 'TRANSKONTONR';
     public const TRANSDIMENSIONNR         = 'TRANSDIMENSIONNR';
     public const TRANSOBJEKTNR            = 'TRANSOBJEKTNR';
@@ -352,6 +370,7 @@ Interface Sie4Interface
     public const RTRANS                   = '#RTRANS';
     public const RTRANSTIMESTAMP          = 'RTRANSTIMESTAMP';
     public const RTRANSGUID               = 'RTRANSGUID';
+    public const RTRANSPARENTGUID         = 'RTRANSPARENTGUID'; // guid för Ver
     public const RTRANSKONTONR            = 'RTRANSKONTONR';
     public const RTRANSDIMENSIONNR        = 'RTRANSDIMENSIONNR';
     public const RTRANSOBJEKTNR           = 'RTRANSOBJEKTNR';
@@ -363,6 +382,7 @@ Interface Sie4Interface
     public const BTRANS                   = '#BTRANS';
     public const BTRANSTIMESTAMP          = 'BTRANSTIMESTAMP';
     public const BTRANSGUID               = 'BTRANSGUID';
+    public const BTRANSPARENTGUID         = 'BTRANSPARENTGUID'; // guid för Ver
     public const BTRANSKONTONR            = 'BTRANSKONTONR';
     public const BTRANSDIMENSIONNR        = 'BTRANSDIMENSIONNR';
     public const BTRANSOBJEKTNR           = 'BTRANSOBJEKTNR';
@@ -384,7 +404,7 @@ Interface Sie4Interface
     public const KSUMMAPOST               = 'KSUMMA';
 
     /**
-     * Sie4 date format
+     * Sie4 datumformat
      */
     public const SIE4YYYYMMDD             = 'Ymd';
 }

@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -27,6 +27,7 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
+use Exception;
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Util\Assert;
 
@@ -85,8 +86,13 @@ class PeriodDto extends BalansObjektDto
     public function setPeriod( int | string $period ) : self
     {
         static $PERIOD = 'period';
-        Assert::isIntegerish( $PERIOD, $period );
-        Assert::isYYYYMMDate( $PERIOD, $period );
+        try {
+            Assert::isIntegerish( $PERIOD, $period );
+            Assert::isYYYYMMDate( $PERIOD, $period );
+        }
+        catch( Exception $e ) {
+            throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+        }
         $this->period = (string) $period;
         return $this;
     }

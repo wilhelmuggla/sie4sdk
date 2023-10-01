@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -30,6 +30,21 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 use Kigkonsult\Sie4Sdk\Dto\Traits\DimensionNrTrait;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
+/**
+ * Class DimDto
+ *
+ * Följande dimensionsnummer är reserverade:
+ * 1     = Kostnadsställe / resultatenhet.
+ * 2     = Kostnadsbärare (skall vara underdimension till 1).
+ * 3-5   = Reserverade för framtida utökning av standarden.
+ * 6     = Projekt.
+ * 7     = Anställd.
+ * 8     = Kund.
+ * 9     = Leverantör.
+ * 10    = Faktura.
+ * 11-19 = Reserverade för framtida utökning av standarden.
+ * 20-   = Fritt disponibla.
+ */
 class DimDto implements DimensionNrInterface
 {
     use DimensionNrTrait;

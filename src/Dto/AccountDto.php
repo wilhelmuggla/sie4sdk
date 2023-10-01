@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -38,7 +38,9 @@ use function strtoupper;
 /**
  * Class AccountDto
  *
- * Kontonr/name/typ required
+ * Kontonr/name required, typ/enhet opt
+ *
+ * @since 1.8.3 2023-09-20
  */
 class AccountDto implements DtoInterface
 {
@@ -73,6 +75,24 @@ class AccountDto implements DtoInterface
             return $KONTOTYPER2[$type] ?? false;
         }
         return $KONTOTYPER[$type] ?? false;
+    }
+
+    /**
+     * In case of missing kontoTyp...
+     *
+     * @param string $kontoNr
+     * @return string
+     * @since 1.8.3 2023-09-20
+     */
+    public static function findOutKontoTyp( string $kontoNr ) : string
+    {
+        $kontoNrI = (int) $kontoNr;
+        return match( true ) {
+            ( $kontoNrI < 2000 ) => AccountDto::T,
+            ( $kontoNrI < 3000 ) => AccountDto::S,
+            ( $kontoNrI < 4000 ) => AccountDto::I,
+            default              => AccountDto::K,
+        };
     }
 
     use KontoNrTrait;
@@ -114,21 +134,24 @@ class AccountDto implements DtoInterface
      *
      * @param int|string $kontoNr
      * @param string $kontoNamn
-     * @param string $kontoTyp
-     * @param string|null $enhet
+     * @param null|string $kontoTyp
+     * @param null|string $enhet
      * @return self
+     * @since 1.8.3 2023-09-20
      */
     public static function factory(
         int | string $kontoNr,
         string       $kontoNamn,
-        string       $kontoTyp,
-        string       $enhet = null
+        ? string     $kontoTyp = null,
+        ? string     $enhet = null
     ) : self
     {
         $instance = new self();
         $instance->setKontoNr( $kontoNr );
         $instance->setKontoNamn( $kontoNamn );
-        $instance->setKontoTyp( $kontoTyp );
+        if( ! empty( $kontoTyp )) {
+            $instance->setKontoTyp($kontoTyp);
+        }
         if( ! empty( $enhet )) {
             $instance->setEnhet( $enhet );
         }
@@ -190,16 +213,18 @@ class AccountDto implements DtoInterface
     /**
      * Set kontoTyp
      *
-     * @param string $kontoTyp
+     * @param null|string $kontoTyp
      * @return self
      * @throws InvalidArgumentException
      */
-    public function setKontoTyp( string $kontoTyp ) : self
+    public function setKontoTyp( ? string $kontoTyp = null ) : self
     {
         static $FMT = 'Ogiltig kontoTyp : ';
-        $kontoTyp = strtoupper( $kontoTyp );
-        if( false === self::getKontoType( $kontoTyp, false )) {
-            throw new InvalidArgumentException( $FMT . $kontoTyp );
+        if( null !== $kontoTyp ) {
+            $kontoTyp = strtoupper( $kontoTyp );
+            if ( false === self::getKontoType( $kontoTyp, false ) ) {
+                throw new InvalidArgumentException( $FMT . $kontoTyp );
+            }
         }
         $this->kontoTyp = $kontoTyp;
         return $this;

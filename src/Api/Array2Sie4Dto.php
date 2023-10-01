@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -28,6 +28,7 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Api;
 
 use Exception;
+use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\AccountDto;
 use Kigkonsult\Sie4Sdk\Dto\AdressDto;
 use Kigkonsult\Sie4Sdk\Dto\BalansDto;
@@ -45,7 +46,9 @@ use Kigkonsult\Sie4Sdk\Dto\VerDto;
 use Kigkonsult\Sie4Sdk\Util\DateTimeUtil;
 
 use function array_keys;
-use function in_array;
+use function array_merge;
+use function array_unique;
+use function is_array;
 use function ksort;
 
 /**
@@ -55,10 +58,10 @@ use function ksort;
  *
  * input format
  * [
+ *     self::FLAGGPOST          => <0/1>,
+ *
  *     self::TIMESTAMP          => <microtime>
  *     self::GUID               => <guid>
- *
- *     self::FLAGGPOST          => <0/1>,
  *
  *     self::PROGRAMNAMN        => <programNamn>,
  *     self::PROGRAMVERSION     => <programVersion>,
@@ -166,7 +169,7 @@ use function ksort;
  *     self::VERTIMESTAMP       => [ *<microtime> ]
  *     self::VERGUID            => [ *<guid> ]
  *     self::VERDATUM           => [ *<SIE4YYYYMMDD-verdatum> ],
- *     self::VERSERIE           => [ *serie> ],
+ *     self::VERSERIE           => [ *<serie> ],
  *     self::VERNR              => [ *<vernr> ],
  *     self::VERTEXT            => [ *<vertext> ],
  *     self::REGDATUM           => [ *<SIE4YYYYMMDD-regdatum> ],
@@ -210,22 +213,37 @@ use function ksort;
  */
 class Array2Sie4Dto extends ArrayBase
 {
+    private static string $ERR3  = '%s missing';
+    private static string $ERR3part  = '%s[%s][%s] missing';
+    private static string $ERR10     = ' must be an array';
+    private static string $ERR10part = '%s[%s][%s] must be an array';
+
     /**
      * @var array
      */
     private array $input = [];
 
     /**
-     * @var Sie4Dto|null
+     * @var Sie4Dto
      */
-    private ?Sie4Dto $sie4Dto = null;
+    private Sie4Dto $sie4Dto;
+
+    /**
+     * @var VerDto
+     */
+    private VerDto $currentVerDto;
+
+    /**
+     * @var TransDto
+     */
+    private TransDto $currentTransDto;
 
     /**
      * Transform Sie4 array to SieDto, factory method
      *
      * @param array $input
      * @return Sie4Dto
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public static function process( array $input ) : Sie4Dto
     {
@@ -248,6 +266,7 @@ class Array2Sie4Dto extends ArrayBase
         $instance->readResData();
         $instance->readPsaldoData();
         $instance->readPbudgetData();
+
         $instance->readVerTransData();
 
         if( isset( $instance->input[self::KSUMMAPOST] )) {
@@ -261,6 +280,7 @@ class Array2Sie4Dto extends ArrayBase
      * Process identifikationsposter in order
      *
      * @return IdDto
+     * @throws InvalidArgumentException
      */
     private function loadIdDto() : IdDto
     {
@@ -296,9 +316,14 @@ class Array2Sie4Dto extends ArrayBase
          * ]
          */
         if( isset( $this->input[self::GENDATUM] )) {
-            $idDto->setGenDate(
-                DateTimeUtil::getDateTime( $this->input[self::GENDATUM], self::GEN, 3511 )
-            );
+            try {
+                $idDto->setGenDate(
+                    DateTimeUtil::getDateTime( $this->input[self::GENDATUM], self::GEN, 3511 )
+                );
+            }
+            catch( Exception $e ) {
+                throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+            }
         }
         if( isset( $this->input[self::GENSIGN] )) {
             $idDto->setSign( $this->input[self::GENSIGN] );
@@ -371,7 +396,7 @@ class Array2Sie4Dto extends ArrayBase
          * Fullständigt namn för det företag som exporterats
          *
          * #FNAMN företagsnamn
-         * Obligatorisk men valfri i sie4Dto (FileInfoTypeEntry/CompanyTypeEntry)
+         * Obligatorisk, valfri i sie4Dto (FileInfoTypeEntry/CompanyTypeEntry)
          * expected as
          * [
          *     ....
@@ -381,6 +406,9 @@ class Array2Sie4Dto extends ArrayBase
          */
         if( isset( $this->input[self::FTGNAMN] )) {
             $idDto->setFnamn( $this->input[self::FTGNAMN] );
+        }
+        else {
+            throw new InvalidArgumentException( self::FTGNAMN . self::$ERR3, 3517 );
         }
         $this->readIdDtoRarData( $idDto );
         /**
@@ -399,9 +427,14 @@ class Array2Sie4Dto extends ArrayBase
          * valfri, Sie4E only
          */
         if( isset( $this->input[self::OMFATTNDATUM] )) {
-            $idDto->setOmfattn(
-                DateTimeUtil::getDateTime( $this->input[self::OMFATTNDATUM], self::OMFATTN, 3519 )
-            );
+            try {
+                $idDto->setOmfattn(
+                    DateTimeUtil::getDateTime( $this->input[self::OMFATTNDATUM], self::OMFATTN, 3519 )
+                );
+            }
+            catch( Exception $e ) {
+                throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+            }
         }
         /**
          * Kontoplanstyp
@@ -412,7 +445,6 @@ class Array2Sie4Dto extends ArrayBase
         if( isset( $this->input[self::KPTYPE] )) {
             $idDto->setKptyp( $this->input[self::KPTYPE] );
         }
-
         /**
          * Redovisningsvaluta
          *
@@ -436,14 +468,14 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function readBasic() : void
     {
+        if( isset( $this->input[self::FLAGGPOST] )) {
+            $this->sie4Dto->setFlagga((int) $this->input[self::FLAGGPOST] );
+        }
         if( isset( $this->input[self::TIMESTAMP] )) {
             $this->sie4Dto->setTimestamp((float) $this->input[self::TIMESTAMP] );
         }
         if( isset( $this->input[self::GUID] )) {
             $this->sie4Dto->setCorrelationId( $this->input[self::GUID] );
-        }
-        if( isset( $this->input[self::FLAGGPOST] )) {
-            $this->sie4Dto->setFlagga((int) $this->input[self::FLAGGPOST] );
         }
         if( isset( $this->input[self::FNRID] )) {
             $this->sie4Dto->setFnrId( $this->input[self::FNRID] );
@@ -500,6 +532,7 @@ class Array2Sie4Dto extends ArrayBase
      * valfri
      *
      * @param IdDto $idDto
+     * @throws InvalidArgumentException
      */
     private function readIdDtoRarData( IdDto $idDto ) : void
     {
@@ -510,14 +543,24 @@ class Array2Sie4Dto extends ArrayBase
             $rarDto = new RarDto();
             $rarDto->setArsnr( $this->input[self::RARARSNR][$x] );
             if( isset( $this->input[self::RARSTART][$x] )) {
-                $rarDto->setStart(
-                    DateTimeUtil::getDateTime( $this->input[self::RARSTART][$x], self::RAR, 6788 )
-                );
+                try {
+                    $rarDto->setStart(
+                        DateTimeUtil::getDateTime( $this->input[self::RARSTART][$x], self::RAR, 6788 )
+                    );
+                }
+                catch( Exception $e ) {
+                    throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+                }
             } // end if
             if( isset( $this->input[self::RARSLUT][$x] )) {
-                $rarDto->setSlut(
-                   DateTimeUtil::getDateTime( $this->input[self::RARSLUT][$x], self::RAR, 6789 )
-                );
+                try {
+                    $rarDto->setSlut(
+                        DateTimeUtil::getDateTime( $this->input[self::RARSLUT][$x], self::RAR, 6789 )
+                    );
+                }
+                catch( Exception $e ) {
+                    throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+                }
             } // end if
             $idDto->addRarDto( $rarDto );
         } // end foreach
@@ -572,6 +615,7 @@ class Array2Sie4Dto extends ArrayBase
      * ]
      *
      * @return void
+     * @throws InvalidArgumentException
      */
     private function readSruData() : void
     {
@@ -600,6 +644,7 @@ class Array2Sie4Dto extends ArrayBase
      * ]
      *
      * @return void
+     * @throws InvalidArgumentException
      */
     private function readDimData() : void
     {
@@ -629,6 +674,7 @@ class Array2Sie4Dto extends ArrayBase
      * ]
      *
      * @return void
+     * @throws InvalidArgumentException
      */
     private function readUnderDimData() : void
     {
@@ -661,6 +707,7 @@ class Array2Sie4Dto extends ArrayBase
      * ]
      *
      * @return void
+     * @throws InvalidArgumentException
      */
     private function readDimObjektData() : void
     {
@@ -736,6 +783,7 @@ class Array2Sie4Dto extends ArrayBase
      * @param string[] $keys
      * @param int|string $x
      * @return BalansDto
+     * @throws InvalidArgumentException
      */
     private function loadBalansDto( array $keys, int|string $x ) : BalansDto
     {
@@ -820,6 +868,7 @@ class Array2Sie4Dto extends ArrayBase
      * @param string[] $keys
      * @param int|string $x
      * @return BalansObjektDto
+     * @throws InvalidArgumentException
      */
     private function loadBalansObjektDto( array $keys, int|string $x ) : BalansObjektDto
     {
@@ -858,6 +907,7 @@ class Array2Sie4Dto extends ArrayBase
      * ]
      *
      * @return void
+     * @throws InvalidArgumentException
      */
     private function readResData() : void
     {
@@ -887,6 +937,7 @@ class Array2Sie4Dto extends ArrayBase
      * ]
      *
      * @return void
+     * @throws InvalidArgumentException
      */
     private function readPsaldoData() : void
     {
@@ -919,6 +970,7 @@ class Array2Sie4Dto extends ArrayBase
      * ]
      *
      * @return void
+     * @throws InvalidArgumentException
      */
     private function readPbudgetData() : void
     {
@@ -934,9 +986,14 @@ class Array2Sie4Dto extends ArrayBase
     }
 
     /**
+     * Return populated PeriodDto
+     *
+     * The period property (YYYYmm) value is asserted in the Dto::setPeriod() method
+     *
      * @param string[] $keys
      * @param int|string $x
      * @return PeriodDto
+     * @throws InvalidArgumentException
      */
     private function loadPeriodDto( array $keys, int|string $x ) : PeriodDto
     {
@@ -969,7 +1026,9 @@ class Array2Sie4Dto extends ArrayBase
      *
      * #VER serie vernr verdatum vertext regdatum sign
      *
-     * verdatum mandatory in array input
+     * Timestamp/guid autocreated if missing, parentGuid auto from SieDto
+     *
+     * VERDATUM mandatory in array input
      * expected as
      * [
      *     ....
@@ -983,61 +1042,95 @@ class Array2Sie4Dto extends ArrayBase
      * ]
      *
      * @return void
+     * @since 1.8.4 20230926
      */
     private function readVerTransData() : void
     {
-        if( ! isset( $this->input[self::VERDATUM] )) {
+        $key = self::VERDATUM;
+        if( ! isset( $this->input[$key] )) {
             return;
         }
-        foreach( array_keys( $this->input[self::VERDATUM] ) as $verX ) {
-            $verDto = new VerDto();
-            if( isset( $this->input[self::VERTIMESTAMP][$verX] )) { // accepts empty
-                $verDto->setTimestamp((float) $this->input[self::VERTIMESTAMP][$verX] );
+        if( ! is_array( $this->input[$key] )) {
+            throw new InvalidArgumentException( $key . self::$ERR10, 3710 );
+        }
+        foreach( array_keys( $this->input[$key] ) as $verX ) {
+            $this->currentVerDto = new VerDto();
+            $key    = self::VERTIMESTAMP;
+            if( $this->verKeyExists( $key, $verX )) {
+                $this->currentVerDto->setTimestamp((float) $this->input[$key][$verX] );
             }
-            if( isset( $this->input[self::VERGUID][$verX] ) &&
-                ! empty( $this->input[self::VERGUID][$verX] )) {
-                $verDto->setCorrelationId( $this->input[self::VERGUID][$verX] );
+            $key    = self::VERGUID;
+            if( $this->verKeyExists( $key, $verX )) {
+                $this->currentVerDto->setCorrelationId( $this->input[$key][$verX] );
             }
-            $verDto->setVerdatum(
-                DateTimeUtil::getDateTime(
-                    $this->input[self::VERDATUM][$verX],
-                    self::VER,
-                    3711
-                )
-            );
-            if( isset( $this->input[self::VERSERIE][$verX] ) &&
-                ! empty( $this->input[self::VERSERIE][$verX] )) {
-                $verDto->setSerie( $this->input[self::VERSERIE][$verX] );
-            }
-            if( isset( $this->input[self::VERNR][$verX] ) &&
-                ! empty( $this->input[self::VERNR][$verX] )) {
-                $verDto->setVernr( $this->input[self::VERNR][$verX] );
-            }
-            if( isset( $this->input[self::VERTEXT][$verX] ) &&
-                ! empty( $this->input[self::VERTEXT][$verX] )) {
-                $verDto->setVertext( $this->input[self::VERTEXT][$verX] );
-            }
-            if( isset( $this->input[self::REGDATUM][$verX] ) &&
-                ! empty( $this->input[self::REGDATUM][$verX] )) {
-                $verDto->setRegdatum(
-                    DateTimeUtil::getDateTime( $this->input[self::REGDATUM][$verX], self::VER, 3712 )
+            try {
+                $this->currentVerDto->setVerdatum(
+                    DateTimeUtil::getDateTime(
+                        $this->input[self::VERDATUM][$verX],
+                        self::VER,
+                        3711
+                    )
                 );
             }
+            catch( Exception $e ) {
+                throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+            }
+            $key    = self::VERSERIE;
+            if( $this->verKeyExists( $key, $verX )) {
+                $this->currentVerDto->setSerie( $this->input[$key][$verX] );
+            }
+            $key    = self::VERNR;
+            if( $this->verKeyExists( $key, $verX )) {
+                $this->currentVerDto->setVernr((int) $this->input[$key][$verX] );
+            }
+            $key    = self::VERTEXT;
+            if( $this->verKeyExists( $key, $verX )) {
+                $this->currentVerDto->setVertext( $this->input[$key][$verX] );
+            }
+            $key    = self::REGDATUM;
+            if( $this->verKeyExists( $key, $verX )) {
+                try {
+                    $this->currentVerDto->setRegdatum(
+                        DateTimeUtil::getDateTime( $this->input[$key][$verX], self::VER, 3712 )
+                    );
+                }
+                catch( Exception $e ) {
+                    throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+                }
+            }
             else {
-                $verDto->setRegdatum( $verDto->getVerdatum());
+                $this->currentVerDto->setRegdatum( $this->currentVerDto->getVerdatum());
             }
-            if( isset( $this->input[self::VERSIGN][$verX] ) &&
-                ! empty( $this->input[self::VERSIGN][$verX] )) {
-                $verDto->setSign( $this->input[self::VERSIGN][$verX] );
+            $key    = self::VERSIGN;
+            if( $this->verKeyExists( $key, $verX )) {
+                $this->currentVerDto->setSign( $this->input[$key][$verX] );
             }
-            if( isset( $this->input[self::TRANSKONTONR][$verX] )) {
-                $this->readTransData((int) $verX, $verDto );
-            }
-            $this->sie4Dto->addVerDto( $verDto );
+            $this->readTransData((int) $verX );
+            $this->sie4Dto->addVerDto( $this->currentVerDto );
         } // end foreach
     }
 
     /**
+     * Return bol true if $this->input[<verKey>] exists and is array and element verX not empty
+     *
+     * @param string $key
+     * @param int $verX
+     * @return bool
+     */
+    private function verKeyExists( string $key, int $verX ) : bool
+    {
+        return ( isset( $this->input[$key] ) &&
+            is_array( $this->input[$key] ) &&
+            ! empty( $this->input[$key][$verX] ));
+    }
+
+    /**
+     * Timestamp/guid autocreated if missing, parentGuid auto from VerDto
+     *
+     * #TRANS kontonr {objektlista} belopp transdat transtext kvantitet sign
+     *
+     * KONTNR/BELOPP mandatory in array input
+     *
      * expected as (for #TRANS, #RTRANS has self::RTRANSKONTONR etc, #BTRANS has self::BTRANSKONTONR etc)
      * [
      *     self::TRANSKONTONR     => [ *[ *<kontonr> ] ]
@@ -1051,118 +1144,172 @@ class Array2Sie4Dto extends ArrayBase
      * ]
      *
      * @param int    $verX
-     * @param VerDto $verDto
      * @return void
+     * @throws InvalidArgumentException
+     * @since 1.8.4 20230926
      */
-    private function readTransData( int $verX, VerDto $verDto ) : void
+    private function readTransData( int $verX ) : void
     {
-        static $leadKeys = [ self::TRANSKONTONR, self::RTRANSKONTONR, self::BTRANSKONTONR ];
-        $labels = [];
-        // preserve order of #TRANS, #RTRANS and #BTRANS
-        foreach( array_keys( $this->input ) as $transKey ) {
-            if( ! in_array( $transKey, $leadKeys, true )) {
-                continue;
-            }
-            $found = null;
-            switch( $transKey ) {
-                case ( ! isset( $this->input[$transKey][$verX] )) :
-                    break;
-                case self::RTRANSKONTONR :
-                    $found = self::RTRANS;
-                    break;
-                case self::BTRANSKONTONR :
-                    $found = self::BTRANS;
-                    break;
-                default :
-                    $found = self::TRANS;
-                    break;
-            } // end switch
-            if( ! empty( $found )) {
-                foreach( array_keys( $this->input[$transKey][$verX] ) as $tx ) {
-                    $labels[$tx] = $found;
-                }
-            }
-        } // end foreach
-        ksort( $labels, SORT_NUMERIC );
-        $transDtos = [];
+        $labels         = $this->transDataValidation( $verX );
+        $transDtos      = [];
         foreach( $labels as $lx => $label ) {
             $keyArr     = self::$TRANSKEYS[$label];
             $keyKontoNr = $keyArr[self::TRANSKONTONR];
+            $keybelopp  = $keyArr[self::TRANSBELOPP];
             foreach( array_keys( $this->input[$keyKontoNr][$verX] ) as $transX ) {
                 if( $lx !== $transX ) {
                     continue;
                 }
-                $transDto = new TransDto();
-                $transDto->setTransType( $label );
-                $transDto->setKontoNr( $this->input[$keyKontoNr][$verX][$transX] );
-                $this->processTransData( $transDto, $keyArr, $verX, (int) $transX, $label );
-                $transDtos[$transX] = $transDto;
+                $this->currentTransDto = TransDto::factory(
+                    $this->input[$keyKontoNr][$verX][$transX],
+                    (float) $this->input[$keybelopp][$verX][$transX],
+                    $label
+                );
+                $this->processTransData( $keyArr, $verX, (int) $transX, $label );
+                $transDtos[$transX] = $this->currentTransDto;
                 break; // lx found
             } // end foreach
         } // end foreach leadKey
         ksort( $transDtos, SORT_NUMERIC );
-        $verDto->setTransDtos( $transDtos );
+        $this->currentVerDto->setTransDtos( $transDtos );
+    }
+
+    /**
+     * Validates (each) trans is ok, kontoNr/belopp MUST exist, return string[]
+     *
+     * Preserve order of #TRANS, #RTRANS and #BTRANS
+     *
+     * @param int $verX
+     * @return string[]
+     * @throws InvalidArgumentException
+     * @since 1.8.4 20230926
+     */
+    private function transDataValidation( int $verX ) : array
+    {
+        static $leadKeys0 = [ self::TRANSKONTONR, self::RTRANSKONTONR, self::BTRANSKONTONR ];
+        static $leadKeys1 = [ self::TRANSBELOPP, self::RTRANSBELOPP, self::BTRANSBELOPP ];
+        static $leadKeys2 = [ self::TRANS, self::RTRANS, self::BTRANS ];
+        $labels = [];
+        foreach( [ 0, 1, 2 ] as $tx1 ) {
+            $keyKontoNr = $leadKeys0[$tx1];
+            $keybelopp  = $leadKeys1[$tx1];
+            if( ! isset( $this->input[$keyKontoNr][$verX] ) && ! isset( $this->input[$keybelopp][$verX] )) {
+                continue;
+            }
+            if( isset( $this->input[$keyKontoNr][$verX] ) and ! isset( $this->input[$keybelopp][$verX] )) {
+                throw new InvalidArgumentException( $keybelopp . self::$ERR10, 3902 );
+            }
+            if( ! isset( $this->input[$keyKontoNr][$verX] ) and isset( $this->input[$keybelopp][$verX] )) {
+                throw new InvalidArgumentException( $keyKontoNr . self::$ERR10, 4003 );
+            }
+            $transKeys = array_unique(
+                array_merge(
+                    array_keys( $this->input[$keyKontoNr][$verX] ?? [] ),
+                    array_keys( $this->input[$keybelopp][$verX] ?? [] )
+                )
+            );
+            foreach( $transKeys as $tx2 ) {
+                if ( ! isset( $this->input[$keyKontoNr][$verX][$tx2] )) {
+                    throw new InvalidArgumentException(
+                        sprintf( self::$ERR3part, $keyKontoNr, $verX, $tx2 ),
+                        ( 4000 + (int) $tx2 )
+                    );
+                }
+                if ( ! isset( $this->input[$keybelopp][$verX][$tx2] )) {
+                    throw new InvalidArgumentException(
+                        sprintf( self::$ERR3part, $keybelopp, $verX, $tx2 ),
+                        ( 4100 + (int) $tx2 )
+                    );
+                }
+                $labels[$tx2] = $leadKeys2[$tx1];
+            } // end foreach
+        } // end foreach
+        if( empty( $labels )) {
+            throw new InvalidArgumentException(
+                implode( DIRECTORY_SEPARATOR, $leadKeys2 ) . self::$ERR10,
+                4209
+            );
+        }
+        ksort( $labels, SORT_NUMERIC );
+        return $labels;
     }
 
     /**
      * Process single #TRANS/#RTRANS/#BTRANS
      *
-     * @param TransDto $transDto
-     * @param array    $keyArr
+     * Sets all but kontoNr/belopp
+     *
+     * @param string[] $keyArr
      * @param int      $verX
      * @param int      $transX
      * @param string   $label
      * @return void
+     * @throws InvalidArgumentException
      */
     private function processTransData(
-        TransDto  $transDto,
         array  $keyArr,
         int    $verX,
         int    $transX,
         string $label
     ) : void
     {
-        $keyTimestamp = $keyArr[self::TRANSTIMESTAMP];
-        if( isset( $this->input[$keyTimestamp][$verX][$transX] )) { // accepts empty
-            $transDto->setTimestamp((float) $this->input[$keyTimestamp][$verX][$transX] );
+        $key = $keyArr[self::TRANSTIMESTAMP];
+        if( $this->transKeyExists( $key, $verX, $transX )) { // accepts empty
+            $this->currentTransDto->setTimestamp((float) $this->input[$key][$verX][$transX] );
         }
-        $keyGuid      = $keyArr[self::TRANSGUID];
-        if( isset( $this->input[$keyGuid][$verX][$transX] ) &&
-            ! empty( $this->input[$keyGuid][$verX][$transX] )) {
-            $transDto->setCorrelationId( $this->input[$keyGuid][$verX][$transX] );
+        $key = $keyArr[self::TRANSGUID];
+        if( $this->transKeyExists( $key, $verX, $transX ) &&
+            ! empty( $this->input[$key][$verX][$transX] )) {
+            $this->currentTransDto->setCorrelationId( $this->input[$key][$verX][$transX] );
         }
-        $this->loadObjektlista(
-            $keyArr[self::TRANSDIMENSIONNR],
-            $keyArr[self::TRANSOBJEKTNR],
-            $verX,
-            $transX,
-            $transDto
-        );
-        $keyBelopp = $keyArr[self::TRANSBELOPP];
-        if( isset( $this->input[$keyBelopp][$verX][$transX] )) { // accepts empty
-            $transDto->setBelopp( $this->input[$keyBelopp][$verX][$transX] );
+        $keyDimNr    = $keyArr[self::TRANSDIMENSIONNR];
+        $keyObjektNr = $keyArr[self::TRANSOBJEKTNR];
+        if( isset( $this->input[$keyDimNr][$verX][$transX] )) {
+            $this->assertObjektlista( $keyDimNr, $keyObjektNr, $verX, $transX );
+            $this->loadObjektlista( $keyDimNr, $keyObjektNr, $verX, $transX );
         }
-        $keyDatum = $keyArr[self::TRANSDAT];
-        if( isset( $this->input[$keyDatum][$verX][$transX] ) &&
-            ! empty( $this->input[$keyDatum][$verX][$transX] )) {
-            $transDto->setTransdat(
-                DateTimeUtil::getDateTime( $this->input[$keyDatum][$verX][$transX], $label, 3713 )
-            );
+        $key = $keyArr[self::TRANSDAT];
+        if( $this->transKeyExists( $key, $verX, $transX ) &&
+            ! empty( $this->input[$key][$verX][$transX] )) {
+            try {
+                $this->currentTransDto->setTransdat(
+                    DateTimeUtil::getDateTime( $this->input[$key][$verX][$transX], $label, 4301 )
+                );
+            }
+            catch( Exception $e ) {
+                throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+            }
         }
-        $keyText = $keyArr[self::TRANSTEXT];
-        if( isset( $this->input[$keyText][$verX][$transX] ) &&
-            ! empty( $this->input[$keyText][$verX][$transX] )) {
-            $transDto->setTranstext( $this->input[$keyText][$verX][$transX] );
+
+        $key = $keyArr[self::TRANSTEXT];
+        if( $this->transKeyExists( $key, $verX, $transX ) &&
+            ! empty( $this->input[$key][$verX][$transX] )) {
+            $this->currentTransDto->setTranstext( $this->input[$key][$verX][$transX] );
         }
-        $keyKvantitet = $keyArr[self::TRANSKVANTITET];
-        if( isset( $this->input[$keyKvantitet][$verX][$transX] )) { // accepts empty
-            $transDto->setKvantitet( $this->input[$keyKvantitet][$verX][$transX] );
+        $key = $keyArr[self::TRANSKVANTITET];
+        if( $this->transKeyExists( $key, $verX, $transX )) { // accepts empty
+            $this->currentTransDto->setKvantitet( $this->input[$key][$verX][$transX] );
         }
-        $keySign = $keyArr[self::TRANSSIGN];
-        if( isset( $this->input[$keySign][$verX][$transX] ) &&
-            ! empty( $this->input[$keySign][$verX][$transX] )) {
-            $transDto->setSign( $this->input[$keySign][$verX][$transX] );
+        $key = $keyArr[self::TRANSSIGN];
+        if( $this->transKeyExists( $key, $verX, $transX ) &&
+            ! empty( $this->input[$key][$verX][$transX] )) {
+            $this->currentTransDto->setSign( $this->input[$key][$verX][$transX] );
         }
+    }
+
+    /**
+     * Return bol true if $this->input[<transKey>][verX] exists and is array and element transX exists
+     *
+     * @param string $key
+     * @param int $verX
+     * @param int $transX
+     * @return bool
+     */
+    private function transKeyExists( string $key, int $verX, int $transX ) : bool
+    {
+        return ( isset( $this->input[$key] ) && is_array( $this->input[$key] ) &&
+            isset( $this->input[$key][$verX] ) && is_array( $this->input[$key][$verX] ) &&
+            isset( $this->input[$key][$verX][$transX] ));
     }
 
     /**
@@ -1170,30 +1317,62 @@ class Array2Sie4Dto extends ArrayBase
      * @param string $keyObjektNr
      * @param int $verX
      * @param int $transX
-     * @param TransDto $transDto
+     * @throws InvalidArgumentException
      */
-    private function loadObjektlista(
-        string $keyDimNr,
-        string $keyObjektNr,
-        int    $verX,
-        int    $transX,
-        TransDto $transDto
-    ) : void
+    private function assertObjektlista( string $keyDimNr, string $keyObjektNr, int $verX, int $transX ) : void
     {
-        if( ! isset( $this->input[$keyDimNr][$verX][$transX] )) {
-            return;
+        static $ERR4part  = '%s[%s][%s][%s] missing';
+        if( ! is_array( $this->input[$keyDimNr][$verX][$transX] )) {
+            throw new InvalidArgumentException(
+                sprintf( self::$ERR10part, $keyDimNr, $verX, $transX ),
+                4411
+            );
+        }
+        if( ! isset( $this->input[$keyObjektNr][$verX][$transX] ) ||
+            ! is_array( $this->input[$keyObjektNr][$verX][$transX] )) {
+            throw new InvalidArgumentException(
+                sprintf( self::$ERR10part, $keyObjektNr, $verX, $transX ),
+                4412
+            );
         }
         foreach( array_keys( $this->input[$keyDimNr][$verX][$transX] ) as $doX ) {
-            $dimObjektDto = new DimObjektDto();
-            $dimObjektDto->setDimensionNr(
-                $this->input[$keyDimNr][$verX][$transX][$doX]
-            );
-            if( isset( $this->input[$keyObjektNr][$verX][$transX][$doX] )) {
-                $dimObjektDto->setObjektNr(
-                    $this->input[$keyObjektNr][$verX][$transX][$doX]
+            if ( empty( $this->input[$keyDimNr][$verX][$transX][$doX] )) {
+                throw new InvalidArgumentException(
+                    sprintf( $ERR4part, $keyDimNr, $verX, $transX, $doX ),
+                    4413
                 );
             }
-            $transDto->addObjektlista( $dimObjektDto );
+            if ( empty( $this->input[$keyObjektNr][$verX][$transX][$doX] )) {
+                throw new InvalidArgumentException(
+                    sprintf( $ERR4part, $keyObjektNr, $verX, $transX, $doX ),
+                    4414
+                );
+            }
+        } // end foreach
+    }
+
+    /**
+     * @param string $keyDimNr
+     * @param string $keyObjektNr
+     * @param int $verX
+     * @param int $transX
+     * @throws InvalidArgumentException
+     */
+    private function loadObjektlista( string $keyDimNr, string $keyObjektNr, int $verX, int $transX ) : void
+    {
+        foreach( array_keys( $this->input[$keyDimNr][$verX][$transX] ) as $doX ) {
+            if( empty( $this->input[$keyObjektNr][$verX][$transX][$doX] )) {
+                throw new InvalidArgumentException(
+                    sprintf( self::$ERR10part, $keyObjektNr, $verX, $transX ),
+                    4414
+                );
+            }
+            $this->currentTransDto->addObjektlista(
+                DimObjektDto::factoryDimObject(
+                    $this->input[$keyDimNr][$verX][$transX][$doX],
+                    $this->input[$keyObjektNr][$verX][$transX][$doX]
+                )
+            );
         } // end foreach
     }
 }

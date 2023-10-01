@@ -23,7 +23,6 @@
 #OBJEKT 1 "0125" "Utvecklingsavdelningen"
 #OBJEKT 1 "456" "ITavdelningen"
 
-
 #DIM 6 "Projekt"
 #UNDERDIM 62 "IT-projekt" 6
 #OBJEKT 6 "47" "Sie5-projektet"

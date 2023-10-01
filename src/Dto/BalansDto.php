@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -30,7 +30,6 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 use Kigkonsult\Sie4Sdk\Dto\Traits\ArsnrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KvantitetTrait;
-use Kigkonsult\Sie4Sdk\Util\Assert;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 /**
@@ -38,7 +37,6 @@ use Kigkonsult\Sie4Sdk\Util\StringUtil;
  */
 class BalansDto implements KontoNrInterface
 {
-
     use ArsnrTrait;
 
     use KontoNrTrait;
@@ -46,7 +44,7 @@ class BalansDto implements KontoNrInterface
     /**
      * @var float|null
      */
-    protected ?float $saldo = null;
+    protected ? float $saldo = null;
 
     use KvantitetTrait;
 
@@ -64,7 +62,7 @@ class BalansDto implements KontoNrInterface
      */
     public static function balansSorter( BalansDto $a, BalansDto $b ) : int
     {
-        if( 0 !== ( $res = StringUtil::strSort((string) $a->getKontoNr(),(string) $b->getKontoNr() ))) {
+        if( 0 !== ( $res = StringUtil::strSort((string) $a->getKontoNr(),(string) $b->getKontoNr()))) {
             return $res;
         }
         return StringUtil::strSort((string) $a->getArsnr(), (string) $b->getArsnr());
@@ -78,6 +76,7 @@ class BalansDto implements KontoNrInterface
      * @param float|int|string $saldo
      * @param float|null $kvantitet
      * @return self
+     * @since 1.8.2 2023-09-20
      */
     public static function factory(
         int | string         $arsnr,
@@ -89,7 +88,6 @@ class BalansDto implements KontoNrInterface
         $class    = static::class;
         $instance = new $class();
         $instance->setArsnr( $arsnr );
-        Assert::isIntOrString( self::KONTONR, $kontoNr );
         $instance->setKontoNr( $kontoNr );
         $instance->setSaldo( $saldo );
         if( null !== $kvantitet ) {
@@ -121,7 +119,7 @@ class BalansDto implements KontoNrInterface
     /**
      * Set saldo
      *
-     * @param float|int|string $saldo
+     * @param float|int|string $saldo    saved as float
      * @return self
      */
     public function setSaldo( float | int | string $saldo ) : self

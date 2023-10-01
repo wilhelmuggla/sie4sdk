@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -46,10 +46,10 @@ use function number_format;
  *
  * output format
  * [
+ *     self::FLAGGPOST          => <0/1>,
+ *
  *     self::TIMESTAMP          => <microtime>
  *     self::GUID               => <guid>
- *
- *     self::FLAGGPOST          => <0/1>,
  *
  *     self::PROGRAMNAMN        => <programNamn>,
  *     self::PROGRAMVERSION     => <programVersion>,
@@ -157,7 +157,7 @@ use function number_format;
  *     self::VERTIMESTAMP       => [ *<microtime> ]
  *     self::VERGUID            => [ *<guid> ]
  *     self::VERDATUM           => [ *<SIE4YYYYMMDD-verdatum> ],
- *     self::VERSERIE           => [ *serie> ],
+ *     self::VERSERIE           => [ *<serie> ],
  *     self::VERNR              => [ *<vernr> ],
  *     self::VERTEXT            => [ *<vertext> ],
  *     self::REGDATUM           => [ *<SIE4YYYYMMDD-regdatum> ],
@@ -202,9 +202,9 @@ use function number_format;
 class Sie4Dto2Array extends ArrayBase
 {
     /**
-     * @var Sie4Dto|null
+     * @var Sie4Dto
      */
-    private ?Sie4Dto $sie4Dto = null;
+    private Sie4Dto $sie4Dto;
 
     /**
      * @var array
@@ -222,11 +222,12 @@ class Sie4Dto2Array extends ArrayBase
         $instance          = new self();
         $instance->sie4Dto = $sie4Dto;
         $instance->output  = [];
+
+        $instance->output[self::FLAGGPOST] = $instance->sie4Dto->getFlagga();
         $instance->output[self::TIMESTAMP] = number_format(
             $instance->sie4Dto->getTimestamp(), 6, StringUtil::$DOT, StringUtil::$SP0
         );
         $instance->output[self::GUID]      = $instance->sie4Dto->getCorrelationId();
-        $instance->output[self::FLAGGPOST] = $instance->sie4Dto->getFlagga();
 
         $instance->processIdDto();
 
@@ -243,6 +244,7 @@ class Sie4Dto2Array extends ArrayBase
         $instance->processResDtos();
         $instance->processPsaldoDtos();
         $instance->processPbudgetDtos();
+
         $instance->processVerDtos();
 
         if( $instance->sie4Dto->isKsummaSet()) {
@@ -697,12 +699,14 @@ class Sie4Dto2Array extends ArrayBase
      * Process Sie4 VER with TRANS/RTRANS/BTRANS data
      *
      * @return void
+     * @since 1.8.4 20230925
      */
     private function processVerDtos() : void
     {
         static $KEYS = [
             self::VERTIMESTAMP,
             self::VERGUID,
+            self::VERPARENTGUID,
             self::VERSERIE,
             self::VERNR,
             self::VERDATUM,
@@ -711,6 +715,7 @@ class Sie4Dto2Array extends ArrayBase
             self::VERSIGN,
             self::TRANSTIMESTAMP,
             self::TRANSGUID,
+            self::TRANSPARENTGUID,
             self::TRANSKONTONR,
             self::TRANSDIMENSIONNR,
             self::TRANSOBJEKTNR,
@@ -721,6 +726,7 @@ class Sie4Dto2Array extends ArrayBase
             self::TRANSSIGN,
             self::RTRANSTIMESTAMP,
             self::RTRANSGUID,
+            self::RTRANSPARENTGUID,
             self::RTRANSKONTONR,
             self::RTRANSDIMENSIONNR,
             self::RTRANSOBJEKTNR,
@@ -731,6 +737,7 @@ class Sie4Dto2Array extends ArrayBase
             self::RTRANSSIGN,
             self::BTRANSTIMESTAMP,
             self::BTRANSGUID,
+            self::RTRANSPARENTGUID,
             self::BTRANSKONTONR,
             self::BTRANSDIMENSIONNR,
             self::BTRANSOBJEKTNR,
@@ -746,32 +753,33 @@ class Sie4Dto2Array extends ArrayBase
         ArrayUtil::assureIsArray( $this->output, $KEYS );
         foreach( $this->sie4Dto->getVerDtos() as $verX => $verDto ) {
 
-            $this->output[self::VERTIMESTAMP][$verX] = number_format(
+            $this->output[self::VERTIMESTAMP][$verX]  = number_format(
                 $verDto->getTimestamp(), 6, StringUtil::$DOT, StringUtil::$SP0
             );
-            $this->output[self::VERGUID][$verX]      = $verDto->getCorrelationId();
+            $this->output[self::VERGUID][$verX]       = $verDto->getCorrelationId();
+            $this->output[self::VERPARENTGUID][$verX] = $verDto->getParentCorrelationId();
 
             if( $verDto->isSerieSet()) {
-                $this->output[self::VERSERIE][$verX] = $verDto->getSerie();
+                $this->output[self::VERSERIE][$verX]  = $verDto->getSerie();
             }
             if( $verDto->isVernrSet()) {
-                $this->output[self::VERNR][$verX] = $verDto->getVernr();
+                $this->output[self::VERNR][$verX]     = $verDto->getVernr();
             }
             if( $verDto->isVerdatumSet()) {
-                $this->output[self::VERDATUM][$verX] =
+                $this->output[self::VERDATUM][$verX]  =
                     $verDto->getVerdatum()->format( self::SIE4YYYYMMDD );
             }
             if( $verDto->isVertextSet()) {
-                $this->output[self::VERTEXT][$verX] = $verDto->getVertext();
+                $this->output[self::VERTEXT][$verX]   = $verDto->getVertext();
             }
             if( $verDto->isRegdatumSet()) {
-                $this->output[self::REGDATUM][$verX] =
+                $this->output[self::REGDATUM][$verX]  =
                     $verDto->getRegdatum()->format( self::SIE4YYYYMMDD );
             }
             if( $verDto->isSignSet()) {
-                $this->output[self::VERSIGN][$verX] = $verDto->getSign();
+                $this->output[self::VERSIGN][$verX]   = $verDto->getSign();
             }
-            foreach( $verDto->getTransDtos() as $transX =>$transDto ) {
+            foreach( $verDto->getTransDtos() as $transX => $transDto ) {
                 $this->processSingleTransDto( $verX, $transX, $transDto );
             }
         } // end foreach
@@ -782,6 +790,7 @@ class Sie4Dto2Array extends ArrayBase
      * @param int      $transX trans order no (in ver)
      * @param TransDto $transDto
      * @return void
+     * @since 1.8.4 20230925
      */
     private function processSingleTransDto(
         int $verX,
@@ -799,6 +808,8 @@ class Sie4Dto2Array extends ArrayBase
             );
         $key      = $keyArr[self::TRANSGUID];
         $this->output[$key][$verX][$transX] = $transDto->getCorrelationId();
+        $key      = $keyArr[self::TRANSPARENTGUID];
+        $this->output[$key][$verX][$transX] = $transDto->getParentCorrelationId();
 
         if( $transDto->isKontoNrSet()) {
             $key  = $keyArr[self::TRANSKONTONR];
@@ -839,7 +850,7 @@ class Sie4Dto2Array extends ArrayBase
     }
 
     /**
-     * @return array
+     * @return int[]|float[]|string[]
      */
     public function getOutput() : array
     {

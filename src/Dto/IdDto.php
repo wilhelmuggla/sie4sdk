@@ -5,7 +5,7 @@
  * This file is a part of Sie4Sdk
  *
  * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2022 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
+ * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @link      https://kigkonsult.se
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
@@ -32,8 +32,8 @@ use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnr2Trait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
-
 use Kigkonsult\Sie4Sdk\Util\Assert;
+
 use function count;
 use function usort;
 
@@ -459,6 +459,7 @@ class IdDto implements DtoInterface
     public function setTaxar( int | string $taxar ) : self
     {
         Assert::isIntegerish( self::TAXAR, $taxar );
+        Assert::isYYYYDate( self::TAXAR, $taxar );
         $this->taxar = (int) $taxar;
         return $this;
     }
