@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -32,8 +31,8 @@ use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnr2Trait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
-use Kigkonsult\Sie4Sdk\Util\Assert;
 
+use Kigkonsult\Sie4Sdk\Util\Assert;
 use function count;
 use function usort;
 

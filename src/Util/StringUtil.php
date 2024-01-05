@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -33,6 +32,7 @@ use RuntimeException;
 use function explode;
 use function iconv;
 use function ord;
+use function mb_convert_encoding;
 use function sprintf;
 use function str_contains;
 use function str_replace;
@@ -89,17 +89,20 @@ class StringUtil
     private static string $UTF8     = 'UTF-8';
 
     /**
+     * Charset and fallback
+     *
      * @var string
      */
     private static string $CP437    = 'CP437';
+    private static string $BIT8     = '8bit';
 
     /**
-     * @  var string
+     * @ var string
      */
     // private static $TRANSLIT = '//TRANSLIT';
 
     /**
-     * @  var string
+     * @ var string
      */
     // private static $IGNORE   = '//IGNORE';
 
@@ -116,6 +119,7 @@ class StringUtil
      * @param string $string
      * @return string
      * @throws RuntimeException
+     * @since 1.8.7 2023-12-08
      */
     public static function utf8toCP437( string $string ) : string
     {
@@ -125,17 +129,25 @@ class StringUtil
         }
         $msg = self::$SP0;
         try {
-//          $output = iconv( self::$UTF8, self::$CP437 . self::$IGNORE, $string );
-            $output = iconv( self::$UTF8, self::$CP437, $string );
+            $charSet = self::$CP437;
+//          $output  = iconv( self::$UTF8, $charSet . self::$IGNORE, $string );
+            $output  = iconv( self::$UTF8, $charSet, $string );
+
         }
-        catch( Exception $e ) {
-            $output = false;
-            $msg = $e->getMessage();
+        catch( Exception ) {
+            try {
+                $charSet = self::$BIT8;
+                $output  = mb_convert_encoding( $string, $charSet, self::$UTF8 );
+            }
+            catch( Exception $e ) {
+                $output = false;
+                $msg = $e->getMessage();
+            }
         }
         if( false === $output ) {
             throw new RuntimeException(
-//              sprintf( self::$FMT1, $msg, self::$UTF8, self::$CP437 . self::$IGNORE, $string ),
-                sprintf( self::$FMT1, $msg, self::$UTF8, self::$CP437, $string ),
+//              sprintf( self::$FMT1, $msg, self::$UTF8, $charSet . self::$IGNORE, $string ),
+                sprintf( self::$FMT1, $msg, self::$UTF8, $charSet, PHP_EOL . $string ),
                 14111
             );
         }
@@ -146,6 +158,7 @@ class StringUtil
      * @param string $string
      * @return string
      * @throws RuntimeException
+     * @since 1.8.7 2023-12-08
      */
     public static function cp437toUtf8( string $string ) : string
     {
@@ -154,17 +167,24 @@ class StringUtil
         }
         $msg = self::$SP0;
         try {
-//          $output = iconv( self::$CP437, self::$UTF8 . self::$IGNORE, $string );
-            $output = iconv( self::$CP437, self::$UTF8, $string );
+            $charSet = self::$CP437;
+//          $output  = iconv( $charSet, self::$UTF8 . self::$IGNORE, $string );
+            $output  = iconv( $charSet, self::$UTF8, $string );
         }
-        catch( Exception $e ) {
-            $output = false;
-            $msg = $e->getMessage();
+        catch( Exception ) {
+            try {
+                $charSet = self::$BIT8;
+                $output  = mb_convert_encoding( $string, self::$UTF8, $charSet );
+            }
+            catch( Exception $e ) {
+                $output = false;
+                $msg    = $e->getMessage();
+            }
         }
         if( false === $output ) {
             throw new RuntimeException(
 //              sprintf( self::$FMT1, $msg, self::$CP437, self::$UTF8 . self::$IGNORE, $string ),
-                sprintf( self::$FMT1, $msg, self::$CP437, self::$UTF8, $string ),
+                sprintf( self::$FMT1, $msg, $charSet, self::$UTF8, PHP_EOL . $string ),
                 14211
             );
         }
@@ -182,8 +202,8 @@ class StringUtil
         static $CRLFs = [ "\r\n", "\n\r", "\n", "\r" ];
         static $EOL2  = PHP_EOL . PHP_EOL;
         /* fix eol chars */
-        $string     = str_replace( $CRLFs, PHP_EOL, $string );
-        while( str_contains( $string, $EOL2 ) ) {
+        $string = str_replace( $CRLFs, PHP_EOL, $string );
+        while( str_contains( $string, $EOL2 )) {
             $string = str_replace( $EOL2, PHP_EOL, $string );
         } // end while
         return $string;
@@ -379,10 +399,10 @@ class StringUtil
     private static function prePrepInput( string $input ) : string
     {
         static $BS = "\\";
-        $input     = trim( $input );
-        $output    = self::$SP0;
-        $len       = strlen( $input );
-        for( $x = 0; $x < $len; $x++ ) {
+        $input  = trim( $input );
+        $output = self::$SP0;
+        $len    = strlen( $input );
+        for ($x = 0; $x < $len; $x++) {
             $byteInt = ord( $input[$x] );
             if (( $byteInt < 32 ) || ( 127 === $byteInt )) {
                 // skip control characters
@@ -456,13 +476,13 @@ class StringUtil
     }
 
     /**
-     * @param string $string
-     * @return string
+     * @link https://www.php.net/manual/en/function.is-int.php#82857
+     * @param mixed $input
+     * @return bool
      */
-    public static function trimBrackets( string $string ) : string
+    public static function isInteger( mixed $input ) : bool
     {
-        static $EXCL = '{}';
-        return trim( $string, $EXCL );
+        return( ctype_digit( strval( $input )));
     }
 
     /**
@@ -475,6 +495,16 @@ class StringUtil
     public static function strSort( string $a,string $b ) : int
     {
         return strcmp( $a, $b );
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    public static function trimBrackets( string $string ) : string
+    {
+        static $EXCL = '{}';
+        return trim( $string, $EXCL );
     }
 
     /**
@@ -577,7 +607,7 @@ class StringUtil
             ! $exists1 && ! $exists2 => self::$SP0,
             $exists1 && ! $exists2   => self::after( $needle1, $haystack ),
             ! $exists1 && $exists2   => self::before( $needle2, $haystack ),
-            default                  => self::before( $needle2, self::after( $needle1, $haystack ) ),
+            default                  => self::before( $needle2, self::after( $needle1, $haystack )),
         }; // end match
     }
 

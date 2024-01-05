@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -80,18 +79,17 @@ class AccountDto implements DtoInterface
     /**
      * In case of missing kontoTyp...
      *
-     * @param string $kontoNr
+     * @param int|string $kontoNr
      * @return string
      * @since 1.8.3 2023-09-20
      */
-    public static function findOutKontoTyp( string $kontoNr ) : string
+    public static function findOutKontoType( int|string $kontoNr ) : string
     {
-        $kontoNrI = (int) $kontoNr;
-        return match( true ) {
-            ( $kontoNrI < 2000 ) => AccountDto::T,
-            ( $kontoNrI < 3000 ) => AccountDto::S,
-            ( $kontoNrI < 4000 ) => AccountDto::I,
-            default              => AccountDto::K,
+        return match((int) trim((string) $kontoNr )[0] ) {
+            1       => self::T,
+            2       => self::S,
+            3       => self::I,
+            default => self::K,
         };
     }
 
@@ -150,7 +148,7 @@ class AccountDto implements DtoInterface
         $instance->setKontoNr( $kontoNr );
         $instance->setKontoNamn( $kontoNamn );
         if( ! empty( $kontoTyp )) {
-            $instance->setKontoTyp($kontoTyp);
+        $instance->setKontoTyp( $kontoTyp );
         }
         if( ! empty( $enhet )) {
             $instance->setEnhet( $enhet );
@@ -221,10 +219,10 @@ class AccountDto implements DtoInterface
     {
         static $FMT = 'Ogiltig kontoTyp : ';
         if( null !== $kontoTyp ) {
-            $kontoTyp = strtoupper( $kontoTyp );
-            if ( false === self::getKontoType( $kontoTyp, false ) ) {
-                throw new InvalidArgumentException( $FMT . $kontoTyp );
-            }
+        $kontoTyp = strtoupper( $kontoTyp );
+        if( false === self::getKontoType( $kontoTyp, false )) {
+            throw new InvalidArgumentException( $FMT . $kontoTyp );
+        }
         }
         $this->kontoTyp = $kontoTyp;
         return $this;

@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -213,7 +212,7 @@ use function ksort;
  */
 class Array2Sie4Dto extends ArrayBase
 {
-    private static string $ERR3  = '%s missing';
+    private static string $ERR3      = '%s missing';
     private static string $ERR3part  = '%s[%s][%s] missing';
     private static string $ERR10     = ' must be an array';
     private static string $ERR10part = '%s[%s][%s] must be an array';
@@ -266,7 +265,6 @@ class Array2Sie4Dto extends ArrayBase
         $instance->readResData();
         $instance->readPsaldoData();
         $instance->readPbudgetData();
-
         $instance->readVerTransData();
 
         if( isset( $instance->input[self::KSUMMAPOST] )) {
@@ -317,10 +315,10 @@ class Array2Sie4Dto extends ArrayBase
          */
         if( isset( $this->input[self::GENDATUM] )) {
             try {
-                $idDto->setGenDate(
-                    DateTimeUtil::getDateTime( $this->input[self::GENDATUM], self::GEN, 3511 )
-                );
-            }
+            $idDto->setGenDate(
+                DateTimeUtil::getDateTime( $this->input[self::GENDATUM], self::GEN, 3511 )
+            );
+        }
             catch( Exception $e ) {
                 throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
             }
@@ -428,10 +426,10 @@ class Array2Sie4Dto extends ArrayBase
          */
         if( isset( $this->input[self::OMFATTNDATUM] )) {
             try {
-                $idDto->setOmfattn(
-                    DateTimeUtil::getDateTime( $this->input[self::OMFATTNDATUM], self::OMFATTN, 3519 )
-                );
-            }
+            $idDto->setOmfattn(
+                DateTimeUtil::getDateTime( $this->input[self::OMFATTNDATUM], self::OMFATTN, 3519 )
+            );
+        }
             catch( Exception $e ) {
                 throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
             }
@@ -445,6 +443,7 @@ class Array2Sie4Dto extends ArrayBase
         if( isset( $this->input[self::KPTYPE] )) {
             $idDto->setKptyp( $this->input[self::KPTYPE] );
         }
+
         /**
          * Redovisningsvaluta
          *
@@ -544,9 +543,9 @@ class Array2Sie4Dto extends ArrayBase
             $rarDto->setArsnr( $this->input[self::RARARSNR][$x] );
             if( isset( $this->input[self::RARSTART][$x] )) {
                 try {
-                    $rarDto->setStart(
-                        DateTimeUtil::getDateTime( $this->input[self::RARSTART][$x], self::RAR, 6788 )
-                    );
+                $rarDto->setStart(
+                    DateTimeUtil::getDateTime( $this->input[self::RARSTART][$x], self::RAR, 6788 )
+                );
                 }
                 catch( Exception $e ) {
                     throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
@@ -554,9 +553,9 @@ class Array2Sie4Dto extends ArrayBase
             } // end if
             if( isset( $this->input[self::RARSLUT][$x] )) {
                 try {
-                    $rarDto->setSlut(
-                        DateTimeUtil::getDateTime( $this->input[self::RARSLUT][$x], self::RAR, 6789 )
-                    );
+                $rarDto->setSlut(
+                   DateTimeUtil::getDateTime( $this->input[self::RARSLUT][$x], self::RAR, 6789 )
+                );
                 }
                 catch( Exception $e ) {
                     throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
@@ -1052,7 +1051,7 @@ class Array2Sie4Dto extends ArrayBase
         }
         if( ! is_array( $this->input[$key] )) {
             throw new InvalidArgumentException( $key . self::$ERR10, 3710 );
-        }
+            }
         foreach( array_keys( $this->input[$key] ) as $verX ) {
             $this->currentVerDto = new VerDto();
             $key    = self::VERTIMESTAMP;
@@ -1065,12 +1064,12 @@ class Array2Sie4Dto extends ArrayBase
             }
             try {
                 $this->currentVerDto->setVerdatum(
-                    DateTimeUtil::getDateTime(
-                        $this->input[self::VERDATUM][$verX],
-                        self::VER,
-                        3711
-                    )
-                );
+                DateTimeUtil::getDateTime(
+                    $this->input[self::VERDATUM][$verX],
+                    self::VER,
+                    3711
+                )
+            );
             }
             catch( Exception $e ) {
                 throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
@@ -1092,8 +1091,8 @@ class Array2Sie4Dto extends ArrayBase
                 try {
                     $this->currentVerDto->setRegdatum(
                         DateTimeUtil::getDateTime( $this->input[$key][$verX], self::VER, 3712 )
-                    );
-                }
+                );
+            }
                 catch( Exception $e ) {
                     throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
                 }
@@ -1151,7 +1150,7 @@ class Array2Sie4Dto extends ArrayBase
     private function readTransData( int $verX ) : void
     {
         $labels         = $this->transDataValidation( $verX );
-        $transDtos      = [];
+        $transDtos = [];
         foreach( $labels as $lx => $label ) {
             $keyArr     = self::$TRANSKEYS[$label];
             $keyKontoNr = $keyArr[self::TRANSKONTONR];
@@ -1274,8 +1273,8 @@ class Array2Sie4Dto extends ArrayBase
             try {
                 $this->currentTransDto->setTransdat(
                     DateTimeUtil::getDateTime( $this->input[$key][$verX][$transX], $label, 4301 )
-                );
-            }
+            );
+        }
             catch( Exception $e ) {
                 throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
             }
@@ -1307,8 +1306,10 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function transKeyExists( string $key, int $verX, int $transX ) : bool
     {
-        return ( isset( $this->input[$key] ) && is_array( $this->input[$key] ) &&
-            isset( $this->input[$key][$verX] ) && is_array( $this->input[$key][$verX] ) &&
+        return ( isset( $this->input[$key] ) &&
+            is_array( $this->input[$key] ) &&
+            isset( $this->input[$key][$verX] ) &&
+            is_array( $this->input[$key][$verX] ) &&
             isset( $this->input[$key][$verX][$transX] ));
     }
 
@@ -1346,7 +1347,7 @@ class Array2Sie4Dto extends ArrayBase
                 throw new InvalidArgumentException(
                     sprintf( $ERR4part, $keyObjektNr, $verX, $transX, $doX ),
                     4414
-                );
+            );
             }
         } // end foreach
     }
@@ -1372,7 +1373,7 @@ class Array2Sie4Dto extends ArrayBase
                     $this->input[$keyDimNr][$verX][$transX][$doX],
                     $this->input[$keyObjektNr][$verX][$transX][$doX]
                 )
-            );
+                );
         } // end foreach
     }
 }

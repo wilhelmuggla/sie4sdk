@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -37,6 +36,7 @@ use Kigkonsult\Sie4Sdk\Util\StringUtil;
  */
 class BalansDto implements KontoNrInterface
 {
+
     use ArsnrTrait;
 
     use KontoNrTrait;
@@ -44,7 +44,7 @@ class BalansDto implements KontoNrInterface
     /**
      * @var float|null
      */
-    protected ? float $saldo = null;
+    protected ?float $saldo = null;
 
     use KvantitetTrait;
 
@@ -62,7 +62,7 @@ class BalansDto implements KontoNrInterface
      */
     public static function balansSorter( BalansDto $a, BalansDto $b ) : int
     {
-        if( 0 !== ( $res = StringUtil::strSort((string) $a->getKontoNr(),(string) $b->getKontoNr()))) {
+        if( 0 !== ( $res = StringUtil::strSort((string) $a->getKontoNr(),(string) $b->getKontoNr() ))) {
             return $res;
         }
         return StringUtil::strSort((string) $a->getArsnr(), (string) $b->getArsnr());

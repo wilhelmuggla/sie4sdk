@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -33,8 +32,6 @@ use Kigkonsult\Sie4Sdk\Dto\Traits\ParentCorrelationIdTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SerieVernrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
-
-use function count;
 
 /**
  * Class VerDto
@@ -90,13 +87,25 @@ class VerDto extends BaseId
      * @param VerDto $a
      * @param VerDto $b
      * @return int
+     * @since 1.8.7 2023-12-08
      */
     public static function verDtoSorter( VerDto $a, VerDto $b ) : int
     {
         if( 0 !== ( $res = StringUtil::strSort((string) $a->getSerie(),(string) $b->getSerie()))) {
             return $res;
         }
-        return StringUtil::strSort((string) $a->getVernr(), (string) $b->getVernr());
+        $aCmp = (string) $a->getVernr();
+        $bCmp = (string) $b->getVernr();
+        if( StringUtil::isInteger( $aCmp ) && StringUtil::isInteger( $bCmp )) {
+            $aCmp = (int) $aCmp;
+            $bCmp = (int) $bCmp;
+            return match( true ) {
+                ( $aCmp < $bCmp ) => -1,
+                ( $aCmp > $bCmp ) => 1,
+                default => 0
+            };
+        }
+        return StringUtil::strSort( $aCmp, $aCmp );
     }
 
     /**
@@ -186,7 +195,7 @@ class VerDto extends BaseId
      */
     public function isVerdatumSet() : bool
     {
-        return ( null !== $this->verdatum );
+        return isset( $this->verdatum );
     }
 
     /**

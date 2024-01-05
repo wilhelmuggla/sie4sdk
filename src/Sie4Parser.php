@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -220,7 +219,7 @@ class Sie4Parser implements Sie4Interface
             array_map( $TRIM, array_map( $TAB2SPACE, $input ))
         );
         Sie4Validator::assertSie4Input( $fileRows );
-        $this->input = $fileRows;
+        $this->input     = $fileRows;
         return $this;
     }
 
@@ -448,6 +447,7 @@ class Sie4Parser implements Sie4Interface
             } // end switch
             $this->input->next();
         } // end while
+
         return $idDto;
     }
 
@@ -969,7 +969,7 @@ class Sie4Parser implements Sie4Interface
     private static function getBalansDto( array $rowData ) : BalansDto
     {
         ArrayUtil::assureArrayLength( $rowData, 4 );
-        if( null !== $rowData[3]  ) {
+        if( null !== $rowData[3] ) {
             $rowData[3] = (float) $rowData[3];
         }
         return BalansDto::factory( $rowData[0], $rowData[1], $rowData[2], $rowData[3] );
@@ -1225,15 +1225,18 @@ class Sie4Parser implements Sie4Interface
         // $dimensionData[self::UNDERDIM][underDimNr] = underDimNamn
         // $dimensionData[self::OBJEKT][objektnr]     = objektNamn
         foreach(  $dimValues as $dimensionId => $dimensionData ) {
-            if( isset( $dimensionData[0] )) { // #DIM namn
+            if( isset( $dimensionData[0] )) {
+                // #DIM namn
                 $this->sie4Dto->addDim( $dimensionId, $dimensionData[0] );
             }
-            if( isset( $dimensionData[self::UNDERDIM] )) { // #UNDERDIM
+            if( isset( $dimensionData[self::UNDERDIM] )) {
+                // #UNDERDIM
                 foreach( $dimensionData[self::UNDERDIM] as $underDimNr => $underDimNamn ) {
                     $this->sie4Dto->addUnderDim( $underDimNr, $underDimNamn, $dimensionId );
                 }
             }
-            if( isset( $dimensionData[self::OBJEKT] )) { // #OBJEKT
+            if( isset( $dimensionData[self::OBJEKT] )) {
+                // #OBJEKT
                 foreach( $dimensionData[self::OBJEKT] as $objektNr => $objektNamn ) {
                     $this->sie4Dto->addDimObjekt( $dimensionId, (string) $objektNr, $objektNamn );
                 } // end foreach

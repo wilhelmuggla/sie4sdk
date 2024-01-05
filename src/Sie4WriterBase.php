@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -108,7 +107,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     protected It $output;
 
     /**
-     * @var Sie4Dto|null
+     * @var Sie4Dto
      */
     protected Sie4Dto $sie4Dto;
 
@@ -265,13 +264,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     {
         static $FORMATPC8 = 'PC8';
         $this->appendKsumma( self::FORMAT, $FORMATPC8 );
-        $this->output->append(
-            sprintf(
-                self::$SIEFMT1,
-                self::FORMAT,
-                $FORMATPC8
-            )
-        );
+        $this->output->append( sprintf( self::$SIEFMT1, self::FORMAT, $FORMATPC8 ));
     }
 
     /**
@@ -314,13 +307,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     {
         $sieType = $this->sie4Dto->getIdDto()->getSieTyp(); // IdDto always set
         $this->appendKsumma( self::SIETYP, $sieType );
-        $this->output->append(
-            sprintf(
-                self::$SIEFMT1,
-                self::SIETYP,
-                $sieType
-            )
-        );
+        $this->output->append( sprintf( self::$SIEFMT1, self::SIETYP, $sieType ));
     }
 
     /**
@@ -351,9 +338,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( $idDto->isFtypSet()) {
             $fTyp = StringUtil::utf8toCP437( $idDto->getFtyp());
             $this->appendKsumma( self::FTYP, $fTyp );
-            $this->output->append(
-                sprintf( self::$SIEFMT1, self::FTYP, $fTyp )
-            );
+            $this->output->append( sprintf( self::$SIEFMT1, self::FTYP, $fTyp ));
         }
     }
 
@@ -368,9 +353,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( $idDto->isFnrIdSet()) {
             $companyClientId = StringUtil::utf8toCP437( $idDto->getFnrId());
             $this->appendKsumma( self::FNR, $companyClientId );
-            $this->output->append(
-                sprintf( self::$SIEFMT1, self::FNR, $companyClientId )
-            );
+            $this->output->append( sprintf( self::$SIEFMT1, self::FNR, $companyClientId ));
         }
     }
 
@@ -386,9 +369,7 @@ abstract class Sie4WriterBase implements Sie4Interface
             $orgnr    = $idDto->getOrgnr();
             $multiple = ( $idDto->getMultiple() ?: StringUtil::$SP0 );
             $this->appendKsumma( self::ORGNR, $orgnr, $multiple );
-            $this->output->append(
-                rtrim( sprintf( self::$SIEFMT2, self::ORGNR, $orgnr, $multiple ))
-            );
+            $this->output->append( rtrim( sprintf( self::$SIEFMT2, self::ORGNR, $orgnr, $multiple )));
         }
     }
 
@@ -448,11 +429,7 @@ abstract class Sie4WriterBase implements Sie4Interface
             $companyName = StringUtil::utf8toCP437((string) $idDto->getFnamn());
             $this->appendKsumma( self::FNAMN, $companyName );
             $this->output->append(
-                sprintf(
-                    self::$SIEFMT1,
-                    self::FNAMN,
-                    StringUtil::quoteString( $companyName )
-                )
+                sprintf( self::$SIEFMT1, self::FNAMN, StringUtil::quoteString( $companyName ))
             );
         }
     }
@@ -495,13 +472,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( $idDto->isTaxarSet()) {
             $taxar = $idDto->getTaxar();
             $this->appendKsumma( self::TAXAR, $taxar );
-            $this->output->append(
-                sprintf(
-                    self::$SIEFMT1,
-                    self::TAXAR,
-                    $taxar
-                )
-            );
+            $this->output->append( sprintf( self::$SIEFMT1, self::TAXAR, $taxar ));
         }
     }
 
@@ -516,13 +487,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( $idDto->isOmfattnSet()) {
             $datum = $idDto->getOmfattn()->format( self::SIE4YYYYMMDD );
             $this->appendKsumma( self::OMFATTN, $datum );
-            $this->output->append(
-                sprintf(
-                    self::$SIEFMT1,
-                    self::OMFATTN,
-                    $datum
-                )
-            );
+            $this->output->append( sprintf( self::$SIEFMT1, self::OMFATTN, $datum ));
         }
     }
 
@@ -537,13 +502,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( $idDto->isKptypSet()) {
             $kptyp = StringUtil::utf8toCP437((string) $idDto->getKptyp());
             $this->appendKsumma( self::KPTYP, $kptyp );
-            $this->output->append(
-                sprintf(
-                    self::$SIEFMT1,
-                    self::KPTYP,
-                    StringUtil::quoteString( $kptyp )
-                )
-            );
+            $this->output->append( sprintf( self::$SIEFMT1, self::KPTYP, $kptyp ));
         }
     }
 
@@ -558,9 +517,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( $idDto->isValutakodSet()) {
             $valutakod = StringUtil::utf8toCP437( $idDto->getValutakod());
             $this->appendKsumma( self::VALUTA, $valutakod );
-            $this->output->append(
-                sprintf( self::$SIEFMT1, self::VALUTA, $valutakod )
-            );
+            $this->output->append( sprintf( self::$SIEFMT1, self::VALUTA, $valutakod ));
         }
     }
 
@@ -604,27 +561,16 @@ abstract class Sie4WriterBase implements Sie4Interface
             )
         );
         if( $accountDto->isKontotypSet()) {
-            $kontotyp = StringUtil::utf8toCP437((string)$accountDto->getKontoTyp());
-            $this->appendKsumma(self::KTYP, $kontoNr, $kontotyp);
-            $this->output->append(
-                sprintf(
-                    self::$SIEFMT2,
-                    self::KTYP,
-                    $kontoNr,
-                    $kontotyp
-                )
-            );
+        $kontotyp = StringUtil::utf8toCP437((string) $accountDto->getKontoTyp());
+        $this->appendKsumma( self::KTYP, $kontoNr, $kontotyp );
+        $this->output->append(
+            sprintf( self::$SIEFMT2, self::KTYP, $kontoNr, $kontotyp )
+        );
         }
         if( $accountDto->isEnhetSet()) {
             $enhet = StringUtil::utf8toCP437((string) $accountDto->getEnhet());
             $this->appendKsumma( self::ENHET, $kontoNr, $enhet );
-            $this->output->append(
-                sprintf(
-                    self::$SIEFMT2,
-                    self::ENHET,
-                    $kontoNr,
-                    $enhet
-                )
+            $this->output->append( sprintf( self::$SIEFMT2, self::ENHET, $kontoNr, $enhet )
             );
         } // end if
     }
@@ -656,14 +602,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         $kontoNr = $sruDto->getKontoNr();
         $sruKod  = $sruDto->getSruKod();
         $this->appendKsumma( self::SRU, $kontoNr, $sruKod );
-        $this->output->append(
-            sprintf(
-                self::$SIEFMT2,
-                self::SRU,
-                $kontoNr,
-                $sruKod
-            )
-        );
+        $this->output->append( sprintf( self::$SIEFMT2, self::SRU, $kontoNr, $sruKod ));
     }
 
     /**
@@ -701,12 +640,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         $namn  = StringUtil::utf8toCP437((string) $dimDto->getDimensionsNamn());
         $this->appendKsumma( self::DIM, $dimId, $namn );
         $this->output->append(
-            sprintf(
-                self::$SIEFMT2,
-                self::DIM,
-                $dimId,
-                StringUtil::quoteString( $namn )
-            )
+            sprintf( self::$SIEFMT2, self::DIM, $dimId, StringUtil::quoteString( $namn ))
         );
     }
 
@@ -723,7 +657,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( 0 < $this->sie4Dto->countUnderDimDtos()) {
             foreach( $this->sie4Dto->getUnderDimDtos() as $underDimDto ) {
                 if( $superDim == $underDimDto->getSuperDimNr()) {
-                    $this->writeUnderDimData( $underDimDto );
+                $this->writeUnderDimData( $underDimDto );
                     $dimensions[] = $underDimDto->getDimensionNr();
                 }
             } // end foreach
@@ -766,7 +700,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( 0 < $this->sie4Dto->countDimObjektDtos()) {
             foreach( $this->sie4Dto->getDimObjektDtos() as $dimObjektDto ) {
                 if( $superDim == $dimObjektDto->getDimensionNr()) {
-                    $this->writeDimObjektData( $dimObjektDto );
+                $this->writeDimObjektData( $dimObjektDto );
                 }
             } // end foreach
         }
@@ -1249,11 +1183,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         // empty row before
         $this->output->append( StringUtil::$SP0 );
         $this->output->append(
-            sprintf(
-                self::$SIEFMT1,
-                self::KSUMMA,
-                (string) crc32( $this->getKsummaBase())
-            )
+            sprintf( self::$SIEFMT1, self::KSUMMA, (string) crc32( $this->getKsummaBase()))
         );
     }
 

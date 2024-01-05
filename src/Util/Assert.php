@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -50,7 +49,7 @@ class Assert
     {
         static $ERR = '%s integer <= 0 förväntas, nu %s';
         self::isIntegerish( $label, $value );
-        if( 0 < (int) $value ) {
+        if( 0 < (int)$value ) {
             throw new InvalidArgumentException(
                 sprintf( $ERR, $label, (int) $value ),
                 3721
@@ -126,9 +125,9 @@ class Assert
         $value = trim( (string)$value );
         $yyxx  = (int) substr( $value, 0, 2 );
         $mm    = (int) substr( $value, -2 );
-        if(( 6 !== strlen( $value )) ||
-            ( 19 > $yyxx ) ||
-            ( 20 < $yyxx ) ||
+        if( (6 !== strlen( $value )) ||
+            (19 > $yyxx ) ||
+            (20 < $yyxx ) ||
             (  0 === $mm ) ||
             ( 12 < $mm )) {
             throw new InvalidArgumentException(

@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -27,7 +26,7 @@
 /**
  * Simpler Sie4 Comet server,
  * offer conversion from array/json input to Sie4 string output.
- * The input requires at least one Sie '#VER', ex. the result from an 'online' purchase
+ * The input requires at least one input Sie '#VER', ex. the result from an 'online' purchase
  *
  * Requires composer update : "gotzmann/comet": "^2.4" and, opt for logger, "monolog/monolog": "^2.5"
  *
@@ -59,7 +58,7 @@
  *  returns string with product name and version and the current timestamp
  *
  * Start server in a command window (in the 'local SieSdk' dir)
- * > sudo php src/Api/Server/server.php start
+ * > sudo php src/Api/Server/sie4Server.php start
  *
  * @since 1.8.4 20230927
  */
@@ -87,12 +86,13 @@ $config = [
 $format     = "\n%datetime% %level_name% %message%";
 $dateFormat = "Y-m-d H:i:s.u";
 $formatter  = new LineFormatter( $format, $dateFormat );
-$logDirFile = __DIR__ . '/../../../log/app.log';
+$logDirFile = realpath( __DIR__ . '/../../../log/app.log' );
 $logLevel   = Logger::DEBUG;
 $stream     = new StreamHandler( $logDirFile, $logLevel );
 $stream->setFormatter( $formatter );
 $logger     = new Logger('comet' );
 $logger->pushHandler( $stream );
+
 if( $logger ) {
     $config['debug']  = true;
     $config['logger'] = $logger;

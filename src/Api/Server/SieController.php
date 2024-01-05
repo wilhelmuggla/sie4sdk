@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -75,21 +74,17 @@ class SieController implements Sie4Interface
      *
      * '$this' required for PHP post-8.0 for non-static callables
      *
+     * @param string $route
      * @return callable
      */
     public function getCallable( string $route ) : callable
     {
-        switch( $route ) {
-            case '/get' :
-                return [ $this, 'get' ];
-            case '/getJson' :
-                return [ $this, 'getJson' ];
-            case '/getFromJson' :
-                return [ $this, 'getFromJson' ];
-            case '/test' :
-            default :
-                return [ $this, 'test' ];
-        }
+        return match ( $route ) {
+            '/get'         => [ $this, 'get' ],
+            '/getJson'     => [ $this, 'getJson' ],
+            '/getFromJson' => [ $this, 'getFromJson' ],
+            default        => [ $this, 'test' ],
+        };
     }
 
     /**

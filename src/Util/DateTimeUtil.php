@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -54,6 +53,8 @@ class DateTimeUtil
     private static string $M = 'm';
 
     /**
+     * Return DateTime, loaded from input string
+     *
      * @param string $dateTimeString
      * @param string $label
      * @param int    $errCode
@@ -87,7 +88,7 @@ class DateTimeUtil
         static $TIMESTAMP = 'timestamp';
         static $AT        = '@';
         try {
-            self::getDateTime( $AT . (int) $timestamp, $TIMESTAMP, $errCode );
+            self::getDateTime( $AT . (int)$timestamp, $TIMESTAMP, $errCode );
         }
         catch( RuntimeException $e ) {
             throw new InvalidArgumentException( $e->getMessage(), ( $errCode + 1 ), $e );
@@ -145,8 +146,8 @@ class DateTimeUtil
     {
         static $FIRST = '01';
         static $T     = 't';
-        $year         = substr( $gYearMonth, 0, 4 );
-        $month        = substr( $gYearMonth, -2, 2 );
+        $year     = substr( $gYearMonth, 0, 4 );
+        $month    = substr( $gYearMonth, -2, 2 );
         try {
             $dateTime = new DateTime( $year . $month . $FIRST );
         }
@@ -155,11 +156,11 @@ class DateTimeUtil
         }
         if( $setEnd ) {
             try {
-                $dateTime->setDate(
-                    (int) $dateTime->format( self::$Y ),
-                    (int) $dateTime->format( self::$M ),
-                    (int) $dateTime->format( $T )
-                );
+            $dateTime->setDate(
+                (int) $dateTime->format( self::$Y ),
+                (int) $dateTime->format( self::$M ),
+                (int) $dateTime->format( $T )
+            );
             }
             catch( Exception $e ) {
                 throw new RuntimeException( $e->getMessage(), 19502, $e );

@@ -24,26 +24,41 @@
  *            along with Sie4Sdk. If not, see <https://www.gnu.org/licenses/>.
  */
 declare( strict_types = 1 );
-namespace Kigkonsult\Sie4Sdk\DtoLoader;
+namespace Kigkonsult\Sie4Sdk\Api\Server\ValidatorRules;
 
-use Kigkonsult\Sie4Sdk\Dto\SruDto as Dto;
+use Rakit\Validation\Rule;
 
-class SruDto extends LoaderBase
+use function filter_var;
+use function is_array;
+use function sprintf;
+
+/**
+ * class Int1
+ *
+ * Check value is an array with int elements
+ */
+class Int1 extends Rule
 {
     /**
-     * @param string $kontoNr
-     * @return Dto
-     * @since 1.8.3 2023-09-20
+     * The rule check
+     *
+     * @param mixed $value
+     * @return bool
      */
-    public static function load( string $kontoNr ) : Dto
+    public function check( mixed $value ): bool
     {
-        $faker = self::getFaker();
-        $dto   = new Dto();
-
-        $dto->setKontoNr( $kontoNr );
-
-        $dto->setSruKod((string) $faker->numberBetween( 1000, 9999 ));
-
-        return $dto;
+        static $err1   = " must be an array";
+        static $err2   = "[%s] must be an int";
+        if( ! is_array( $value )) {
+            $this->message = $err1;
+            return false;
+        }
+        foreach( $value as $vx => $value2 ) {
+            if( false === filter_var( $value2, FILTER_VALIDATE_INT )) {
+                $this->message = sprintf( $err2, $vx );
+                return false;
+            }
+        } // end foreach
+        return true;
     }
 }

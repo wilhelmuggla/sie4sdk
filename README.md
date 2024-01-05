@@ -86,4 +86,4 @@ This project is licensed under the LGPLv3 License
 [Sie]:http://www.sie.se
 [XSD]:http://www.sie.se/sie5.xsd
 
-[comment]: # (This file is part of Sie4Sdk, The PHP Sie4I SDK and Sie5 conversion package. Copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved, licence LGPLv3)
+[comment]: # (This file is part of Sie4Sdk, The PHP Sie4I SDK and Sie5 conversion package. Copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved, licence LGPLv3)

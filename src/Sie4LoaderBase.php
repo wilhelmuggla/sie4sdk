@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -48,6 +47,7 @@ abstract class Sie4LoaderBase implements Sie4Interface
      * @return IdDto
      * @throws RuntimeException
      * @throws Exception
+     * @since 1.8.9 2023-12-08
      */
     protected static function processIdData( bool $isSie4E, FileInfoType|FileInfoTypeEntry $fileInfo ) : IdDto
     {
@@ -94,13 +94,18 @@ abstract class Sie4LoaderBase implements Sie4Interface
         }
 
         if( $isSie4E ) {
-            $arsNr = 0;
+            $rarArr = [];
             foreach( $fileInfo->getFiscalYears()->getFiscalYear() as $fiscalYearType ) {
+                $rarArr[$fiscalYearType->getStart()] = $fiscalYearType->getEnd();
+            }
+            krsort( $rarArr );
+            $arsNr = 0;
+            foreach( $rarArr as $start => $end ) {
                 $idDto->addRarDto(
                     RarDto::factory(
                         $arsNr,
-                        DateTimeUtil::gYearMonthToDateTime( $fiscalYearType->getStart(), false ),
-                        DateTimeUtil::gYearMonthToDateTime( $fiscalYearType->getEnd(), true )
+                        DateTimeUtil::gYearMonthToDateTime( $start, false ),
+                        DateTimeUtil::gYearMonthToDateTime( $end, true )
                     )
                 );
                 --$arsNr;

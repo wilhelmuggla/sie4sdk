@@ -47,3 +47,7 @@
 1.8.4  Simpler (http) Comet API
 1.8.5  VerDto/TransDto parent guid, ext array output upd
 1.8.6  name/version parse mgnt upd
+
+1.8.7 write upd, charset etc
+1.8.8 KontoTyp upd
+1.8.9 Sie5loader RAR upd

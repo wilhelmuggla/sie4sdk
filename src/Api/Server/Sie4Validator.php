@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -28,14 +27,19 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Api\Server;
 
 use Comet\Validator;
+use Kigkonsult\Sie4Sdk\Api\Server\ValidatorRules\Array2;
+use Kigkonsult\Sie4Sdk\Api\Server\ValidatorRules\Array3;
+use Kigkonsult\Sie4Sdk\Api\Server\ValidatorRules\Array3int;
+use Kigkonsult\Sie4Sdk\Api\Server\ValidatorRules\Date1;
+use Kigkonsult\Sie4Sdk\Api\Server\ValidatorRules\Date2;
+use Kigkonsult\Sie4Sdk\Api\Server\ValidatorRules\Int1;
+use Kigkonsult\Sie4Sdk\Api\Server\ValidatorRules\Int2;
+use Kigkonsult\Sie4Sdk\Api\Server\ValidatorRules\Numeric2;
 use Kigkonsult\Sie4Sdk\Sie4Interface;
-use Rakit\Validation\Rule;
+use Rakit\Validation\RuleQuashException;
+use RuntimeException;
 
-use function date_create;
-use function filter_var;
 use function is_array;
-use function is_numeric;
-use function sprintf;
 
 /**
  * class Sie4Validator
@@ -79,6 +83,7 @@ class Sie4Validator implements Sie4Interface
      * @param string[] $input
      * @param string|null $msg
      * @return bool
+     * @throws RuntimeException
      */
     public static function validateArray( array $input, ? string & $msg = null ) : bool
     {
@@ -86,14 +91,19 @@ class Sie4Validator implements Sie4Interface
         static $SP1 = ' ';
         static $CLN = ',';
         $validator  = new Validator;
-        $validator->addValidator('date1',     new Date1());
-        $validator->addValidator('int1',      new Int1());
-        $validator->addValidator('array2',    new Array2());
-        $validator->addValidator('array3',    new Array3());
-        $validator->addValidator('array3int', new Array3int());
-        $validator->addValidator('int2',      new Int2());
-        $validator->addValidator('date2',     new Date2());
-        $validator->addValidator('numeric2',  new Numeric2());
+        try {
+            $validator->addValidator( 'date1', new Date1() );
+            $validator->addValidator( 'int1', new Int1() );
+            $validator->addValidator( 'array2', new Array2() );
+            $validator->addValidator( 'array3', new Array3() );
+            $validator->addValidator( 'array3int', new Array3int() );
+            $validator->addValidator( 'int2', new Int2() );
+            $validator->addValidator( 'date2', new Date2() );
+            $validator->addValidator( 'numeric2', new Numeric2() );
+        }
+        catch( RuleQuashException $e ) {
+            throw new RuntimeException( $e->getMessage(), $e->getCode(), $e );
+        }
         $validation = $validator->validate( $input, self::$RULES );
         $errors     = $validation->getErrors();
         if( empty( $errors )) {
@@ -107,294 +117,5 @@ class Sie4Validator implements Sie4Interface
             $msg = $field . $SP1 . $txt;
         } // end foreach
         return false;
-    }
-}
-
-/**
- * class Array2
- *
- * Check value is a two-dim array
- */
-class Array2 extends Rule
-{
-    /**
-     * The rule check
-     *
-     * @param mixed $value
-     * @return bool
-     */
-    public function check( mixed $value ): bool
-    {
-        static $err1   = " must be an array";
-        static $err2   = "[%s] must be an array";
-        if( ! is_array( $value )) {
-            $this->message = $err1;
-            return false;
-        }
-        foreach( $value as $vx => $value2 ) {
-            if( ! is_array( $value2 )) {
-                $this->message = sprintf( $err2, $vx );
-                return false;
-            }
-        } // end foreach
-        return true;
-    }
-}
-
-/**
- * class Array3
- *
- * Check value is a three-dim array
- */
-class Array3 extends Rule
-{
-    /**
-     * The rule check
-     *
-     * @param mixed $value
-     * @return bool
-     */
-    public function check( mixed $value ): bool
-    {
-        static $err1   = " must be an array";
-        static $err2   = "[%s] must be an array";
-        static $err3   = "[%s][%s] must be an array";
-        if( ! is_array( $value )) {
-            $this->message = $err1;
-            return false;
-        }
-        foreach( $value as $vx1 => $value2 ) {
-            if( ! is_array( $value2 )) {
-                $this->message = sprintf( $err2, $vx1 );
-                return false;
-            }
-            foreach( $value2 as $vx2 => $value3 ) {
-                if( ! is_array( $value3 )) {
-                    $this->message = sprintf( $err3, $vx1, $vx2 );
-                    return false;
-                }
-            } // end foreach
-        } // end foreach
-        return true;
-    }
-}
-
-/**
- * class Array3int
- *
- * Check value is a three-dim array with int elements
- */
-class Array3int extends Rule
-{
-    /**
-     * The rule check
-     *
-     * @param mixed $value
-     * @return bool
-     */
-    public function check( mixed $value ): bool
-    {
-        static $err1   = " must be an array";
-        static $err2   = "[%s] must be an array";
-        static $err3   = "[%s][%s] must be an array";
-        static $err4   = "[%s][%s][%s] must be an int";
-        if( ! is_array( $value )) {
-            $this->message = $err1;
-            return false;
-        }
-        foreach( $value as $vx1 => $value2 ) {
-            if( ! is_array( $value2 )) {
-                $this->message = sprintf( $err2, $vx1 );
-                return false;
-            } // end foreach
-            foreach( $value2 as $vx2 => $value3 ) {
-                if( ! is_array( $value3 )) {
-                    $this->message = sprintf( $err3, $vx1, $vx2 );
-                    return false;
-                }
-                foreach( $value3 as $vx3 => $value4 ) {
-                    if( false === filter_var( $value4, FILTER_VALIDATE_INT )) {
-                        $this->message = sprintf( $err4, $vx1, $vx2, $vx3 );
-                        return false;
-                    }
-                } // end foreach
-            } // end foreach
-        } // end foreach
-        return true;
-    }
-}
-
-/**
- * class Date1
- *
- * Check value is an array with any Ymd-date elements
- */
-class Date1 extends Rule
-{
-    /**
-     * The rule check
-     *
-     * @param mixed $value
-     * @return bool
-     */
-    public function check( mixed $value ): bool
-    {
-        static $err1   = " must be an array";
-        static $err2   = "[%s] must be any Ymd-date";
-        if( ! is_array( $value )) {
-            $this->message = $err1;
-            return false;
-        }
-        foreach( $value as $vx => $value2 ) {
-            if( false === date_create( $value2 )) {
-                $this->message = sprintf( $err2, $vx );
-                return false;
-            }
-        } // end foreach
-        return true;
-    }
-}
-/**
- * class Int1
- *
- * Check value is an array with int elements
- */
-class Int1 extends Rule
-{
-    /**
-     * The rule check
-     *
-     * @param mixed $value
-     * @return bool
-     */
-    public function check( mixed $value ): bool
-    {
-        static $err1   = " must be an array";
-        static $err2   = "[%s] must be an int";
-        if( ! is_array( $value )) {
-            $this->message = $err1;
-            return false;
-        }
-        foreach( $value as $vx => $value2 ) {
-            if( false === filter_var( $value2, FILTER_VALIDATE_INT )) {
-                $this->message = sprintf( $err2, $vx );
-                return false;
-            }
-        } // end foreach
-        return true;
-    }
-}
-
-/**
- * class int2
- *
- * Check value is a two-dim array with int elements
- */
-class Int2 extends Rule
-{
-    /**
-     * The rule check
-     *
-     * @param mixed $value
-     * @return bool
-     */
-    public function check( mixed $value ): bool
-    {
-        static $err1   = " must be an array";
-        static $err2   = "[%s] must be an array";
-        static $err3   = "[%s][%s] must be an int";
-        if( ! is_array( $value )) {
-            $this->message = $err1;
-            return false;
-        }
-        foreach( $value as $vx1 => $value2 ) {
-            if( ! is_array( $value2 )) {
-                $this->message = sprintf( $err2, $vx1 );
-                return false;
-            }
-            foreach( $value2 as $vx2 =>$value3 ) {
-                if( false === filter_var( $value3, FILTER_VALIDATE_INT )) {
-                    $this->message = sprintf( $err3, $vx1, $vx2 );
-                    return false;
-                }
-            } // end foreach
-        } // end foreach
-        return true;
-    }
-}
-
-/**
- * class Numeric2
- *
- * Check value is a two-dim array with numeric elements
- */
-class Numeric2 extends Rule
-{
-    /**
-     * The rule check
-     *
-     * @param mixed $value
-     * @return bool
-     */
-    public function check( mixed $value ): bool
-    {
-        static $err1   = " must be an array";
-        static $err2   = "[%s] must be an array";
-        static $err3   = "[%s][%s] must be numeric";
-        if( ! is_array( $value )) {
-            $this->message = $err1;
-            return false;
-        }
-        foreach( $value as $vx1 => $value2 ) {
-            if( ! is_array( $value2 )) {
-                $this->message = sprintf( $err2, $vx1 );
-                return false;
-            }
-            foreach( $value2 as $vx2 =>$value3 ) {
-                if( ! is_numeric( $value3 )) {
-                    $this->message = sprintf( $err3, $vx1, $vx2 );
-                    return false;
-                }
-            } // end foreach
-        } // end foreach
-        return true;
-    }
-}
-
-/**
- * class Date2
- *
- * Check value is a two-dim array with any Ymd-date elements
- */
-class Date2 extends Rule
-{
-    /**
-     * The rule check
-     *
-     * @param mixed $value
-     * @return bool
-     */
-    public function check( mixed $value ): bool
-    {
-        static $err1   = " must be an array";
-        static $err2   = "[%s] must be an array";
-        static $err3   = "[%s][%s] must be any Ymd-date";
-        if( ! is_array( $value )) {
-            $this->message = $err1;
-            return false;
-        }
-        foreach( $value as $vx1 =>$value2 ) {
-            if( ! is_array( $value2 )) {
-                $this->message = sprintf( $err2, $vx1 );
-                return false;
-            }
-            foreach( $value2 as $vx2 => $value3 ) {
-                if( false === date_create( $value3 )) {
-                    $this->message = sprintf( $err3, $vx1, $vx2 );
-                    return false;
-                }
-            } // end foreach
-        } // end foreach
-        return true;
     }
 }

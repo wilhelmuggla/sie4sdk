@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -169,6 +168,7 @@ class Sie5Loader extends Sie5LoaderBase
      * Process Sie4 accountDtos into Sie
      *
      * @return void
+     * @since 1.8.8 2023-12-08
      */
     private function processAccountDtos() : void
     {
@@ -182,11 +182,14 @@ class Sie5Loader extends Sie5LoaderBase
             $this->sie->setAccounts( $accounts );
         }
         foreach( $accountDtos as $accountDto ) {
-            $kontoNr = $accountDto->getKontoNr();
+            $kontoNr  = $accountDto->getKontoNr();
+            $kontoTyp = $accountDto->isKontotypSet()
+                ? $accountDto->getKontoTyp()
+                : AccountDto::findOutKontoType( $kontoNr );
             $accountType = AccountType::factoryIdNameType(
                 $kontoNr,
                 $accountDto->getKontoNamn(),
-                (string) AccountDto::getKontoType( $accountDto->getKontoTyp(), false )
+                (string) AccountDto::getKontoType( $kontoTyp, false )
             );
             if( $accountDto->isEnhetSet()) {
                 $accountType->setUnit( $accountDto->getEnhet());
@@ -360,7 +363,7 @@ class Sie5Loader extends Sie5LoaderBase
             ? $this->sie4EDto->getIdDto()->getSign()
             : Sie::PRODUCTNAME;
         foreach( $this->sie4EDto->getVerDtos() as $verDto ) {
-            $serie = $verDto->isSerieSet() ? $verDto->getSerie() : StringUtil::$SP0;
+            $serie       = $verDto->isSerieSet() ? $verDto->getSerie() : StringUtil::$SP0;
             $JournalType = $this->getJournalType( $serie );
             $JournalEntryType = JournalEntryType::factory();
             $JournalType->addJournalEntry( $JournalEntryType );

@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -244,7 +243,6 @@ class Sie4Dto2Array extends ArrayBase
         $instance->processResDtos();
         $instance->processPsaldoDtos();
         $instance->processPbudgetDtos();
-
         $instance->processVerDtos();
 
         if( $instance->sie4Dto->isKsummaSet()) {
@@ -753,33 +751,33 @@ class Sie4Dto2Array extends ArrayBase
         ArrayUtil::assureIsArray( $this->output, $KEYS );
         foreach( $this->sie4Dto->getVerDtos() as $verX => $verDto ) {
 
-            $this->output[self::VERTIMESTAMP][$verX]  = number_format(
+            $this->output[self::VERTIMESTAMP][$verX] = number_format(
                 $verDto->getTimestamp(), 6, StringUtil::$DOT, StringUtil::$SP0
             );
-            $this->output[self::VERGUID][$verX]       = $verDto->getCorrelationId();
+            $this->output[self::VERGUID][$verX]      = $verDto->getCorrelationId();
             $this->output[self::VERPARENTGUID][$verX] = $verDto->getParentCorrelationId();
 
             if( $verDto->isSerieSet()) {
-                $this->output[self::VERSERIE][$verX]  = $verDto->getSerie();
+                $this->output[self::VERSERIE][$verX] = $verDto->getSerie();
             }
             if( $verDto->isVernrSet()) {
-                $this->output[self::VERNR][$verX]     = $verDto->getVernr();
+                $this->output[self::VERNR][$verX] = $verDto->getVernr();
             }
             if( $verDto->isVerdatumSet()) {
-                $this->output[self::VERDATUM][$verX]  =
+                $this->output[self::VERDATUM][$verX] =
                     $verDto->getVerdatum()->format( self::SIE4YYYYMMDD );
             }
             if( $verDto->isVertextSet()) {
-                $this->output[self::VERTEXT][$verX]   = $verDto->getVertext();
+                $this->output[self::VERTEXT][$verX] = $verDto->getVertext();
             }
             if( $verDto->isRegdatumSet()) {
-                $this->output[self::REGDATUM][$verX]  =
+                $this->output[self::REGDATUM][$verX] =
                     $verDto->getRegdatum()->format( self::SIE4YYYYMMDD );
             }
             if( $verDto->isSignSet()) {
-                $this->output[self::VERSIGN][$verX]   = $verDto->getSign();
+                $this->output[self::VERSIGN][$verX] = $verDto->getSign();
             }
-            foreach( $verDto->getTransDtos() as $transX => $transDto ) {
+            foreach( $verDto->getTransDtos() as $transX =>$transDto ) {
                 $this->processSingleTransDto( $verX, $transX, $transDto );
             }
         } // end foreach

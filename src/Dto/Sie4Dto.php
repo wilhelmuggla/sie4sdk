@@ -4,9 +4,8 @@
  *
  * This file is a part of Sie4Sdk
  *
- * @author    Kjell-Inge Gustafsson, kigkonsult
- * @copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
- * @link      https://kigkonsult.se
+ * @author    Kjell-Inge Gustafsson, kigkonsult, <ical@kigkonsult.se>
+ * @copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved
  * @license   Subject matter of licence is the software Sie4Sdk.
  *            The above package, copyright, link and this licence notice shall be
  *            included in all copies or substantial portions of the Sie4Sdk.
@@ -132,12 +131,17 @@ class Sie4Dto extends BaseId
      * Class constructor
      *
      * @param IdDto $idDto
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function __construct( IdDto $idDto )
     {
-        parent::__construct();
-        $this->setIdDto( $idDto );
+        try {
+            parent::__construct();
+            $this->setIdDto( $idDto );
+        }
+        catch( Exception $e ) {
+            throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+        }
     }
 
     /**
@@ -268,8 +272,8 @@ class Sie4Dto extends BaseId
     /**
      * Add single AccountDto using kontoNr/namn, typ/enhet opt
      *
-     * @param int|string  $kontoNr
-     * @param string      $kontoNamn
+     * @param int|string $kontoNr
+     * @param string $kontoNamn
      * @param null|string $kontoTyp
      * @param null|string $enhet
      * @return self

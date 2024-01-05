@@ -218,4 +218,4 @@ Note for Sie4 - Sie/SieEntry conversion
 [sie4Server.php]:src/Api/Server/sie4Server.php
 [Sie5Sdk]:https://github.com/iCalcreator/SieSdk
 
-[comment]: # (This file is part of Sie4Sdk, The PHP Sie4I SDK and Sie5 conversion package. Copyright 2021-2023 Kjell-Inge Gustafsson, kigkonsult, All rights reserved, licence LGPLv3)
+[comment]: # (This file is part of Sie4Sdk, The PHP Sie4I SDK and Sie5 conversion package. Copyright 2021-2024 Kjell-Inge Gustafsson, kigkonsult, All rights reserved, licence LGPLv3)
