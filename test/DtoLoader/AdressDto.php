@@ -26,17 +26,18 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
+use Faker\Generator;
 use Kigkonsult\Sie4Sdk\Dto\AdressDto as Dto;
 
 class AdressDto extends LoaderBase
 {
     /**
+     * @param Generator $faker
      * @return Dto
      * @since 1.8.3 2023-09-20
      */
-    public static function load() : Dto
+    public static function load( Generator $faker ) : Dto
     {
-        $faker = self::getFaker();
         $dto   = new Dto();
 
         $dto->setKontakt( $faker->name );

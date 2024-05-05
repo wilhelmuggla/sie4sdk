@@ -37,15 +37,35 @@ use Kigkonsult\Sie4Sdk\Dto\DtoInterface;
  */
 abstract class LoaderBase implements DtoInterface
 {
+    protected static array $Arr12  = [ 1, 2 ];
+    protected static array $Arr123 = [ 1, 2, 3 ];
+
     /**
-     * @return Generator
+     * Return a random belopp
+     * @param Generator $faker
+     * @return float
      */
-    protected static function getFaker() : Generator
+    protected static function getRandomBelopp( Generator $faker ) : float
     {
-        static $faker = null;
-        if( null === $faker ) {
-            $faker = Factory::create();
+        $belopp = $faker->randomFloat( 2, 1, 999999 );
+        if( 1 === $faker->randomElement( self::$Arr123 )) {
+            $belopp *= -1;
         }
-        return $faker;
+        return $belopp;
+    }
+
+    /**
+     * Return a random belopp
+     * @param Generator $faker
+     * @return float
+     */
+    protected static function getRandomString( Generator $faker, null|int|array $len = null ) : string
+    {
+        $len = match( true ) {
+            ( null == $len ) => $faker->randomElement( self::$Arr123 ),
+            is_array( $len ) => $faker->randomElement( $len ),
+            default => $len
+        };
+        return (string) $faker->words( $len, true );
     }
 }

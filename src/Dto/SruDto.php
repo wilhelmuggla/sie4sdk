@@ -29,12 +29,11 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
 use Kigkonsult\Sie4Sdk\Util\Assert;
-use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 /**
  * Class SruDto
  */
-class SruDto implements DtoInterface
+class SruDto implements DtoInterface, KontoNrInterface
 {
     use KontoNrTrait;
 
@@ -42,26 +41,6 @@ class SruDto implements DtoInterface
      * @var int|null
      */
     private ?int $sruKod = null;
-
-    /**
-     * @var callable
-     */
-    public static $SORTER = [ self::class, 'sruSorter' ];
-
-    /**
-     * Sort SruDto[] on kontonr, sruKod
-     *
-     * @param SruDto $a
-     * @param SruDto $b
-     * @return int
-     */
-    public static function sruSorter( SruDto $a, SruDto $b ) : int
-    {
-        if( 0 !== ( $res = StringUtil::strSort((string) $a->getKontoNr(),(string) $b->getKontoNr()))) {
-            return $res;
-        }
-        return StringUtil::strSort((string) $a->getSruKod(), (string) $b->getSruKod());
-    }
 
     /**
      * Class factory method, kontoNr/Namn/Typ, enhet opt

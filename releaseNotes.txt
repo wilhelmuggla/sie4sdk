@@ -51,3 +51,13 @@
 1.8.7 write upd, charset etc
 1.8.8 KontoTyp upd
 1.8.9 Sie5loader RAR upd
+
+1.8.10 VerDto::addTransKontoNrBelopp() also accepts transType/-Text
+       TransDto::factory() also accepts transType/-Text
+1.8.11 TransDto::setBelopp()/setKvantitet() accepts int|float|string as input, save as float
+1.8.12 VerDto::setVerdatum() accepts Datetime|(dateTime-)string, save as DateTime
+       VerDto::setRegdatum() accepts Datetime|(dateTime-)string, save as DateTime
+       TransDto:setTransdat() accepts Datetime|(dateTime-)string, save as DateTime
+1.8.13 AccountLDtoList/DimDtoList/DimObjectDtoList/TransDtoList/UnderDimDtoList/VerDtoList
+1.8.14 DimDto::DimenensionsNr altered to DimenensionNr
+1.8.15 SruDtoList/BalansDtoList/BalanObjektsDtoList

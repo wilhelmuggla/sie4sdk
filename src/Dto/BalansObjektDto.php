@@ -28,7 +28,6 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use Kigkonsult\Sie4Sdk\Dto\Traits\DimensionNrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\ObjektNrTrait;
-use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 /**
  * Class BalansObjektDto
@@ -38,27 +37,4 @@ class BalansObjektDto extends BalansDto
     use DimensionNrTrait;
 
     use ObjektNrTrait;
-
-    /**
-     * @var callable
-     */
-    public static $SORTER = [ BalansObjektDto::class, 'balansObjektSorter' ];
-
-    /**
-     * Sort BalansObjektDto[] on kontonr, arsnr, dimensionNr, objektNr
-     *
-     * @param BalansObjektDto $a
-     * @param BalansObjektDto $b
-     * @return int
-     */
-    public static function balansObjektSorter( BalansObjektDto $a, BalansObjektDto $b ) : int
-    {
-        if( 0 !== ( $kontoNrArsnrCmp = parent::balansSorter( $a, $b ))) {
-            return $kontoNrArsnrCmp;
-        }
-        if( 0 !== ( $res = StringUtil::strSort((string) $a->getDimensionNr(),(string) $b->getDimensionNr()))) {
-            return $res;
-        }
-        return StringUtil::strSort((string) $a->getObjektNr(), (string)$b->getObjektNr());
-    }
 }

@@ -26,17 +26,17 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
+use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\ArsnrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KvantitetTrait;
-use Kigkonsult\Sie4Sdk\Util\StringUtil;
+use Kigkonsult\Sie4Sdk\Util\Assert;
 
 /**
  * Class BalansDto
  */
 class BalansDto implements KontoNrInterface
 {
-
     use ArsnrTrait;
 
     use KontoNrTrait;
@@ -44,29 +44,9 @@ class BalansDto implements KontoNrInterface
     /**
      * @var float|null
      */
-    protected ?float $saldo = null;
+    protected ? float $saldo = null;
 
     use KvantitetTrait;
-
-    /**
-     * @var callable
-     */
-    static public $SORTER = [ self::class, 'balansSorter' ];
-
-    /**
-     * Sort BalansDto[] on kontonr, arsnr
-     *
-     * @param BalansDto $a
-     * @param BalansDto $b
-     * @return int
-     */
-    public static function balansSorter( BalansDto $a, BalansDto $b ) : int
-    {
-        if( 0 !== ( $res = StringUtil::strSort((string) $a->getKontoNr(),(string) $b->getKontoNr() ))) {
-            return $res;
-        }
-        return StringUtil::strSort((string) $a->getArsnr(), (string) $b->getArsnr());
-    }
 
     /**
      * Class factory method, arsnr, kontoNr, saldo, kvantitet
@@ -74,16 +54,16 @@ class BalansDto implements KontoNrInterface
      * @param int|string $arsnr
      * @param int|string $kontoNr
      * @param float|int|string $saldo
-     * @param float|null $kvantitet
-     * @return self
+     * @param null|int|float|string $kvantitet
+     * @return static
      * @since 1.8.2 2023-09-20
      */
     public static function factory(
-        int | string         $arsnr,
-        int | string         $kontoNr,
-        float | int | string $saldo,
-        float                $kvantitet = null
-    ) : self
+        int|string       $arsnr,
+        int|string       $kontoNr,
+        float|int|string $saldo,
+        null|int|float|string $kvantitet = null
+    ) : static
     {
         $class    = static::class;
         $instance = new $class();
@@ -119,11 +99,13 @@ class BalansDto implements KontoNrInterface
     /**
      * Set saldo
      *
-     * @param float|int|string $saldo    saved as float
-     * @return self
+     * @param int|float|string $saldo    saved as float
+     * @return static
+     * @throws InvalidArgumentException
      */
-    public function setSaldo( float | int | string $saldo ) : self
+    public function setSaldo( int|float|string $saldo ) : static
     {
+        Assert::isfloatish( __FUNCTION__ , $saldo );
         $this->saldo = (float) $saldo;
         return $this;
     }

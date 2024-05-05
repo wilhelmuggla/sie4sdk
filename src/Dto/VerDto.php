@@ -28,10 +28,14 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 
 use DateTime;
 use Exception;
+use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\ParentCorrelationIdTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SerieVernrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
-use Kigkonsult\Sie4Sdk\Util\StringUtil;
+use Kigkonsult\Sie4Sdk\Lists\TransDtoList;
+use Traversable;
+
+use function is_string;
 
 /**
  * Class VerDto
@@ -62,77 +66,46 @@ class VerDto extends BaseId
     /**
      * @var string|null
      */
-    private ?string $vertext = null;
+    private ? string $vertext = null;
 
     /**
      * @var DateTime|null
      */
-    private ?DateTime $regdatum = null;
+    private ? DateTime $regdatum = null;
 
     use SignTrait;
 
     /**
-     * @var TransDto[]  contains #TRANS/#RTRANS/#BTRANS
+     * @var TransDtoList  contains #TRANS/#RTRANS/#BTRANS
      */
-    private array $transDtos = [];
-
-    /**
-     * @var callable
-     */
-    public static $SORTER = [ VerDto::class, 'verDtoSorter'];
-
-    /**
-     * Sort VerDto[] on serie and vernr
-     *
-     * @param VerDto $a
-     * @param VerDto $b
-     * @return int
-     * @since 1.8.7 2023-12-08
-     */
-    public static function verDtoSorter( VerDto $a, VerDto $b ) : int
-    {
-        if( 0 !== ( $res = StringUtil::strSort((string) $a->getSerie(),(string) $b->getSerie()))) {
-            return $res;
-        }
-        $aCmp = (string) $a->getVernr();
-        $bCmp = (string) $b->getVernr();
-        if( StringUtil::isInteger( $aCmp ) && StringUtil::isInteger( $bCmp )) {
-            $aCmp = (int) $aCmp;
-            $bCmp = (int) $bCmp;
-            return match( true ) {
-                ( $aCmp < $bCmp ) => -1,
-                ( $aCmp > $bCmp ) => 1,
-                default => 0
-            };
-        }
-        return StringUtil::strSort( $aCmp, $aCmp );
-    }
+    private TransDtoList $transDtos;
 
     /**
      * VerDto constructor
      *
      * Sets unique timestamp, guid and verdatum (opt overload later)
      *
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function __construct()
     {
         parent::__construct();
         $this->setVerdatum( new DateTime());
+        $this->transDtos = new TransDtoList();
     }
 
     /**
      * Class factory method, opt vernr/text, verDatum default 'now'
      *
-     * @param int|null $vernr
-     * @param string|null $verText
-     * @param DateTime|null $verDatum  default 'now'
+     * @param null|int     $vernr
+     * @param null|string $verText
+     * @param null|string|DateTime $verDatum  default 'now'
      * @return self
      */
     public static function factory(
         ? int    $vernr = null,
         ? string $verText = null,
-        ? DateTime $verDatum = null
+        null|string|DateTime $verDatum = null
     ) : self
     {
         $instance = new self();
@@ -149,7 +122,31 @@ class VerDto extends BaseId
     }
 
     /**
-     * Set serie
+     * Updates VerDto with opt parentCorrelationId and, opt, IdData
+     *
+     * @param null|string $correlationId  for parent
+     * @param null|IdDto  $idDto
+     * @return void
+     */
+    public function setCorrIdDtoData( ? string $correlationId = null, ? IdDto $idDto = null ) : void
+    {
+        if( null !== $correlationId ) {
+            $this->setParentCorrelationId( $correlationId );
+        }
+        if( null !== $idDto ) {
+            if( $idDto->isFnrIdSet()) {
+                $this->setFnrId( $idDto->getFnrId());
+            }
+            if( $idDto->isOrgnrSet()) {
+                $this->setOrgnr( $idDto->getOrgnr());
+                $this->setMultiple( $idDto->getMultiple());
+            }
+        } // end if
+        $this->transDtos->setCorrIdDtoData( $this->correlationId, $this );
+    }
+
+    /**
+     * Set vernr serie, will populate down to all transDtos
      *
      * @param int|string $serie
      * @return self
@@ -157,14 +154,12 @@ class VerDto extends BaseId
     public function setSerie( int | string $serie ) : self
     {
         $this->serie = (string) $serie;
-        foreach( $this->transDtos as $transDto ) {
-            $transDto->setSerie( $this->serie );
-        }
+        $this->transDtos->setCorrIdDtoData( null, $this );
         return $this;
     }
 
     /**
-     * Set vernr
+     * Set vernr, will populate down to all transDtos
      *
      * @param int $vernr
      * @return self
@@ -172,9 +167,7 @@ class VerDto extends BaseId
     public function setVernr( int $vernr ) : self
     {
         $this->vernr = $vernr;
-        foreach( $this->transDtos as $transDto ) {
-            $transDto->setvernr( $this->vernr );
-        }
+        $this->transDtos->setCorrIdDtoData( null, $this );
         return $this;
     }
 
@@ -201,11 +194,20 @@ class VerDto extends BaseId
     /**
      * Set verdatum, DateTime
      *
-     * @param DateTime $verdatum
+     * @param string|DateTime $verdatum
      * @return VerDto
+     * @throws InvalidArgumentException
      */
-    public function setVerdatum( DateTime $verdatum ) : VerDto
+    public function setVerdatum( string|DateTime $verdatum ) : VerDto
     {
+        if( is_string( $verdatum )) {
+            try {
+                $verdatum = new DateTime( $verdatum );
+            }
+            catch( Exception $e ) {
+                throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+            }
+        }
         $this->verdatum = $verdatum;
         return $this;
     }
@@ -247,7 +249,7 @@ class VerDto extends BaseId
      *
      * @return DateTime|null
      */
-    public function getRegdatum() : ?DateTime
+    public function getRegdatum() : ? DateTime
     {
         return $this->regdatum;
     }
@@ -265,12 +267,22 @@ class VerDto extends BaseId
     /**
      * Set regdatum, DateTime
      *
-     * @param DateTime $regdatum
+     * @param string|DateTime $regdatum
      * @return self
+     * @throws InvalidArgumentException
      */
-    public function setRegdatum( DateTime $regdatum ) : self
+    public function setRegdatum( string|DateTime $regdatum ) : self
     {
+        if( is_string( $regdatum )) {
+            try {
+                $regdatum = new DateTime( $regdatum );
+            }
+            catch( Exception $e ) {
+                throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+            }
+        }
         $this->regdatum = $regdatum;
+        $this->transDtos->setCorrIdDtoData( null, $this );
         return $this;
     }
 
@@ -282,51 +294,61 @@ class VerDto extends BaseId
      */
     public function countTransDtos( ? string $transType = null ) : int
     {
-        $transType = $transType ?? self::TRANS;
-        $count     = 0;
-        foreach( $this->transDtos as $transDto ) {
-            if( $transType === $transDto->getTransType()) {
-                ++$count;
-            }
-        }
-        return $count;
+        return $this->transDtos->tagCount( $transType ?? self::TRANS );
     }
 
     /**
      * Return array, TransDto[], #TRANS / #RTRANS / #BTRANS  (all default)
      *
      * @param null|string $transType
-     * @return TransDto[]
+     * @return TransDtoList|TransDto[]|Traversable
      */
-    public function getTransDtos( ? string $transType = null ) : array
+    public function getTransDtos( ? string $transType = null ) : TransDtoList|Traversable
     {
-        $output = [];
-        foreach( $this->transDtos as $transDto ) {
-            if(( null === $transType ) || ( $transType === $transDto->getTransType())) {
-                $output[] = $transDto;
-            }
-        }
-        return $output;
+        return ( null === $transType )
+            ? $this->transDtos
+            : $this->transDtos->tagGet( $transType );
     }
 
     /**
-     * Add single transDto using kontoNr, belopp, #TRANS default
+     * Return bool true if transDto[] is 'i balans', if NOT false and dif in $balans
      *
-     * @param int|string $kontoNr
-     * @param float  $belopp
+     * Will NOT affect the internal counter
+     *
+     * @param null|float $balans
+     * @return bool
+     */
+    public function iBalans( ? float & $balans = 0.00 ) : bool
+    {
+        return $this->transDtos->iBalans( $balans );
+    }
+
+    /**
+     * Add single transDto using kontoNr, belopp, #TRANS (default)
+     *
+     * @param int|string  $kontoNr
+     * @param float|int|string $belopp
+     * @param null|string $transType
+     * @param null|string $transText
      * @return self
      */
-    public function addTransKontoNrBelopp( int | string $kontoNr, float $belopp ) : self
+    public function addTransKontoNrBelopp(
+        int|string $kontoNr,
+        float|int|string $belopp,
+        ? string $transType = null,
+        ? string $transText = null
+    ) : self
     {
-        return $this->addTransDto(
-            TransDto::factory( $kontoNr, $belopp )
+        $this->addTransDto(
+            TransDto::factory( $kontoNr, $belopp, $transType, $transText )
         );
+        return $this;
     }
 
     /**
      * Add single transDto #TRANS (default) / #RTRANS / #BTRANS
      *
-     * Populates down fnrId, orgnr(+multiple), serie and vernr
+     * Populates down correlationId, fnrId, orgnr(+multiple), serie and vernr
      * If missing, transdat is set from regdatum (if set)
      *
      * @param TransDto $transDto
@@ -335,24 +357,10 @@ class VerDto extends BaseId
      */
     public function addTransDto( TransDto $transDto ) : self
     {
-        $transDto->setParentCorrelationId( $this->getCorrelationId());
-        if( $this->isFnrIdSet()) {
-            $transDto->setFnrId( $this->getFnrId());
-        }
-        if( $this->isOrgnrSet()) {
-            $transDto->setOrgnr( $this->getOrgnr());
-            $transDto->setMultiple( $this->getMultiple());
-        }
-        if( $this->isSerieSet()) {
-            $transDto->setSerie( $this->getSerie());
-        }
-        if( $this->isVernrSet()) {
-            $transDto->setVernr( $this->getVernr());
-        }
-        if( ! $transDto->isTransdatSet() && $this->isRegdatumSet()) {
-            $transDto->setTransdat( clone $this->getRegdatum());
-        }
-        $this->transDtos[] = $transDto;
+        $transDto->setCorrIdDtoData( $this->getCorrelationId(), $this );
+        $this->transDtos->append( $transDto )
+            ->addCurrentTag( $transDto->getTransType())
+            ->addCurrentTag( $transDto->getKontoNr());
         return $this;
     }
 
@@ -364,7 +372,7 @@ class VerDto extends BaseId
      */
     public function setTransDtos( array $transDtos ) : self
     {
-        $this->transDtos = [];
+        $this->transDtos->init();
         foreach( $transDtos as $transDto ) {
             $this->addTransDto( $transDto );
         }
@@ -381,9 +389,7 @@ class VerDto extends BaseId
     public function setFnrId( string $fnrId ) : self
     {
         $this->fnrId = $fnrId;
-        foreach( $this->transDtos as $transDto ) {
-            $transDto->setFnrId( $fnrId );
-        }
+        $this->transDtos->setCorrIdDtoData( null, $this );
         return $this;
     }
 
@@ -397,14 +403,12 @@ class VerDto extends BaseId
     public function setOrgnr( string $orgnr ) : self
     {
         $this->orgnr = $orgnr;
-        foreach( $this->transDtos as $transDto ) {
-            $transDto->setOrgnr( $orgnr );
-        }
+        $this->transDtos->setCorrIdDtoData( null, $this );
         return $this;
     }
 
     /**
-     * Set multiple in each trandDto
+     * Set multiple in each transDto
      *
      * @param int $multiple
      * @return self
@@ -412,9 +416,7 @@ class VerDto extends BaseId
     public function setMultiple( int $multiple ) : self
     {
         $this->multiple = $multiple;
-        foreach( $this->transDtos as $transDto ) {
-            $transDto->setMultiple( $multiple );
-        }
+        $this->transDtos->setCorrIdDtoData( null, $this );
         return $this;
     }
 }

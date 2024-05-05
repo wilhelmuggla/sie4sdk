@@ -27,7 +27,6 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
 use Kigkonsult\Sie4Sdk\Dto\Traits\DimensionNrTrait;
-use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 /**
  * Class DimDto
@@ -51,24 +50,7 @@ class DimDto implements DimensionNrInterface
     /**
      * @var string|null
      */
-    protected ?string $dimensionsNamn = null;
-
-    /**
-     * @var callable
-     */
-    public static $SORTER = [ self::class, 'dimSorter' ];
-
-    /**
-     * Sort DimDto[] on dimensionsnr
-     *
-     * @param DimDto $a
-     * @param DimDto $b
-     * @return int
-     */
-    public static function dimSorter( DimDto $a, DimDto $b ) : int
-    {
-        return StringUtil::strSort((string) $a->getDimensionNr(), (string) $b->getDimensionNr());
-    }
+    protected ? string $dimensionNamn = null;
 
     /**
      * Class factory method, set dimensionNr and dimensionsNamn
@@ -79,9 +61,10 @@ class DimDto implements DimensionNrInterface
      */
     public static function factoryDim( int | string $dimensionsNr, string $dimensionsNamn ) : static
     {
-        $instance = new self();
+        $class    = static::class;
+        $instance = new $class();
         $instance->setDimensionNr( $dimensionsNr );
-        $instance->setDimensionsNamn( $dimensionsNamn );
+        $instance->setDimensionNamn( $dimensionsNamn );
         return $instance;
     }
 
@@ -90,9 +73,9 @@ class DimDto implements DimensionNrInterface
      *
      * @return string|null
      */
-    public function getDimensionsNamn() : ?string
+    public function getDimensionNamn() : ?string
     {
-        return $this->dimensionsNamn;
+        return $this->dimensionNamn;
     }
 
     /**
@@ -102,18 +85,18 @@ class DimDto implements DimensionNrInterface
      */
     public function isDimensionsNamnSet() : bool
     {
-        return ( null !== $this->dimensionsNamn );
+        return ( null !== $this->dimensionNamn );
     }
 
     /**
      * Set dimensionsNamn
      *
-     * @param string $dimensionsNamn
+     * @param string $dimensionNamn
      * @return static
      */
-    public function setDimensionsNamn( string $dimensionsNamn ) : static
+    public function setDimensionNamn( string $dimensionNamn ) : static
     {
-        $this->dimensionsNamn = $dimensionsNamn;
+        $this->dimensionNamn = $dimensionNamn;
         return $this;
     }
 }

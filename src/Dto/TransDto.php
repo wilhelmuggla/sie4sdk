@@ -27,6 +27,7 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
 use DateTime;
+use Exception;
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnr2Trait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\KontoNrTrait;
@@ -34,9 +35,11 @@ use Kigkonsult\Sie4Sdk\Dto\Traits\KvantitetTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\ParentCorrelationIdTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SerieVernrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
+use Kigkonsult\Sie4Sdk\Util\Assert;
 
 use function in_array;
 use function count;
+use function is_string;
 use function sprintf;
 
 /**
@@ -84,17 +87,17 @@ class TransDto extends BaseId implements KontoNrInterface
     /**
      * @var float|null
      */
-    private ?float $belopp = null;
+    private ? float $belopp = null;
 
     /**
      * @var DateTime|null
      */
-    private ?DateTime $transdat = null;
+    private ? DateTime $transdat = null;
 
     /**
      * @var string|null
      */
-    private ?string $transtext = null;
+    private ? string $transtext = null;
 
     use KvantitetTrait;
 
@@ -106,17 +109,59 @@ class TransDto extends BaseId implements KontoNrInterface
      * Class factory method, kontoNr/belopp, opt transType but #TRANS default
      *
      * @param int|string $kontoNr
-     * @param float $belopp
+     * @param float|int|string $belopp
      * @param string|null $transType
+     * @param null|string $transText
      * @return self
      */
-    public static function factory( int | string $kontoNr, float $belopp, ? string $transType = null ) : self
+    public static function factory(
+        int|string $kontoNr,
+        float|int|string $belopp,
+        ? string $transType = null,
+        ? string $transText = null
+    ) : self
     {
         $instance = new self();
         $instance->setKontoNr( $kontoNr );
         $instance->setBelopp( $belopp );
         $instance->setTransType( $transType ?? self::TRANS );
+        if( null !== $transText ) {
+            $instance->setTranstext( $transText );
+        }
         return $instance;
+    }
+
+    /**
+     * Updates all VerDto with opt parentCorrelationId and, opt, IdData
+     *
+     * @param null|string $correlationId  for parent
+     * @param null|VerDto $verDto
+     * @return void
+     */
+    public function setCorrIdDtoData( ? string $correlationId = null, ? VerDto $verDto = null ) : void
+    {
+        if( null !== $correlationId ) {
+            $this->setParentCorrelationId( $correlationId );
+        }
+        if( null === $verDto ) {
+            return;
+        }
+        if( $verDto->isFnrIdSet() ) {
+            $this->setFnrId( $verDto->getFnrId() );
+        }
+        if( $verDto->isOrgnrSet() ) {
+            $this->setOrgnr( $verDto->getOrgnr() );
+            $this->setMultiple( $verDto->getMultiple() );
+        }
+        if( $verDto->isSerieSet() ) {
+            $this->setSerie( $verDto->getSerie() );
+        }
+        if( $verDto->isVernrSet() ) {
+            $this->setVernr( $verDto->getVernr() );
+        }
+        if( ! $this->isTransdatSet() && $verDto->isRegdatumSet() ) {
+            $this->setTransdat( clone $verDto->getRegdatum() );
+        }
     }
 
     /**
@@ -130,14 +175,13 @@ class TransDto extends BaseId implements KontoNrInterface
     /**
      * @param string $transType
      * @return self
+     * @throws InvalidArgumentException
      */
     public function setTransType( string $transType ) : self
     {
         static $FMT = 'Fel trans-typ %s, #TRANS/#RTRANS/#BTRANS förväntas';
         if( ! in_array( $transType, self::$allowedTypes, true )) {
-            throw new InvalidArgumentException(
-                sprintf( $FMT, $transType )
-            );
+            throw new InvalidArgumentException( sprintf( $FMT, $transType ));
         }
         $this->transType = $transType;
         return $this;
@@ -149,7 +193,7 @@ class TransDto extends BaseId implements KontoNrInterface
      * @param int|string $serie
      * @return self
      */
-    public function setSerie( int | string $serie ) : self
+    public function setSerie( int|string $serie ) : self
     {
         $this->serie = (string) $serie;
         return $this;
@@ -234,7 +278,7 @@ class TransDto extends BaseId implements KontoNrInterface
      *
      * @return float|null
      */
-    public function getBelopp() : ?float
+    public function getBelopp() : ? float
     {
         return $this->belopp;
     }
@@ -254,9 +298,11 @@ class TransDto extends BaseId implements KontoNrInterface
      *
      * @param float|int|string $belopp
      * @return self
+     * InvalidArgumentException
      */
-    public function setBelopp( float | int | string $belopp ) : self
+    public function setBelopp( float|int|string $belopp ) : self
     {
+        Assert::isfloatish( __FUNCTION__, $belopp );
         $this->belopp = (float) $belopp;
         return $this;
     }
@@ -266,7 +312,7 @@ class TransDto extends BaseId implements KontoNrInterface
      *
      * @return DateTime|null
      */
-    public function getTransdat() : ?DateTime
+    public function getTransdat() : ? DateTime
     {
         return $this->transdat;
     }
@@ -284,11 +330,20 @@ class TransDto extends BaseId implements KontoNrInterface
     /**
      * Set transdat
      *
-     * @param DateTime $transdat
+     * @param string|DateTime $transdat
      * @return self
+     * @throws InvalidArgumentException
      */
-    public function setTransdat( DateTime $transdat ) : self
+    public function setTransdat( string|DateTime $transdat ) : self
     {
+        if( is_string( $transdat )) {
+            try {
+                $transdat = new DateTime( $transdat );
+            }
+            catch( Exception $e ) {
+                throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+            }
+        }
         $this->transdat = $transdat;
         return $this;
     }

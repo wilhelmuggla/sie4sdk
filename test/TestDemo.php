@@ -42,7 +42,7 @@ class TestDemo extends TestCase implements Sie4Interface
      *
      * @return array
      */
-    public function demoTestProvider() : array
+    public static function demoTestProvider() : array
     {
         $dataArr   = [];
         $case      = 1000;
@@ -52,7 +52,7 @@ class TestDemo extends TestCase implements Sie4Interface
                 ++$case,
                 Sie4Dto::factory( 'Acme Corp', '123', '556334-3689' )
                     ->addVerDto(
-                        VerDto::factory( 123, 'Porto' )
+                        VerDto::factory( 123, 'Porto', date( 'Ymd' ))
                             ->addTransKontoNrBelopp( 1910, -2000.00 )
                             ->addTransKontoNrBelopp( 2640, 400.00 )
                             ->addTransKontoNrBelopp( 6250, 1600.00 )
@@ -117,12 +117,13 @@ class TestDemo extends TestCase implements Sie4Interface
                 $input = $array;
                 // fall through
             case is_array( $input ) :
-                $sie4Dto = Array2Sie4Dto::process( $input );
+                $sie4Dto    = Array2Sie4Dto::process( $input );
                 $inputArray = $input;
                 break;
             default :
-                $sie4Dto = $input;
+                $sie4Dto    = $input;
                 $inputArray = Sie4Dto2Array::process( $sie4Dto );
+                break;
         }
         // assert as Sie4I
         $outcome = true;
@@ -133,6 +134,8 @@ class TestDemo extends TestCase implements Sie4Interface
             $outcome = $e->getMessage();
         }
 
+        // create sie4String
+        $sie4String1 = Sie4IWriter::factory()->process( $sie4Dto );
         $this->assertTrue(
             $outcome,
             sprintf(
@@ -140,13 +143,10 @@ class TestDemo extends TestCase implements Sie4Interface
                 $case,
                 11,
                 PHP_EOL,
-                StringUtil::cp437toUtf8(
-                    Sie4IWriter::factory()->process( $sie4Dto )
-                )
+                StringUtil::cp437toUtf8( $sie4String1 )
             )
         );
-        // create sie4String
-        $sie4String1 = Sie4IWriter::factory()->process( $sie4Dto );
+
         // parse the Sie4I string back and create new Sie4I string, compare
         $sie4String2 = Sie4IWriter::factory()->process( Sie4Parser::factory()->process( $sie4String1 ));
 
@@ -193,11 +193,13 @@ class TestDemo extends TestCase implements Sie4Interface
             $output[self::REGDATUM],
             $output[self::TRANSDAT],
         );
-        foreach( $inputArray[self::TRANSBELOPP] as $bx => $belopp ) { // json may skip decimals
-            foreach( $belopp as $tx => $transBelopp ) {
-                $inputArray[self::TRANSBELOPP][$bx][$tx] = number_format((float) $transBelopp, 2, '.', '' );
+        foreach( $inputArray[self::TRANSBELOPP] as & $belopp ) { // json may skip decimals
+            foreach( $belopp as & $transBelopp ) {
+                $transBelopp = number_format((float) $transBelopp, 2, '.', '' );
             }
+            unset( $transBelopp );
         }
+        unset( $belopp );
         $this->assertEquals(
             $inputArray,
             $output,

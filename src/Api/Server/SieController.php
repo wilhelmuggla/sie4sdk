@@ -196,7 +196,7 @@ class SieController implements Sie4Interface
 
     /**
      * @param null|StreamInterface $body
-     * @param array $serverParams
+     * @param mixed[] $serverParams
      * @param string|null $msg
      * @return false|string
      */
@@ -213,10 +213,10 @@ class SieController implements Sie4Interface
     }
 
     /**
-     * @param array $serverParams
+     * @param mixed[] $serverParams
      * @param string $input
      * @param string|null $msg
-     * @return false|array
+     * @return false|string[]
      */
     private static function jsonDecode( array $serverParams, string $input, ? string & $msg ) : false|array
     {

@@ -37,12 +37,12 @@ trait FnrIdOrgnrTrait
     /**
      * @var string|null
      */
-    protected ?string $fnrId = null;
+    protected ? string $fnrId = null;
 
     /**
      * @var string|null
      */
-    protected ?string $orgnr = null;
+    protected ? string $orgnr = null;
 
     /**
      * @var int  default 1

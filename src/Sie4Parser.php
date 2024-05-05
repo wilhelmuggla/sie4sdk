@@ -53,6 +53,8 @@ use function is_array;
 use function is_string;
 use function ksort;
 use function sprintf;
+use function str_contains;
+use function str_starts_with;
 use function trim;
 
 /**
@@ -262,11 +264,11 @@ class Sie4Parser implements Sie4Interface
             throw new RuntimeException( sprintf( $FMT1, 1 ), 1411 );
         }
         $this->sie4Dto  = new Sie4Dto( $this->readIdData());
-        $this->input->rewind();
         $currentGroup   = 0;
         $kSummaCounter  = 0;
         $prevLabel      = null;
         $this->postGroupActions = [];
+        $this->input->rewind();
         while( [ $label, $rowData ] = $this->getNextInputRow()) {
             switch( true ) {
                 case (( 0 === $currentGroup ) && ( self::FLAGGA === $label )) :
@@ -1039,7 +1041,7 @@ class Sie4Parser implements Sie4Interface
      */
     private function readVerTransData( string $label, array $rowData ) : void
     {
-        if( in_array( $rowData[0], StringUtil::$CURLYBRACKETS )) {
+        if( ! empty( $rowData[0] ) && str_contains( StringUtil::$CURLYBRACKETS, $rowData[0]  )) {
             return;
         }
         switch( $label ) {
@@ -1216,7 +1218,7 @@ class Sie4Parser implements Sie4Interface
     /**
      * Create DimDto/DimObjektDto for all DIM/OBJECT
      *
-     * @param array $dimValues
+     * @param mixed[] $dimValues
      * @return void
      */
     private function postDimActions( array $dimValues ) : void

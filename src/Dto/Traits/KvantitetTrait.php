@@ -26,12 +26,14 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto\Traits;
 
+use Kigkonsult\Sie4Sdk\Util\Assert;
+
 trait KvantitetTrait
 {
     /**
      * @var float|null
      */
-    protected ?float $kvantitet = null;
+    protected ? float $kvantitet = null;
 
     /**
      * Return kvantitet
@@ -58,9 +60,11 @@ trait KvantitetTrait
      *
      * @param int|float|string $kvantitet
      * @return static
+     * InvalidArgumentException
      */
     public function setKvantitet( int|float|string $kvantitet ) : static
     {
+        Assert::isfloatish( __FUNCTION__, $kvantitet );
         $this->kvantitet = (float) $kvantitet;
         return $this;
     }

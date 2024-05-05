@@ -26,6 +26,11 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
+/**
+ * interface KontoNrInterface
+ *
+ * @usedby AccountDto, BalansDto, BalansObjektDto, PeriodDto, SruDto, TransDto
+ */
 interface KontoNrInterface extends DtoInterface
 {
     /**

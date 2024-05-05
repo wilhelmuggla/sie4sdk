@@ -26,24 +26,25 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
+use Faker\Generator;
 use Kigkonsult\Sie4Sdk\Dto\AccountDto as Dto;
 
 class AccountDto extends LoaderBase
 {
     /**
+     * @param Generator $faker
      * @param string $kontoNr
      * @return Dto
      * @since 1.8.3 2023-09-20
      */
-    public static function load( string $kontoNr ) : Dto
+    public static function load( Generator $faker, string $kontoNr ) : Dto
     {
         static $KTYPES = [ Dto::T, Dto::S, Dto::K, Dto::I ];
         static $UNITS  = [ 'st', 'kg', 'l' ];
-        $faker = self::getFaker();
         $dto   = new Dto();
 
         $dto->setKontoNr( $kontoNr );
-        $dto->setKontoNamn((string) $faker->words( 3, true ));
+        $dto->setKontoNamn( self::getRandomString( $faker, 3 ));
 
         if( 1 !== $faker->numberBetween( 1, 5 )) {
             $dto->setKontoTyp((string)$faker->randomElement($KTYPES));

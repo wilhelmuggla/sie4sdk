@@ -29,9 +29,16 @@ namespace Kigkonsult\Sie4Sdk\Dto;
 use Exception;
 use InvalidArgumentException;
 
-use function count;
+use Kigkonsult\Sie4Sdk\Lists\AccountDtoList;
+use Kigkonsult\Sie4Sdk\Lists\BalansDtoList;
+use Kigkonsult\Sie4Sdk\Lists\BalansObjektDtoList;
+use Kigkonsult\Sie4Sdk\Lists\DimDtoList;
+use Kigkonsult\Sie4Sdk\Lists\DimObjektDtoList;
+use Kigkonsult\Sie4Sdk\Lists\PeriodDtoList;
+use Kigkonsult\Sie4Sdk\Lists\SruDtoList;
+use Kigkonsult\Sie4Sdk\Lists\UnderDimDtoList;
+use Kigkonsult\Sie4Sdk\Lists\VerDtoList;
 use function is_string;
-use function usort;
 
 /**
  * Class Sie5EntryLoader
@@ -63,69 +70,69 @@ class Sie4Dto extends BaseId
     private IdDto $idDto;
 
     /**
-     * @var AccountDto[]  #KONTO/#KTYP/#ENHET
+     * @var AccountDtoList   #KONTO/#KTYP/#ENHET
      */
-    private array $accountDtos = [];
+    private AccountDtoList $accountDtos;
 
     /**
-     * @var SruDto[]   #SRU
+     * @var SruDtoList   #SRU
      */
-    private array $sruDtos = [];
+    private SruDtoList $sruDtos;
 
     /**
-     * @var DimDto[]  #DIM
+     * @var DimDtoList  #DIM
      */
-    private array $dimDtos = [];
+    private DimDtoList $dimDtos;
 
     /**
-     * @var UnderDimDto[]  #UNDERDIM
+     * @var UnderDimDtoList  #UNDERDIM
      */
-    private array $underDimDtos = [];
+    private UnderDimDtoList $underDimDtos;
 
     /**
-     * @var DimObjektDto[]   #OBJECT
+     * @var DimObjektDtoList   #OBJECT
      */
-    private array $dimObjektDtos = [];
+    private DimObjektDtoList $dimObjektDtos;
 
     /**
-     * @var BalansDto[]  Ingående balans  #IB
+     * @var BalansDtoList  Ingående balans  #IB
      */
-    private array $ibDtos = [];
+    private BalansDtoList $ibDtos;
 
     /**
-     * @var BalansDto[]  Utgående balans #UB
+     * @var BalansDtoList  Utgående balans #UB
      */
-    private array $ubDtos = [];
+    private BalansDtoList $ubDtos;
 
     /**
-     * @var BalansObjektDto[]  Ingående balans för objekt  #OIB
+     * @var BalansObjektDtoList  Ingående balans för objekt  #OIB
      */
-    private array $oibDtos = [];
+    private BalansObjektDtoList $oibDtos;
 
     /**
-     * @var BalansObjektDto[]  Utgående balans för objekt   #OUB
+     * @var BalansObjektDtoList  Utgående balans för objekt   #OUB
      */
-    private array $oubDtos = [];
+    private BalansObjektDtoList $oubDtos;
 
     /**
-     * @var BalansDto[]   Saldo för resultatkonto  #RES
+     * @var BalansDtoList   Saldo för resultatkonto  #RES
      */
-    private array $saldoDtos = [];
+    private BalansDtoList $saldoDtos;
 
     /**
-     * @var PeriodDto[]  Periodsaldopost  #PSALDO
+     * @var PeriodDtoList  Periodsaldopost  #PSALDO
      */
-    private array $pSaldoDtos = [];
+    private PeriodDtoList $pSaldoDtos;
 
     /**
-     * @var PeriodDto[]  Periodbudgetpost  #PBUDGET
+     * @var PeriodDtoList  Periodbudgetpost  #PBUDGET
      */
-    private array $pBudgetDtos = [];
+    private PeriodDtoList $pBudgetDtos;
 
     /**
-     * @var VerDto[]   verifikationer med kontringsrader  #VER/#TRANS
+     * @var VerDtoList   verifikationer med kontringsrader  #VER/#TRANS
      */
-    private array $verDtos = [];
+    private VerDtoList $verDtos;
 
     /**
      * Class constructor
@@ -137,11 +144,24 @@ class Sie4Dto extends BaseId
     {
         try {
             parent::__construct();
+            $this->accountDtos  = new AccountDtoList();
+            $this->verDtos      = new VerDtoList();
             $this->setIdDto( $idDto );
         }
         catch( Exception $e ) {
             throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
         }
+        $this->sruDtos       = new SruDtoList();
+        $this->dimDtos       = new DimDtoList();
+        $this->underDimDtos  = new UnderDimDtoList();
+        $this->dimObjektDtos = new DimObjektDtoList();
+        $this->ibDtos        = new BalansDtoList();
+        $this->ubDtos        = new BalansDtoList();
+        $this->oibDtos       = new BalansObjektDtoList();
+        $this->oubDtos       = new BalansObjektDtoList();
+        $this->saldoDtos     = new BalansDtoList();
+        $this->pSaldoDtos    = new PeriodDtoList();
+        $this->pBudgetDtos   = new PeriodDtoList();
     }
 
     /**
@@ -163,6 +183,20 @@ class Sie4Dto extends BaseId
             $idDto = IdDto::factory( $idDto, $fnrId, $orgnr );
         }
         return new self( $idDto );
+    }
+
+    /**
+     * @override
+     * @param string $correlationId
+     * @return $this
+     */
+    public function setCorrelationId( string $correlationId ) : static
+    {
+        parent::setCorrelationId( $correlationId );
+        if( isset( $this->verDtos )) {
+            $this->verDtos->setCorrIdDtoData( $correlationId );
+        }
+        return $this;
     }
 
     /**
@@ -238,34 +272,27 @@ class Sie4Dto extends BaseId
     public function setIdDto( IdDto $idDto ) : self
     {
         $this->idDto = $idDto;
-        if( $idDto->isFnrIdSet()) {
-            $this->setFnrId( $idDto->getFnrId());
-        }
-        if( $idDto->isOrgnrSet()) {
-            $this->setOrgnr( $idDto->getOrgnr());
-            $this->setMultiple( $idDto->getMultiple());
-        }
+        $this->verDtos->setCorrIdDtoData( null, $idDto );
         return $this;
     }
 
     /**
-     * Return int count AccountDtos
+     * Return int count accountDtos
      *
      * @return int
      */
     public function countAccountDtos() : int
     {
-        return count( $this->accountDtos );
+        return $this->accountDtos->count();
     }
 
     /**
-     * Return array AccountDto
+     * Return AccountDtoList
      *
-     * @return AccountDto[]
+     * @return AccountDtoList
      */
-    public function getAccountDtos() : array
+    public function getAccountDtos() : AccountDtoList
     {
-        usort( $this->accountDtos, AccountDto::$SORTER );
         return $this->accountDtos;
     }
 
@@ -304,7 +331,7 @@ class Sie4Dto extends BaseId
      */
     public function addAccountDto( AccountDto $accountData ) : self
     {
-        $this->accountDtos[] = $accountData;
+        $this->accountDtos->append( $accountData, $accountData->getKontoNr());
         return $this;
     }
 
@@ -316,7 +343,7 @@ class Sie4Dto extends BaseId
      */
     public function setAccountDtos( array $accountDtos ) : self
     {
-        $this->accountDtos = [];
+        $this->accountDtos->init();
         foreach( $accountDtos as $accountDto ) {
             $this->addAccountDto( $accountDto );
         }
@@ -330,17 +357,16 @@ class Sie4Dto extends BaseId
      */
     public function countSruDtos() : int
     {
-        return count( $this->sruDtos );
+        return $this->sruDtos->count();
     }
 
     /**
      * Return array SruDto
      *
-     * @return SruDto[]
+     * @return SruDtoList
      */
-    public function getSruDtos() : array
+    public function getSruDtos() : SruDtoList
     {
-        usort( $this->sruDtos, SruDto::$SORTER );
         return $this->sruDtos;
     }
 
@@ -364,7 +390,7 @@ class Sie4Dto extends BaseId
      */
     public function addSruDto( SruDto $sruDto ) : self
     {
-        $this->sruDtos[] = $sruDto;
+        $this->sruDtos->append( $sruDto, $sruDto->getKontoNr());
         return $this;
     }
 
@@ -376,7 +402,7 @@ class Sie4Dto extends BaseId
      */
     public function setSruDtos( array $sruDtos ) : self
     {
-        $this->sruDtos = [];
+        $this->sruDtos->init();
         foreach( $sruDtos as $sruDto ) {
             $this->addSruDto( $sruDto );
         }
@@ -390,17 +416,16 @@ class Sie4Dto extends BaseId
      */
     public function countDimDtos() : int
     {
-        return count( $this->dimDtos );
+        return $this->dimDtos->count();
     }
 
     /**
      * Return array DimDto
      *
-     * @return DimDto[]
+     * @return DimDtoList
      */
-    public function getDimDtos() : array
+    public function getDimDtos() : DimDtoList
     {
-        usort( $this->dimDtos, DimDto::$SORTER );
         return $this->dimDtos;
     }
 
@@ -429,7 +454,7 @@ class Sie4Dto extends BaseId
      */
     public function addDimDto( DimDto $dimDto ) : self
     {
-        $this->dimDtos[] = $dimDto;
+        $this->dimDtos->append( $dimDto, $dimDto->getDimensionNr());
         return $this;
     }
 
@@ -441,7 +466,7 @@ class Sie4Dto extends BaseId
      */
     public function setDimDtos( array $dimDtos ) : self
     {
-        $this->dimDtos = [];
+        $this->dimDtos->init();
         foreach( $dimDtos as $dimDto ) {
             $this->addDimDto( $dimDto );
         }
@@ -455,17 +480,16 @@ class Sie4Dto extends BaseId
      */
     public function countUnderDimDtos() : int
     {
-        return count( $this->underDimDtos );
+        return $this->underDimDtos->count();
     }
 
     /**
-     * Return array UnderDimDto
+     * Return UnderDimDtoList
      *
-     * @return UnderDimDto[]
+     * @return UnderDimDtoList
      */
-    public function getUnderDimDtos() : array
+    public function getUnderDimDtos() : UnderDimDtoList
     {
-        usort( $this->underDimDtos, UnderDimDto::$SORTER );
         return $this->underDimDtos;
     }
 
@@ -477,7 +501,11 @@ class Sie4Dto extends BaseId
      * @param int|string $superDimNr
      * @return self
      */
-    public function addUnderDim( int | string $dimensionsNr, string $dimensionsNamn, int | string $superDimNr ) : self
+    public function addUnderDim(
+        int | string $dimensionsNr,
+        string $dimensionsNamn,
+        int | string $superDimNr
+    ) : self
     {
         return $this->addUnderDimDto(
             UnderDimDto::factoryUnderDim(
@@ -496,7 +524,12 @@ class Sie4Dto extends BaseId
      */
     public function addUnderDimDto( UnderDimDto $underDimDto ) : self
     {
-        $this->underDimDtos[] = $underDimDto;
+        $superDimNr = $underDimDto->getSuperDimNr();
+        $this->underDimDtos->append(
+            $underDimDto,
+            UnderDimDtoList::getPrimaryKey( $underDimDto->getDimensionNr(), $superDimNr ),
+            $superDimNr
+        );
         return $this;
     }
 
@@ -508,9 +541,9 @@ class Sie4Dto extends BaseId
      */
     public function setUnderDimDtos( array $underDimDtos ) : self
     {
-        $this->underDimDtos = [];
-        foreach( $underDimDtos as $underdimDto ) {
-            $this->addUnderDimDto( $underdimDto );
+        $this->underDimDtos->init();
+        foreach( $underDimDtos as $underDimDto ) {
+            $this->addUnderDimDto( $underDimDto );
         }
         return $this;
     }
@@ -522,17 +555,16 @@ class Sie4Dto extends BaseId
      */
     public function countDimObjektDtos() : int
     {
-        return count( $this->dimObjektDtos );
+        return $this->dimObjektDtos->count();
     }
 
     /**
-     * Return array DimObjekttDto
+     * Return DimObjekttDtoList
      *
-     * @return DimObjektDto[]
+     * @return DimObjektDtoList
      */
-    public function getDimObjektDtos() : array
+    public function getDimObjektDtos() : DimObjektDtoList
     {
-        usort( $this->dimObjektDtos, DimObjektDto::$SORTER );
         return $this->dimObjektDtos;
     }
 
@@ -563,7 +595,13 @@ class Sie4Dto extends BaseId
      */
     public function addDimObjektDto( DimObjektDto $dimObjektDto ) : self
     {
-        $this->dimObjektDtos[] = $dimObjektDto;
+        $dimensionNr = $dimObjektDto->getDimensionNr();
+        $objektNr    = $dimObjektDto->getObjektNr();
+        $this->dimObjektDtos->append(
+            $dimObjektDto,               // list element
+            DimObjektDtoList::getPrimaryKey( $dimensionNr, $objektNr ), // primary key
+            [ $dimensionNr, $objektNr ]  // tags
+        );
         return $this;
     }
 
@@ -575,7 +613,7 @@ class Sie4Dto extends BaseId
      */
     public function setDimObjektDtos( array $dimObjektDtos ) : self
     {
-        $this->dimObjektDtos = [];
+        $this->dimObjektDtos->init();
         foreach( $dimObjektDtos as $dimObjektDto ) {
             $this->addDimObjektDto( $dimObjektDto );
         }
@@ -589,11 +627,11 @@ class Sie4Dto extends BaseId
      */
     public function countIbDtos() : int
     {
-        return count( $this->ibDtos );
+        return $this->ibDtos->count();
     }
 
     /**
-     * Return BalansDto for IB with arsnr == 0 and kontonr
+     * Return BalansDto for IB for (arsnr === 0 and) kontonr
      *
      * @param string $kontoNr
      * @return false|BalansDto
@@ -610,30 +648,12 @@ class Sie4Dto extends BaseId
     }
 
     /**
-     * Return bool true if IB with arsnr == 0 and kontonr is found
-     *
-     * @param string $kontoNr
-     * @return bool
-     */
-    public function isIbKontoNrSet( string $kontoNr ) : bool
-    {
-        foreach( $this->ibDtos as $balansDto ) {
-            if(( 0 === $balansDto->getArsnr()) &&
-                ( $kontoNr === $balansDto->getKontoNr())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Return array ibDto
      *
-     * @return BalansDto[]
+     * @return BalansDtoList
      */
-    public function getIbDtos() : array
+    public function getIbDtos() : BalansDtoList
     {
-        usort( $this->ibDtos, BalansDto::$SORTER );
         return $this->ibDtos;
     }
 
@@ -645,7 +665,7 @@ class Sie4Dto extends BaseId
      */
     public function addIbDto( BalansDto $ibDto ) : self
     {
-        $this->ibDtos[] = $ibDto;
+        $this->ibDtos->append( $ibDto, $ibDto->getKontoNr());
         return $this;
     }
 
@@ -657,7 +677,7 @@ class Sie4Dto extends BaseId
      */
     public function setIbDtos( array $ibDtos ) : self
     {
-        $this->ibDtos = [];
+        $this->ibDtos->init();
         foreach( $ibDtos as $ibDto ) {
             $this->addIbDto( $ibDto );
         }
@@ -671,11 +691,11 @@ class Sie4Dto extends BaseId
      */
     public function countUbDtos() : int
     {
-        return count( $this->ubDtos );
+        return $this->ubDtos->count();
     }
 
     /**
-     * Return BalansDto for UB with arsnr == 0 and kontonr
+     * Return BalansDto for UB with (arsnr === 0 and) kontonr
      *
      * @param string $kontoNr
      * @return false|BalansDto
@@ -692,30 +712,12 @@ class Sie4Dto extends BaseId
     }
 
     /**
-     * Return bool true if UB with arsnr == 0 and kontonr is found
-     *
-     * @param string $kontoNr
-     * @return bool
-     */
-    public function isUbKontoNrSet( string $kontoNr ) : bool
-    {
-        foreach( $this->ubDtos as $balansDto ) {
-            if(( 0 === $balansDto->getArsnr()) &&
-                ( $kontoNr === $balansDto->getKontoNr())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Return array ibDto
      *
-     * @return BalansDto[]
+     * @return BalansDtolist
      */
-    public function getUbDtos() : array
+    public function getUbDtos() : BalansDtolist
     {
-        usort( $this->ubDtos, BalansDto::$SORTER );
         return $this->ubDtos;
     }
 
@@ -727,7 +729,7 @@ class Sie4Dto extends BaseId
      */
     public function addUbDto( BalansDto $ubDto ) : self
     {
-        $this->ubDtos[] = $ubDto;
+        $this->ubDtos->append( $ubDto, $ubDto->getKontoNr());
         return $this;
     }
 
@@ -739,7 +741,7 @@ class Sie4Dto extends BaseId
      */
     public function setUbDtos( array $ubDtos ) : self
     {
-        $this->ubDtos = [];
+        $this->ubDtos->init();
         foreach( $ubDtos as $ubDto ) {
             $this->addUbDto( $ubDto );
         }
@@ -753,17 +755,16 @@ class Sie4Dto extends BaseId
      */
     public function countOibDtos() : int
     {
-        return count( $this->oibDtos );
+        return $this->oibDtos->count();
     }
 
     /**
      * Return array oibDto
      *
-     * @return BalansObjektDto[]
+     * @return BalansObjektDtoList
      */
-    public function getOibDtos() : array
+    public function getOibDtos() : BalansObjektDtoList
     {
-        usort( $this->oibDtos, BalansObjektDto::$SORTER );
         return $this->oibDtos;
     }
 
@@ -775,7 +776,15 @@ class Sie4Dto extends BaseId
      */
     public function addOibDto( BalansObjektDto $oibDto ) : self
     {
-        $this->oibDtos[] = $oibDto;
+        $arsNr       = $oibDto->getArsnr();
+        $kontoNr     = $oibDto->getKontoNr();
+        $dimensionNr = $oibDto->getDimensionNr();
+        $objektNr    = $oibDto->getObjektNr();
+        $this->oibDtos->append(
+            $oibDto,
+            BalansObjektDtoList::getPrimaryKey( $arsNr, $kontoNr, $dimensionNr, $objektNr ), // pKey
+            [ $kontoNr, $dimensionNr, $objektNr ] // tags
+        );
         return $this;
     }
 
@@ -787,7 +796,7 @@ class Sie4Dto extends BaseId
      */
     public function setOibDtos( array $oibDtos ) : self
     {
-        $this->oibDtos = [];
+        $this->oibDtos->init();
         foreach( $oibDtos as $oibDto ) {
             $this->addOibDto( $oibDto );
         }
@@ -801,17 +810,16 @@ class Sie4Dto extends BaseId
      */
     public function countOubDtos() : int
     {
-        return count( $this->oubDtos );
+        return $this->oubDtos->count();
     }
 
     /**
      * Return array oibDto
      *
-     * @return BalansObjektDto[]
+     * @return BalansObjektDtoList
      */
-    public function getOubDtos() : array
+    public function getOubDtos() : BalansObjektDtoList
     {
-        usort( $this->oubDtos, BalansObjektDto::$SORTER );
         return $this->oubDtos;
     }
 
@@ -823,7 +831,15 @@ class Sie4Dto extends BaseId
      */
     public function addOubDto( BalansObjektDto $oubDto ) : self
     {
-        $this->oubDtos[] = $oubDto;
+        $arsNr       = $oubDto->getArsnr();
+        $kontoNr     = $oubDto->getKontoNr();
+        $dimensionNr = $oubDto->getDimensionNr();
+        $objektNr    = $oubDto->getObjektNr();
+        $this->oubDtos->append(
+            $oubDto,
+            BalansObjektDtoList::getPrimaryKey( $arsNr, $kontoNr, $dimensionNr, $objektNr ), // pKey
+            [ $kontoNr, $dimensionNr, $objektNr ] // tags
+        );
         return $this;
     }
 
@@ -835,7 +851,7 @@ class Sie4Dto extends BaseId
      */
     public function setOubDtos( array $oubDtos ) : self
     {
-        $this->oubDtos = [];
+        $this->oubDtos->init();
         foreach( $oubDtos as $oubDto ) {
             $this->addOubDto( $oubDto );
         }
@@ -849,17 +865,16 @@ class Sie4Dto extends BaseId
      */
     public function countSaldoDtos() : int
     {
-        return count( $this->saldoDtos );
+        return $this->saldoDtos->count();
     }
 
     /**
      * Return array saldoDto
      *
-     * @return BalansDto[]
+     * @return BalansDtoList
      */
-    public function getSaldoDtos() : array
+    public function getSaldoDtos() : BalansDtoList
     {
-        usort( $this->saldoDtos, BalansDto::$SORTER );
         return $this->saldoDtos;
     }
 
@@ -871,7 +886,7 @@ class Sie4Dto extends BaseId
      */
     public function addSaldoDto( BalansDto $saldoDto ) : self
     {
-        $this->saldoDtos[] = $saldoDto;
+        $this->saldoDtos->append( $saldoDto, $saldoDto->getKontoNr());
         return $this;
     }
 
@@ -883,7 +898,7 @@ class Sie4Dto extends BaseId
      */
     public function setSaldoDtos( array $saldoDtos ) : self
     {
-        $this->saldoDtos = [];
+        $this->saldoDtos->init();
         foreach( $saldoDtos as $saldoDto ) {
             $this->addSaldoDto( $saldoDto );
         }
@@ -897,24 +912,34 @@ class Sie4Dto extends BaseId
      */
     public function countPsaldoDtos() : int
     {
-        return count( $this->pSaldoDtos );
+        return $this->pSaldoDtos->count();
     }
 
     /**
-     * Return PeriodDto for pSaldo with arsnr == 0 and kontonr
+     * Return PeriodDto for pSaldo with (arsnr === 0 and) kontonr
      *
      * @param string $kontoNr
      * @return false|PeriodDto
      */
     public function getPsaldoForKontoNr( string $kontoNr ) : bool | PeriodDto
     {
-        foreach( $this->pSaldoDtos as $periodDto ) {
+        foreach( $this->pSaldoDtos->yield() as $periodDto ) {
             if(( 0 === $periodDto->getArsnr()) &&
                 ( $kontoNr === $periodDto->getKontoNr())) {
                 return $periodDto;
             }
         }
         return false;
+    }
+
+    /**
+     * Return array pSaldoDto
+     *
+     * @return PeriodDtoList
+     */
+    public function getPsaldoDtos() : PeriodDtoList
+    {
+        return $this->pSaldoDtos;
     }
 
     /**
@@ -935,17 +960,6 @@ class Sie4Dto extends BaseId
     }
 
     /**
-     * Return array pSaldoDto
-     *
-     * @return PeriodDto[]
-     */
-    public function getPsaldoDtos() : array
-    {
-        usort( $this->pSaldoDtos, PeriodDto::$SORTER );
-        return $this->pSaldoDtos;
-    }
-
-    /**
      * Add single pSaldoDto
      *
      * @param PeriodDto $pSaldoDto
@@ -953,7 +967,16 @@ class Sie4Dto extends BaseId
      */
     public function addPsaldoDto( PeriodDto $pSaldoDto ) : self
     {
-        $this->pSaldoDtos[] = $pSaldoDto;
+        $this->pSaldoDtos->append(
+            $pSaldoDto,
+            PeriodDtoList::getPrimaryKey(
+                $pSaldoDto->getArsNr(),
+                $pSaldoDto->getKontoNr(),
+                $pSaldoDto->getDimensionNr(),
+                $pSaldoDto->getObjektNr(),
+                $pSaldoDto->getPeriod()
+            )
+        );
         return $this;
     }
 
@@ -965,7 +988,7 @@ class Sie4Dto extends BaseId
      */
     public function setPsaldoDtos( array $pSaldoDtos ) : self
     {
-        $this->pSaldoDtos = [];
+        $this->pSaldoDtos->init();
         foreach( $pSaldoDtos as $pSaldoDto ) {
             $this->addPsaldoDto( $pSaldoDto );
         }
@@ -979,24 +1002,34 @@ class Sie4Dto extends BaseId
      */
     public function countPbudgetDtos() : int
     {
-        return count( $this->pBudgetDtos );
+        return $this->pBudgetDtos->count();
     }
 
     /**
-     * Return PeriodDto for pBudget with arsnr == 0 and kontonr
+     * Return PeriodDto for pBudget for (arsnr === 0 and) kontonr
      *
      * @param string $kontoNr
      * @return false|PeriodDto
      */
     public function getPbudgetForKontoNr( string $kontoNr ) : bool | PeriodDto
     {
-        foreach( $this->pBudgetDtos as $periodDto ) {
+        foreach( $this->pBudgetDtos->yield() as $periodDto ) {
             if(( 0 === $periodDto->getArsnr()) &&
                 ( $kontoNr === $periodDto->getKontoNr())) {
                 return $periodDto;
             }
         }
         return false;
+    }
+
+    /**
+     * Return array pBudgetDto
+     *
+     * @return PeriodDtoList
+     */
+    public function getPbudgetDtos() : PeriodDtoList
+    {
+        return $this->pBudgetDtos;
     }
 
     /**
@@ -1017,17 +1050,6 @@ class Sie4Dto extends BaseId
     }
 
     /**
-     * Return array pBudgetDto
-     *
-     * @return PeriodDto[]
-     */
-    public function getPbudgetDtos() : array
-    {
-        usort( $this->pBudgetDtos, PeriodDto::$SORTER );
-        return $this->pBudgetDtos;
-    }
-
-    /**
      * Add single pBudgetDto
      *
      * @param PeriodDto $pBudgetDto
@@ -1035,7 +1057,16 @@ class Sie4Dto extends BaseId
      */
     public function addPbudgetDto( PeriodDto $pBudgetDto ) : self
     {
-        $this->pBudgetDtos[] = $pBudgetDto;
+        $this->pBudgetDtos->append(
+            $pBudgetDto,
+            PeriodDtoList::getPrimaryKey(
+                $pBudgetDto->getArsNr(),
+                $pBudgetDto->getKontoNr(),
+                $pBudgetDto->getDimensionNr(),
+                $pBudgetDto->getObjektNr(),
+                $pBudgetDto->getPeriod()
+            )
+        );
         return $this;
     }
 
@@ -1047,7 +1078,7 @@ class Sie4Dto extends BaseId
      */
     public function setPbudgetDtos( array $pBudgetDtos ) : self
     {
-        $this->pBudgetDtos = [];
+        $this->pBudgetDtos->init();
         foreach( $pBudgetDtos as $pBudgetDto ) {
             $this->addPbudgetDto( $pBudgetDto );
         }
@@ -1061,7 +1092,7 @@ class Sie4Dto extends BaseId
      */
     public function countVerDtos() : int
     {
-        return count( $this->verDtos );
+        return $this->verDtos->count();
     }
 
     /**
@@ -1081,11 +1112,10 @@ class Sie4Dto extends BaseId
     /**
      * Return sorted array VerDto
      *
-     * @return VerDto[]
+     * @return VerDtoList
      */
-    public function getVerDtos() : array
+    public function getVerDtos() : VerDtoList
     {
-        usort( $this->verDtos, VerDto::$SORTER );
         return $this->verDtos;
     }
 
@@ -1099,27 +1129,20 @@ class Sie4Dto extends BaseId
      */
     public function addVerDto( VerDto $verDto ) : self
     {
-        $verDto->setParentCorrelationId( $this->getCorrelationId());
-        if( $this->idDto->isFnrIdSet()) {
-            $verDto->setFnrId( $this->idDto->getFnrId());
-        }
-        if( $this->idDto->isOrgnrSet()) {
-            $verDto->setOrgnr( $this->idDto->getOrgnr());
-            $verDto->setMultiple( $this->idDto->getMultiple());
-        }
-        $this->verDtos[] = $verDto;
+        $verDto->setCorrIdDtoData( $this->getCorrelationId(), $this->idDto );
+        $this->verDtos->append( $verDto, VerDtoList::getPrimaryKey( $verDto ));
         return $this;
     }
 
     /**
-     * Set array VerDto[]
+     * Set array VerDto[], will (re-)init verDtoList
      *
      * @param VerDto[] $verDtos
      * @return self
      */
     public function setVerDtos( array $verDtos ) : self
     {
-        $this->verDtos = [];
+        $this->verDtos->init();
         foreach( $verDtos as $verDto ) {
             $this->addVerDto( $verDto );
         }
@@ -1135,7 +1158,7 @@ class Sie4Dto extends BaseId
     {
         $this->fnrId = $fnrId;
         $this->idDto->setFnrId( $fnrId );
-        $this->setVerDtosFnrId( $fnrId );
+        $this->verDtos->setCorrIdDtoData( null, $this->idDto );
         return $this;
     }
 
@@ -1149,7 +1172,7 @@ class Sie4Dto extends BaseId
     {
         $this->orgnr = $orgnr;
         $this->idDto->setOrgnr( $orgnr );
-        $this->setVerDtosOrgnr( $orgnr );
+        $this->verDtos->setCorrIdDtoData( null, $this->idDto );
         return $this;
     }
 
@@ -1163,49 +1186,7 @@ class Sie4Dto extends BaseId
     {
         $this->multiple = $multiple;
         $this->idDto->setMultiple( $multiple );
-        $this->setVerDtosMultiple( $multiple );
-        return $this;
-    }
-
-    /**
-     * Update each verDto (incl transDtos) with fnrId
-     *
-     * @param string $fnrId
-     * @return $this
-     */
-    public function setVerDtosFnrId( string $fnrId ) : self
-    {
-        foreach( $this->verDtos as $verDto ) {
-            $verDto->setFnrId( $fnrId );
-        }
-        return $this;
-    }
-
-    /**
-     * Update each verDto (incl transDtos) with orgnr
-     *
-     * @param string $orgnr
-     * @return $this
-     */
-    public function setVerDtosOrgnr( string $orgnr ) : self
-    {
-        foreach( $this->verDtos as $verDto ) {
-            $verDto->setOrgnr( $orgnr );
-        }
-        return $this;
-    }
-
-    /**
-     * Update each verDto (incl transDtos) with orgnr multiple
-     *
-     * @param int $multiple
-     * @return $this
-     */
-    public function setVerDtosMultiple( int $multiple ) : self
-    {
-        foreach( $this->verDtos as $verDto ) {
-            $verDto->setMultiple( $multiple );
-        }
+        $this->verDtos->setCorrIdDtoData( null, $this->idDto );
         return $this;
     }
 }

@@ -34,6 +34,7 @@ use Kigkonsult\Sie4Sdk\Sie4IWriter;
 use Kigkonsult\Sie4Sdk\Sie4Validator;
 use Monolog\Logger;
 
+use function date;
 use function sprintf;
 use function var_export;
 

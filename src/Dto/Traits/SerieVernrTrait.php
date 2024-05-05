@@ -37,12 +37,12 @@ trait SerieVernrTrait
     /**
      * @var string|null
      */
-    protected ?string $serie = null;
+    protected ? string $serie = null;
 
     /**
      * @var int|null
      */
-    protected ?int $vernr = null;
+    protected ? int $vernr = null;
 
     /**
      * Return serie

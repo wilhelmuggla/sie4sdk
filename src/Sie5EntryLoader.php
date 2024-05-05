@@ -159,16 +159,15 @@ class Sie5EntryLoader extends Sie5LoaderBase
      */
     private function processAccountDtos() : void
     {
-        if( empty( $this->sie4IDto->countAccountDtos())) {
+        if( 0 === $this->sie4IDto->getAccountDtos()->count()) {
             return;
         }
-        $accountDtos = $this->sie4IDto->getAccountDtos();
         $accounts    = $this->sieEntry->getAccounts();
         if( $accounts === null ) {
             $accounts = AccountsTypeEntry::factory();
             $this->sieEntry->setAccounts( $accounts );
         }
-        foreach( $accountDtos as $accountDto ) {
+        foreach( $this->sie4IDto->getAccountDtos()->get() as $accountDto ) {
             $kontoNr  = $accountDto->getKontoNr();
             $kontoTyp = $accountDto->isKontotypSet()
                 ? $accountDto->getKontoTyp()
@@ -203,7 +202,7 @@ class Sie5EntryLoader extends Sie5LoaderBase
         foreach( $this->sie4IDto->getDimDtos() as $dimDto ) {
             $dimensionTypeEntry = DimensionTypeEntry::factoryIdName(
                 $dimDto->getDimensionNr(),
-                $dimDto->getDimensionsNamn()
+                $dimDto->getDimensionNamn()
             );
             $dimensions->addDimension( $dimensionTypeEntry );
         } // end foreach
@@ -216,8 +215,7 @@ class Sie5EntryLoader extends Sie5LoaderBase
      */
     private function processDimObjektDtos() : void
     {
-        $dimObjektDtos = $this->sie4IDto->getDimObjektDtos();
-        if( empty( $dimObjektDtos )) {
+        if( 0 === $this->sie4IDto->countDimObjektDtos()) {
             return;
         }
         $dimensions = $this->sieEntry->getDimensions();
@@ -225,7 +223,7 @@ class Sie5EntryLoader extends Sie5LoaderBase
             $dimensions = DimensionsTypeEntry::factory();
             $this->sieEntry->setDimensions( $dimensions );
         }
-        foreach( $dimObjektDtos as $dimObjektDto ) {
+        foreach( $this->sie4IDto->getDimObjektDtos()->yield() as $dimObjektDto ) {
             $dimensionNr = $dimObjektDto->getDimensionNr();
             // find or create DimensionTypeEntry
             $found = false;
@@ -236,19 +234,7 @@ class Sie5EntryLoader extends Sie5LoaderBase
                 }
             } // end foreach
             if( ! $found ) { // create new dimensionTypeEntry
-                $dimensionsNamn = StringUtil::$SP0;
-                if( $dimObjektDto->isDimensionsNamnSet()) {
-                    $dimensionsNamn = $dimObjektDto->getDimensionsNamn();
-                }
-                elseif( ! empty( $this->sie4IDto->countDimDtos())) {
-                    foreach( $this->sie4IDto->getDimDtos() as $dimData ) {
-                        // checked in dimDtos in validator, MUST exist
-                        if( $dimensionNr === $dimData->getDimensionNr()) {
-                            $dimensionsNamn = $dimData->getDimensionsNamn();
-                            break;
-                        }
-                    } // end forech
-                } // end if
+                $dimensionsNamn = self::getDimensionName( $this->sie4IDto, $dimensionNr, $dimObjektDto );
                 $dimensionTypeEntry = DimensionTypeEntry::factoryIdName(
                     $dimensionNr,
                     $dimensionsNamn
@@ -320,11 +306,6 @@ class Sie5EntryLoader extends Sie5LoaderBase
     }
 
     /**
-     * @var string
-     */
-    private static string $YYYYMMDD = 'Ymd';
-
-    /**
      * Process single VerDto
      *
      * If regdatum found, used if regdatum == verDatum
@@ -357,7 +338,7 @@ class Sie5EntryLoader extends Sie5LoaderBase
                 ( $verDto->isRegdatumSet() ? $verDto->getRegdatum() : $verDatum )
             )
         );
-        foreach( $verDto->getTransDtos() as $transDto ) {
+        foreach( $verDto->getTransDtos()->yield() as $transDto ) {
             if( self::TRANS !== $transDto->getTransType()) {
                 // skip RTRANS,BTRANS
                 continue;
@@ -367,7 +348,7 @@ class Sie5EntryLoader extends Sie5LoaderBase
             self::processSingleTransDto(
                 $transDto,
                 $ledgerEntryTypeEntry,
-                $verDatum->format( self::$YYYYMMDD )
+                $verDatum->format( self::SIE4YYYYMMDD )
             );
         } // end foreach
     }
@@ -400,7 +381,7 @@ class Sie5EntryLoader extends Sie5LoaderBase
         if( $transDto->isTransdatSet()) {
             // skipped if equal to verDatum
             $transDat = $transDto->getTransdat();
-            if( $verDatum !== $transDat->format( self::$YYYYMMDD )) {
+            if( $verDatum !== $transDat->format( self::SIE4YYYYMMDD )) {
                 $ledgerEntryTypeEntry->setLedgerDate( $transDto->getTransdat());
             }
         }

@@ -43,7 +43,6 @@ use Kigkonsult\Sie4Sdk\Dto\VerDto;
 use Kigkonsult\Sie4Sdk\Util\ArrayUtil;
 use Kigkonsult\Sie4Sdk\Util\FileUtil;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
-use Kigkonsult\Sie5Sdk\Impl\CommonFactory;
 
 use function crc32;
 use function implode;
@@ -124,13 +123,46 @@ abstract class Sie4WriterBase implements Sie4Interface
     protected ?string $ksummaBase  = null;
 
     /**
+     * Return instance
+     *
+     * @param Sie4Dto|null $sie4Dto
+     * @return static
+     * @throws InvalidArgumentException
+     */
+    public static function factory( ? Sie4Dto $sie4Dto = null ) : static
+    {
+        $class    = static::class;
+        $instance = new $class();
+        if( $sie4Dto !== null ) {
+            $instance->setSie4Dto( $sie4Dto );
+        }
+        return $instance;
+    }
+
+    /**
+     * The write process method
+     *
+     * @param null|Sie4Dto $sie4Dto
+     * @param null|string  $outputfile
+     * @param null|bool    $writeKsumma
+     * @return string
+     */
+    abstract public function process(
+        ? Sie4Dto $sie4Dto = null,
+        ? string  $outputfile = null,
+        ? bool $writeKsumma = null
+    ) : string;
+
+    /**
      * @param mixed ...$args
      * @return void
      */
     protected function appendKsumma( ...$args ) : void
     {
         if( $this->writeKsumma ) {
-            $this->ksummaBase .= implode( $args );
+            foreach( $args as $arg ) {
+                $this->ksummaBase .= (string) $arg;
+            }
         }
     }
 
@@ -143,26 +175,9 @@ abstract class Sie4WriterBase implements Sie4Interface
     }
 
     /**
-     * Return instance
-     *
-     * @param Sie4Dto|null $sie4Dto
-     * @return self
-     * @throws InvalidArgumentException
-     */
-    public static function factory( ? Sie4Dto $sie4Dto = null ) : self
-    {
-        $instance = new static();
-        if( $sie4Dto !== null ) {
-            $instance->setSie4Dto( $sie4Dto );
-        }
-        return $instance;
-    }
-
-    /**
      * Return Sie4E/Sie4I string (without input validation)
      *
      * @param bool $isSie4E
-     * @param Sie4Dto|null $sie4Dto
      * @param string|null $outputfile
      * @param bool|null $writeKsumma
      * @return string
@@ -171,14 +186,10 @@ abstract class Sie4WriterBase implements Sie4Interface
      */
     protected function write(
         bool $isSie4E,
-        ? Sie4Dto $sie4Dto = null,
         ? string  $outputfile = null,
         ? bool $writeKsumma = null
     ) : string
     {
-        if( $sie4Dto !== null ) {
-            $this->setSie4Dto( $sie4Dto );
-        }
         if( ! empty( $outputfile )) {
             FileUtil::assertWriteFile( $outputfile, 5201 );
         }
@@ -204,6 +215,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         }
         $this->writeAdress();
         $this->writeFnamn();
+
         $this->writeRar();
         $this->writeTaxar();
         if( $isSie4E ) {
@@ -211,6 +223,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         }
         $this->writeKptyp();
         $this->writeValuta();
+
         $this->writeKonto();
         $this->writeSRU();
         $this->writeDim(); // also UnderDim/Object
@@ -529,8 +542,8 @@ abstract class Sie4WriterBase implements Sie4Interface
      */
     protected function writeKonto() : void
     {
-        if( 0 < $this->sie4Dto->countAccountDtos()) {
-            foreach( $this->sie4Dto->getAccountDtos() as $accountDto ) {
+        if( 0 < $this->sie4Dto->getAccountDtos()->count()) {
+            foreach( $this->sie4Dto->getAccountDtos()->yield() as $accountDto ) {
                 // empty row before each #KONTO
                 $this->output->append( StringUtil::$SP0 );
                 $this->writeKontoData( $accountDto );
@@ -585,7 +598,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( 0 < $this->sie4Dto->countSruDtos()) {
             // empty row before #SRUs
             $this->output->append( StringUtil::$SP0 );
-            foreach( $this->sie4Dto->getSruDtos() as $sruDto ) {
+            foreach( $this->sie4Dto->getSruDtos()->yield() as $sruDto ) {
                 $this->writeSruData( $sruDto );
             } // end foreach
         }
@@ -614,12 +627,12 @@ abstract class Sie4WriterBase implements Sie4Interface
     protected function writeDim() : void
     {
         if( 0 < $this->sie4Dto->countDimDtos()) {
-            foreach( $this->sie4Dto->getDimDtos() as $dimDto ) {
+            foreach( $this->sie4Dto->getDimDtos()->yield() as $dimDto ) {
                 // empty row before each #DIM
                 $this->output->append( StringUtil::$SP0 );
                 $this->writeDimData( $dimDto );
                 $dimensionNr = $dimDto->getDimensionNr();
-                $dimensions = $this->writeUnderDim( $dimensionNr );
+                $dimensions  = $this->writeUnderDim( $dimensionNr );
                 array_unshift( $dimensions, $dimensionNr );
                 foreach( $dimensions as $dimension ) {
                     $this->writeObjekt( $dimension );
@@ -637,7 +650,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     private function writeDimData( DimDto $dimDto ) : void
     {
         $dimId = $dimDto->getDimensionNr();
-        $namn  = StringUtil::utf8toCP437((string) $dimDto->getDimensionsNamn());
+        $namn  = StringUtil::utf8toCP437((string) $dimDto->getDimensionNamn());
         $this->appendKsumma( self::DIM, $dimId, $namn );
         $this->output->append(
             sprintf( self::$SIEFMT2, self::DIM, $dimId, StringUtil::quoteString( $namn ))
@@ -655,7 +668,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     {
         $dimensions = [];
         if( 0 < $this->sie4Dto->countUnderDimDtos()) {
-            foreach( $this->sie4Dto->getUnderDimDtos() as $underDimDto ) {
+            foreach( $this->sie4Dto->getUnderDimDtos()->yield() as $underDimDto ) {
                 if( $superDim == $underDimDto->getSuperDimNr()) {
                 $this->writeUnderDimData( $underDimDto );
                     $dimensions[] = $underDimDto->getDimensionNr();
@@ -674,7 +687,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     private function writeUnderDimData( UnderDimDto $underDimDto ) : void
     {
         $underDimId = $underDimDto->getDimensionNr();
-        $namn       = StringUtil::utf8toCP437((string) $underDimDto->getDimensionsNamn());
+        $namn       = StringUtil::utf8toCP437((string) $underDimDto->getDimensionNamn());
         $superDimId = $underDimDto->getSuperDimNr();
         $this->appendKsumma( self::UNDERDIM, $underDimId, $namn, $superDimId );
         $this->output->append(
@@ -698,7 +711,7 @@ abstract class Sie4WriterBase implements Sie4Interface
     protected function writeObjekt( int $superDim ) : void
     {
         if( 0 < $this->sie4Dto->countDimObjektDtos()) {
-            foreach( $this->sie4Dto->getDimObjektDtos() as $dimObjektDto ) {
+            foreach( $this->sie4Dto->getDimObjektDtos()->yield() as $dimObjektDto ) {
                 if( $superDim == $dimObjektDto->getDimensionNr()) {
                 $this->writeDimObjektData( $dimObjektDto );
                 }
@@ -739,14 +752,14 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( ! empty( $this->sie4Dto->countIbDtos())) {
             // empty row before #IB
             $this->output->append( StringUtil::$SP0 );
-            foreach( $this->sie4Dto->getIbDtos() as $ibDto ) {
+            foreach( $this->sie4Dto->getIbDtos()->yield() as $ibDto ) {
                 $this->writeBalansDto( $ibDto, self::IB );
             } // end foreach
         }
         if( ! empty( $this->sie4Dto->countUbDtos())) {
             // empty row before #UB
             $this->output->append( StringUtil::$SP0 );
-            foreach( $this->sie4Dto->getUbDtos() as $ubDto ) {
+            foreach( $this->sie4Dto->getUbDtos()->yield() as $ubDto ) {
                 $this->writeBalansDto( $ubDto, self::UB );
             } // end foreach
         }
@@ -766,7 +779,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         $arsnr     = $balansDto->getArsnr();
         $kontoNr   = $balansDto->getKontoNr();
         $saldo     = $balansDto->isSaldoSet()
-            ? CommonFactory::formatAmount( $balansDto->getSaldo())
+            ? StringUtil::formatAmount( $balansDto->getSaldo())
             : self::$ZERO;
         $kvantitet = $balansDto->isKvantitetSet()
             ? $balansDto->getKvantitet()
@@ -796,17 +809,17 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( ! empty( $this->sie4Dto->countOibDtos())) {
             // empty row before #OIB
             $this->output->append( StringUtil::$SP0 );
-            foreach( $this->sie4Dto->getOibDtos() as $oibDto ) {
+            foreach( $this->sie4Dto->getOibDtos()->yield() as $oibDto ) {
                 $this->writeBalansObjektDto( $oibDto, self::OIB );
             } // end foreach
-        }
+        } // end if
         if( ! empty( $this->sie4Dto->countOubDtos())) {
             // empty row before #OUB
             $this->output->append( StringUtil::$SP0 );
-            foreach( $this->sie4Dto->getOubDtos() as $oubDto ) {
+            foreach( $this->sie4Dto->getOubDtos()->yield() as $oubDto ) {
                 $this->writeBalansObjektDto( $oubDto, self::OUB );
             } // end foreach
-        }
+        } // end if
     }
 
     /**
@@ -833,7 +846,7 @@ abstract class Sie4WriterBase implements Sie4Interface
                 : StringUtil::$SP0
         );
         $saldo       = $balansObjektDto-> isSaldoSet()
-            ? CommonFactory::formatAmount( $balansObjektDto->getSaldo())
+            ? StringUtil::formatAmount( $balansObjektDto->getSaldo())
             : self::$ZERO;
         $kvantitet = $balansObjektDto->isKvantitetSet()
             ? $balansObjektDto->getKvantitet()
@@ -882,7 +895,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( 0 < $this->sie4Dto->countSaldoDtos()) {
             // empty row before #RESs
             $this->output->append( StringUtil::$SP0 );
-            foreach( $this->sie4Dto->getSaldoDtos() as $saldoDto ) {
+            foreach( $this->sie4Dto->getSaldoDtos()->yield() as $saldoDto ) {
                 $this->writeBalansDto( $saldoDto, self::RES );
             } // end foreach
         }
@@ -898,17 +911,17 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( 0 < $this->sie4Dto->countPsaldoDtos()) {
             // empty row before #PSALDOs
             $this->output->append( StringUtil::$SP0 );
-            foreach( $this->sie4Dto->getPsaldoDtos() as $pSaldoDto ) {
+            foreach( $this->sie4Dto->getPsaldoDtos()->yield() as $pSaldoDto ) {
                 $this->writePeriodDto( $pSaldoDto, self::PSALDO );
             } // end foreach
-        }
+        } // end if
         if( 0 < $this->sie4Dto->countPbudgetDtos()) {
             // empty row before #PBUDGETs
             $this->output->append( StringUtil::$SP0 );
-            foreach( $this->sie4Dto->getPbudgetDtos() as $pBudgetDto ) {
+            foreach( $this->sie4Dto->getPbudgetDtos()->yield() as $pBudgetDto ) {
                 $this->writePeriodDto( $pBudgetDto, self::PBUDGET );
             } // end foreach
-        }
+        } // end if
     }
 
     /**
@@ -935,7 +948,7 @@ abstract class Sie4WriterBase implements Sie4Interface
                 : StringUtil::$SP0
         );
         $saldo     = $periodDto->isSaldoSet()
-            ? CommonFactory::formatAmount( $periodDto->getSaldo())
+            ? StringUtil::formatAmount( $periodDto->getSaldo())
             : self::$ZERO;
         $kvantitet = $periodDto->isKvantitetSet()
             ? $periodDto->getKvantitet()
@@ -967,7 +980,7 @@ abstract class Sie4WriterBase implements Sie4Interface
         if( empty( $this->sie4Dto->countVerDtos())) {
             return;
         }
-        foreach( $this->sie4Dto->getVerDtos() as $verDto ) {
+        foreach( $this->sie4Dto->getVerDtos()->yield() as $verDto ) {
             // empty row before each #VER
             $this->output->append( StringUtil::$SP0 );
             $this->writeVerDto( $verDto );
@@ -984,21 +997,17 @@ abstract class Sie4WriterBase implements Sie4Interface
      */
     protected function writeVerDto( VerDto $verDto ) : void
     {
+        $serie =  $vernr =  $vertext =  $regdatum = $sign = StringUtil::$DOUBLEQUOTE;
+
         $this->appendKsumma( self::VER );
         if( $verDto->isSerieSet()) {
             $serie = $verDto->getSerie();
             $this->appendKsumma( $serie );
         }
-        else {
-            $serie = StringUtil::$DOUBLEQUOTE;
-        }
 
         if( $verDto->isVernrSet()) {
             $vernr = $verDto->getVernr();
             $this->appendKsumma( $vernr );
-        }
-        else {
-            $vernr = StringUtil::$DOUBLEQUOTE;
         }
 
         $datum     = $verDto->isVerdatumSet()
@@ -1012,14 +1021,8 @@ abstract class Sie4WriterBase implements Sie4Interface
             $this->appendKsumma( $vertext );
             $vertext = StringUtil::quoteString( $vertext );
         }
-        else {
-            $vertext = StringUtil::$DOUBLEQUOTE;
-        }
 
-        if( ! $verDto->isRegdatumSet()) {
-            $regdatum = StringUtil::$DOUBLEQUOTE;
-        }
-        else {
+        if( $verDto->isRegdatumSet()) {
             $regdatum = $verDto->getRegdatum()->format( self::SIE4YYYYMMDD );
             if( $verdatum === $regdatum ) {
                 // skip if equal
@@ -1035,29 +1038,24 @@ abstract class Sie4WriterBase implements Sie4Interface
             $this->appendKsumma( $sign );
             $sign = StringUtil::quoteString( $sign );
         }
-        else {
-            $sign = StringUtil::$SP0;
-        }
 
-        $row = rtrim(
-            sprintf(
-                self::$SIEFMT6,
-                self::VER,
-                $serie,
-                (string) $vernr,
-                $verdatum,
-                $vertext,
-                $regdatum,
-                $sign
-            )
+        $row = sprintf(
+            self::$SIEFMT6,
+            self::VER,
+            $serie,
+            (string) $vernr,
+            $verdatum,
+            $vertext,
+            $regdatum,
+            $sign
         );
         $this->output->append( StringUtil::d2qRtrim( $row ));
 
-        $this->output->append( StringUtil::$CURLYBRACKETS[0] );
-        foreach( $verDto->getTransDtos() as $transDto ) {
+        $this->output->append( StringUtil::$CURLYBRACKETSTART );
+        foreach( $verDto->getTransDtos()->yield() as $transDto ) {
             $this->writeTransDto( $transDto, $verdatum );
         }
-        $this->output->append( StringUtil::$CURLYBRACKETS[1] );
+        $this->output->append( StringUtil::$CURLYBRACKETEND );
     }
 
     /**
@@ -1077,35 +1075,31 @@ abstract class Sie4WriterBase implements Sie4Interface
         $kontonr = StringUtil::utf8toCP437( $transDto->getKontoNr());
         $this->appendKsumma( $label, $kontonr );
 
-        if( 0 < $transDto->countObjektlista()) {
-            [ $objektlista, $ksummaPart ] = self::getTransObjektLista(
+        if( 0 === $transDto->countObjektlista()) {
+            $objektlista = StringUtil::curlyBacketsString( StringUtil::$SP0 );
+        }
+        else {
+            [ $objektlista, $ksummaPart ] = self::extractTransObjektLista(
                 $transDto->getObjektlista()
             );
             if( ! empty( $objektlista )) {
                 $this->appendKsumma( $ksummaPart );
             }
         }
-        else {
-            $objektlista = StringUtil::curlyBacketsString( StringUtil::$SP0 );
-        }
 
         $belopp = $transDto->isBeloppSet()
-            ? CommonFactory::formatAmount( $transDto->getBelopp())
+            ? StringUtil::formatAmount( $transDto->getBelopp())
             : self::$ZERO;
         $this->appendKsumma( $belopp );
 
+        $transdat = $transtext = $kvantitet = $sign = StringUtil::$DOUBLEQUOTE;
+
         if( $transDto->isTransdatSet()) {
-            $transdat = $transDto->getTransdat()->format( self::SIE4YYYYMMDD );
-            if( $transdat === $verdatum ) {
-                // skip if equal
-                $transdat = StringUtil::$DOUBLEQUOTE;
-            }
-            else {
+            $transdat2 = $transDto->getTransdat()->format( self::SIE4YYYYMMDD );
+            if( $transdat2 !== $verdatum ) { // skip if equal
                 $this->appendKsumma( $transdat );
+                $transdat = $transdat2;
             }
-        }
-        else {
-            $transdat = StringUtil::$DOUBLEQUOTE;
         }
 
         if( $transDto->isTranstextSet()) {
@@ -1113,16 +1107,10 @@ abstract class Sie4WriterBase implements Sie4Interface
             $this->appendKsumma( $transtext );
             $transtext = StringUtil::quoteString( $transtext );
         }
-        else {
-            $transtext = StringUtil::$DOUBLEQUOTE;
-        }
 
         if( $transDto->isKvantitetSet()) {
             $kvantitet = $transDto->getKvantitet();
             $this->appendKsumma( $kvantitet );
-        }
-        else {
-            $kvantitet = StringUtil::$DOUBLEQUOTE;
         }
 
         if( $transDto->isSignSet()) {
@@ -1130,33 +1118,28 @@ abstract class Sie4WriterBase implements Sie4Interface
             $this->appendKsumma( $sign );
             $sign = StringUtil::quoteString( $sign );
         }
-        else {
-            $sign = StringUtil::$SP0;
-        }
 
-        $row = rtrim(
-            sprintf(
-                self::$SIEFMT7,
-                $label,
-                $kontonr,
-                $objektlista,
-                $belopp,
-                $transdat,
-                $transtext,
-                $kvantitet,
-                $sign
-            )
+        $row = sprintf(
+            self::$SIEFMT7,
+            $label,
+            $kontonr,
+            $objektlista,
+            $belopp,
+            $transdat,
+            $transtext,
+            $kvantitet,
+            $sign
         );
         $this->output->append( StringUtil::d2qRtrim( $row ));
     }
 
     /**
-     * Return array : string with (quoted) dimId and objectId pairs (if set), ksummapart
+     * Return array : pairs of (quoted) dimId and objectId (if set) + ksummapart
      *
      * @param DimObjektDto[] $dimObjektDtos
      * @return string[]
      */
-    protected static function getTransObjektLista( array $dimObjektDtos ) : array
+    protected static function extractTransObjektLista( array $dimObjektDtos ) : array
     {
         $objektlista = [];
         $ksummaPart  = StringUtil::$SP0;

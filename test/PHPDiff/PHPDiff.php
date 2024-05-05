@@ -57,7 +57,7 @@ function PHPDiff( string $old, string $new ) : string
     static $GTSP1 = '> ';
     # split the source text into arrays of lines
     $t1 = explode( $EOL, $old );
-    $x = array_pop( $t1 );
+    $x  = array_pop( $t1 );
     if( $x > $SP0 ) {
         $t1[] = $x. $ERR . $OLD;
     }
@@ -146,9 +146,9 @@ function PHPDiff( string $old, string $new ) : string
     $actions[] = 8;
     # now, let's follow the path we just took and report the added/deleted
     # elements into $out.
-    $op = 0;
-    $x0 = $x1 = 0;
-    $y0 = $y1 = 0;
+    $op  = 0;
+    $x0  = $x1 = 0;
+    $y0  = $y1 = 0;
     $out = array();
     foreach( $actions as $act ) {
         if( $act === 1 ) {

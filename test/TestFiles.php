@@ -36,7 +36,10 @@ use Kigkonsult\Sie5Sdk\XMLWrite\Sie5Writer;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-include 'PHPDiff/PHPDiff.php';
+$phpDiffFile = __DIR__ . '/PHPDiff/PHPDiff.php';
+if( ! in_array( $phpDiffFile, get_included_files())) {
+    include $phpDiffFile;
+}
 
 /**
  * Class TestFiles
@@ -52,7 +55,7 @@ class TestFiles extends TestCase
      *
      * @return array
      */
-    public function sie4IFileTestProvider() : array
+    public static function sie4IFileTestProvider() : array
     {
 
         $testPath = __DIR__ . '/Sie4I_files';
@@ -117,7 +120,7 @@ class TestFiles extends TestCase
         $this->assertEquals(
             rtrim( $sie4Istring1 ),
             rtrim( $sie4Istring3 ),
-            __FUNCTION__ . ' ' . $case . '-23 ' . $fileName . ' file parse and write results in diff'
+            __FUNCTION__ . ' ' . $case . '-11 ' . $fileName . ' file parse and write results in diff'
         );
     }
 
@@ -208,7 +211,7 @@ class TestFiles extends TestCase
 
         $this->assertTrue(         // ---- validate SieEntry
             $sieEntry3->isValid( $expected ),
-            sprintf( $FMT1, __FUNCTION__, $case . '_3', PHP_EOL, var_export( $expected, true ), PHP_EOL )
+            sprintf( $FMT1, __FUNCTION__, $case . '_4', PHP_EOL, var_export( $expected, true ), PHP_EOL )
         );
         $this->assertSame(
             $isKsummaSet1, $isKsummaSet2, 'KSUMMA diff' .
@@ -219,7 +222,7 @@ class TestFiles extends TestCase
         $this->assertEquals(
             $sieEntry1String,
             $sieEntry3String,
-            'sieEntry1 and sieEntry3 has NOT the same load'
+            $case . '_5 sieEntry1 and sieEntry3 has NOT the same load, file ' . basename( $fileName )
         );
 
         // echo 'passed \'var_export( $sieEntryX, true )\', OK'; // test ###
@@ -227,16 +230,18 @@ class TestFiles extends TestCase
         // convert SieEntry (again) to Sie4 string and file
         $tempFile3 = tempnam( sys_get_temp_dir(), __FUNCTION__ . '_22_');
         $sie4IDto     = Sie4ILoader::factory( $sieEntry3 )->getSie4IDto();
+        /*
         if( $isKsummaSet2 ) {
             $sie4Iwriter = Sie4IWriter::factory( $sie4IDto->setKsumma( 1 ));
             $dummy       = $sie4Iwriter->process();
             $kSummaBase  = $sie4Iwriter->getKsummaBase();
-            echo $case . '_6 : sie4Istring3 (ksumma base in utf8) :' . PHP_EOL .
+            echo $case . '_6 sie4Istring3 (ksumma base in utf8), file ' . basename( $fileName ) . PHP_EOL .
                 StringUtil::cp437toUtf8(
                     chunk_split( $kSummaBase, 76, PHP_EOL )
                 )
                 . PHP_EOL;
         }
+        */
 
         $sie4Istring3 = Sie4IWriter::factory()->process( $sie4IDto );
         Sie4IWriter::factory()->process( $sie4IDto, $tempFile3 );
@@ -244,7 +249,7 @@ class TestFiles extends TestCase
         $this->assertStringEqualsFile(
             $tempFile3,
             $sie4Istring3,
-            'tempFile3 and sie4Istring3 has NOT the same load'
+            $case . '_7 tempFile3 and sie4Istring3 has NOT the same load, file ' . basename( $fileName )
         );
         unlink( $tempFile3 );
 
@@ -264,10 +269,11 @@ class TestFiles extends TestCase
         error_log( 'sie4Istring3Utf8 ' . PHP_EOL . var_export( $sie4Istring3Utf8, true ));
         */
         // file strings diff but in PHP from http://www.holomind.de/phpnet/diff.php
+        $sie4Istring3Utf8 = rtrim( $sie4Istring3Utf8 ) . PHP_EOL;
         $diff = PHPDiff( $sie4Istring1Utf8, $sie4Istring3Utf8 );
         $this->assertEmpty(
             $diff,
-            $case . 'diff 1/3 (i utf8) : ' . PHP_EOL . $diff
+            $case . '_8 diff 1/3 (i utf8), file ' . basename( $fileName ) . PHP_EOL . $diff
         );
     }
 
@@ -279,7 +285,7 @@ class TestFiles extends TestCase
      *
      * @return array
      */
-    public function sie4EFileTestProvider() : array
+    public static function sie4EFileTestProvider() : array
     {
 
         $testPath = __DIR__ . '/Sie4E_files';
@@ -336,13 +342,20 @@ class TestFiles extends TestCase
 
         $sie4Estring3 = (new Sie4EWriter())->process( $sie4EDto, null, false );
 
-        $sie4Estring1 = rtrim( StringUtil::convEolChar( $sie4Estring1 ));
-        $sie4Estring3 = rtrim( StringUtil::convEolChar( $sie4Estring3 ));
-        // may result in diff due to string quotes and row ordering etc
+        $sie4Estring1 = StringUtil::convEolChar( $sie4Estring1 );
+        $sie4Estring3 = StringUtil::convEolChar( $sie4Estring3 );
+
+        $sie4Estring1Utf8 = rtrim( StringUtil::cp437toUtf8( $sie4Estring1 )) . PHP_EOL;
+        $sie4Estring3Utf8 = rtrim( StringUtil::cp437toUtf8( $sie4Estring3 )) . PHP_EOL;
+
+        // may result in diff due to string quotes and row ordering, KSUMMA diff etc
+        $diff = PHPDiff( $sie4Estring1Utf8, $sie4Estring3Utf8 );
         $this->assertEquals(
-            $sie4Estring1,
-            $sie4Estring3,
-            __FUNCTION__ . ' ' . $case . '-23 ' . basename( $fileName ) . ' file parse and write results in diff'
+            $sie4Estring1Utf8,
+            $sie4Estring3Utf8,
+            __FUNCTION__ . ' ' . $case . '-23 ' . basename( $fileName )
+            . ' file parse and write results in diff'
+            . ', ' . PHP_EOL . $diff
         );
     }
 
@@ -354,6 +367,7 @@ class TestFiles extends TestCase
      *
      * @test
      * @dataProvider sie4EFileTestProvider
+     *
      * @param string $case
      * @param string $fileName
      * @return void
@@ -467,7 +481,7 @@ class TestFiles extends TestCase
         $this->assertEquals(
             $sie1String,
             $sie3String,
-            $case . ' : sieEntry1 and sieEntry3 has NOT the same load'
+            $case . ' : sieEntry1 and sieEntry3 has NOT the same load, file ' . basename( $fileName )
         );
 
         // echo 'passed \'var_export( $sieEntryX, true )\', OK'; // test ###
@@ -475,6 +489,7 @@ class TestFiles extends TestCase
         // convert Sie (again) to Sie4 string and file
         $tempFile3       = tempnam( sys_get_temp_dir(), __FUNCTION__ . '_2_');
         $sie4EDto        = Sie4ELoader::factory( $sie3 )->getSie4EDto();
+        /*
         if( $isKsummaSet2 ) {
             $sie4Iwriter = Sie4IWriter::factory( $sie4EDto->setKsumma( 1 ));
             $dummy       = $sie4Iwriter->process();
@@ -485,6 +500,7 @@ class TestFiles extends TestCase
                 )
                 . PHP_EOL;
         }
+        */
 
         // $sie4Estring3 = Sie4::sie4EDto2String( $sie4EDto ); no validation as above
         $sie4Estring3 = Sie4EWriter::factory()->process( $sie4EDto );
@@ -511,10 +527,11 @@ class TestFiles extends TestCase
         // echo PHP_EOL . 'sie4Istring3 (i utf8) :' . PHP_EOL . $sie4Istring3Utf8 . PHP_EOL;
 
         // file strings diff but in PHP from http://www.holomind.de/phpnet/diff.php
+        $sie4Estring3Utf8 = rtrim( $sie4Estring3Utf8 ) . PHP_EOL;
         $diff = PHPDiff( $sie4Estring1Utf8, $sie4Estring3Utf8 );
         $this->assertEmpty(
             $diff,
-            $case . ' : diff 1/3 (i utf8) : ' . PHP_EOL . $diff
+            $case . ' : diff 1/3 (i utf8), file ' . basename( $fileName ) . PHP_EOL . $diff
         );
     }
 
@@ -522,7 +539,7 @@ class TestFiles extends TestCase
      * testSie5IFile dataProvider
      * @return array
      */
-    public function sie5FileTestProvider() : array
+    public static function sie5FileTestProvider() : array
     {
 
         $testPath = __DIR__ . '/Sie5_files';
@@ -551,6 +568,7 @@ class TestFiles extends TestCase
      *
      * @test
      * @dataProvider sie5FileTestProvider
+     *
      * @param string $case
      * @param string $fileName
      * @return void
@@ -560,13 +578,15 @@ class TestFiles extends TestCase
      */
     public function sie5FileTest( string $case, string $fileName ) : void
     {
-        echo sprintf( self::$FMT0, PHP_EOL, __FUNCTION__, $case, basename( $fileName ), PHP_EOL );
+//      echo sprintf( self::$FMT0, PHP_EOL, __FUNCTION__, $case, basename( $fileName ), PHP_EOL );
 
+        $sie5XMLstring1 = implode( PHP_EOL, file( $fileName, FILE_IGNORE_NEW_LINES )) . PHP_EOL;
         // convert Sie5 (SieEntry) XML file to Sie4 string
         $sie4IString1 = Sie4IWriter::factory()->process(
             Sie4ILoader::factory(
                 Sie5Parser::factory()->parseXmlFromFile( $fileName )
-            )->getSie4IDto()
+            )
+                ->getSie4IDto()
         );
         $sie4IString2 = Sie4IWriter::factory()->process(
             Sie4ILoader::factory(
@@ -577,7 +597,7 @@ class TestFiles extends TestCase
         $this->assertEquals(
             $sie4IString1,
             $sie4IString2,
-            'Error comparing Sie4Is'
+            $case . ' : 1 Error comparing Sie4Is, file ' . basename( $fileName )
         );
 
         // echo $case . ' sie4Istring1 ' . PHP_EOL . StringUtil::cp437toUtf8( $sie4IString1 ) . PHP_EOL;
@@ -590,11 +610,17 @@ class TestFiles extends TestCase
             )->getSieEntry()
         );
 
+        $this->assertXmlStringEqualsXmlString(
+            $sie5XMLstring1,
+            $sie5XMLstring2,
+            $case . ' : 2 Error comparing XMLs, file ' . basename( $fileName )
+        );
+        // we will NOT continue here due to errors above
         // compare SieEntry xml's, will turn up in some inconsistency
         $this->assertXmlStringEqualsXmlFile(
             $fileName,
             $sie5XMLstring2,
-            $case . ' : Error comparing XMLs'
+            $case . ' : 3 Error comparing XMLs, file ' . basename( $fileName )
         );
     }
 }

@@ -35,8 +35,10 @@ class AccountList extends AsittagList
 {
     /**
      * @override
+     * @param mixed|null  $collection
+     * @param string|null $valueType
      */
-    public function __construct()
+    public function __construct( mixed $collection = null, ? string $valueType = null )
     {
         parent::__construct( null, AccountDto::class );
     }

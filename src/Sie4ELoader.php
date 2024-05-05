@@ -249,18 +249,24 @@ class Sie4ELoader extends Sie4LoaderBase
     }
 
     /**
-     * @param LedgerEntryType $LedgerEntryType
-     * @param string          $verDatumYmd
+     * Creates a TrabsDto from a LedgerEntry
+     *
+     * @param object  $ledgerEntryType     LedgerEntryType
+     * @param string  $verDatumYmd
      * @return TransDto
+     * @throws RuntimeException
      */
     protected static function getTransDto(
-        LedgerEntryType $LedgerEntryType,
+        object $ledgerEntryType,
         string $verDatumYmd
     ) : TransDto
     {
+        if( ! $ledgerEntryType instanceof LedgerEntryType ) {
+            throw new RuntimeException( 'Error, Invalid i9nput type ' . get_class( $ledgerEntryType));
+        }
         $transDto      = new TransDto();
-        $transDto->setKontoNr( $LedgerEntryType->getAccountId());
-        $dimObjektData = $LedgerEntryType->getLedgerEntryTypes();
+        $transDto->setKontoNr( $ledgerEntryType->getAccountId());
+        $dimObjektData = $ledgerEntryType->getLedgerEntryTypes();
         if( ! empty( $dimObjektData )) {
             foreach( $dimObjektData as $elementSets ) {
                 foreach( $elementSets as $elementSet ) {
@@ -275,17 +281,17 @@ class Sie4ELoader extends Sie4LoaderBase
                 } // end foreach
             } // end foreach
         } // end if
-        $transDto->setBelopp( $LedgerEntryType->getAmount() ?? 0.0 );
-        $transDate = $LedgerEntryType->getLedgerDate();
+        $transDto->setBelopp( $ledgerEntryType->getAmount() ?? 0.0 );
+        $transDate = $ledgerEntryType->getLedgerDate();
         if( $transDate !== null &&
             ( $verDatumYmd !== $transDate->format( self::SIE4YYYYMMDD ))) {
             $transDto->setTransdat( $transDate );
         }
-        $transtext = $LedgerEntryType->getText();
+        $transtext = $ledgerEntryType->getText();
         if( ! empty( $transtext )) {
             $transDto->setTranstext( $transtext );
         }
-        $kvantitet = $LedgerEntryType->getQuantity();
+        $kvantitet = $ledgerEntryType->getQuantity();
         if( null !== $kvantitet ) {
             $transDto->setKvantitet( $kvantitet );
         }

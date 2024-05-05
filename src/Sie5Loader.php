@@ -172,16 +172,15 @@ class Sie5Loader extends Sie5LoaderBase
      */
     private function processAccountDtos() : void
     {
-        if( empty( $this->sie4EDto->countAccountDtos())) {
+        if( 0 === $this->sie4EDto->getAccountDtos()->count()) {
             return;
         }
-        $accountDtos = $this->sie4EDto->getAccountDtos();
         $accounts    = $this->sie->getAccounts();
         if( $accounts === null ) {
             $accounts = AccountsType::factory();
             $this->sie->setAccounts( $accounts );
         }
-        foreach( $accountDtos as $accountDto ) {
+        foreach( $this->sie4EDto->getAccountDtos()->get() as $accountDto ) {
             $kontoNr  = $accountDto->getKontoNr();
             $kontoTyp = $accountDto->isKontotypSet()
                 ? $accountDto->getKontoTyp()
@@ -196,20 +195,20 @@ class Sie5Loader extends Sie5LoaderBase
             }
             // Check pPsaldoDtos (arsnr=0) for BaseBalanceType
             // (all but below skipped due to month/period not exists)
-            if( $this->sie4EDto->isPsaldoKontoNrSet( $kontoNr )) {
+            if( $this->sie4EDto->getPsaldoDtos()->isKontoNrSet( $kontoNr )) {
                 $accountType->addAccountType(
                     Sie::CLOSINGBALANCE,
                     self::getBaseBalanceType(
-                        $this->sie4EDto->getPbudgetForKontoNr( $kontoNr )
+                        $this->sie4EDto->getPsaldoDtos()->getPeriodDto( $kontoNr )
                     )
                 );
             }
             // Check pBudgetDtos (arsnr=0) for BUDGET
-            if( $this->sie4EDto->isPbudgetKontoNrSet( $kontoNr )) {
+            if( $this->sie4EDto->getPbudgetDtos()->isKontoNrSet( $kontoNr )) {
                 $accountType->addAccountType(
                     Sie::BUDGET,
                     self::getBudgetType(
-                        $this->sie4EDto->getPbudgetForKontoNr( $kontoNr )
+                        $this->sie4EDto->getPsaldoDtos()->getPeriodDto( $kontoNr )
                     )
                 );
             }
@@ -286,11 +285,11 @@ class Sie5Loader extends Sie5LoaderBase
             $this->sie->setDimensions( $dimensions );
         }
         foreach( $this->sie4EDto->getDimDtos() as $dimDto ) {
-            $DimensionType = DimensionType::factoryIdName(
+            $dimensionType = DimensionType::factoryIdName(
                 $dimDto->getDimensionNr(),
-                $dimDto->getDimensionsNamn()
+                $dimDto->getDimensionNamn()
             );
-            $dimensions->addDimension( $DimensionType );
+            $dimensions->addDimension( $dimensionType );
         } // end foreach
     }
 
@@ -301,8 +300,7 @@ class Sie5Loader extends Sie5LoaderBase
      */
     private function processDimObjektDtos() : void
     {
-        $dimObjektDtos = $this->sie4EDto->getDimObjektDtos();
-        if( empty( $dimObjektDtos )) {
+        if( 0 === $this->sie4EDto->countDimObjektDtos()) {
             return;
         }
         $dimensions = $this->sie->getDimensions();
@@ -310,37 +308,25 @@ class Sie5Loader extends Sie5LoaderBase
             $dimensions = DimensionsType::factory();
             $this->sie->setDimensions( $dimensions );
         }
-        foreach( $dimObjektDtos as $dimObjektDto ) {
+        foreach( $this->sie4EDto->getDimObjektDtos()->yield() as $dimObjektDto ) {
             $dimensionNr = $dimObjektDto->getDimensionNr();
             // find or create DimensionType
             $found = false;
-            foreach( $dimensions->getDimension() as $DimensionType ) {
-                if( $dimensionNr === $DimensionType->getId()) {
+            foreach( $dimensions->getDimension() as $dimensionType ) {
+                if( $dimensionNr === $dimensionType->getId()) {
                     $found = true;
                     break;
                 }
             } // end foreach
             if( ! $found ) { // create new DimensionType
-                $dimensionsNamn = StringUtil::$SP0;
-                if( $dimObjektDto->isDimensionsNamnSet()) {
-                    $dimensionsNamn = $dimObjektDto->getDimensionsNamn();
-                }
-                elseif( ! empty( $this->sie4EDto->countDimDtos())) {
-                    foreach( $this->sie4EDto->getDimDtos() as $dimData ) {
-                        // checked in dimDtos in validator, MUST exist
-                        if( $dimensionNr === $dimData->getDimensionNr()) {
-                            $dimensionsNamn = $dimData->getDimensionsNamn();
-                            break;
-                        }
-                    } // end forech
-                } // end if
-                $DimensionType = DimensionType::factoryIdName(
+                $dimensionsNamn = self::getDimensionName( $this->sie4EDto, $dimensionNr, $dimObjektDto );
+                $dimensionType = DimensionType::factoryIdName(
                     $dimensionNr,
                     $dimensionsNamn
                 );
-                $dimensions->addDimension( $DimensionType );
+                $dimensions->addDimension( $dimensionType );
             } // end if ! found
-            $DimensionType->addObject(
+            $dimensionType->addObject(
                 ObjectType::factoryIdName(
                     $dimObjektDto->getObjektNr(),
                     $dimObjektDto->getObjektNamn()
@@ -445,8 +431,7 @@ class Sie5Loader extends Sie5LoaderBase
             )
         );
         foreach( $verDto->getTransDtos() as $transDto ) {
-            if( self::TRANS !== $transDto->getTransType()) {
-                // skip RTRANS,BTRANS
+            if( self::TRANS !== $transDto->getTransType()) { // skip RTRANS,BTRANS
                 continue;
             }
             $LedgerEntryType = LedgerEntryType::factory();

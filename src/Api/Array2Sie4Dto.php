@@ -44,11 +44,13 @@ use Kigkonsult\Sie4Sdk\Dto\UnderDimDto;
 use Kigkonsult\Sie4Sdk\Dto\VerDto;
 use Kigkonsult\Sie4Sdk\Util\DateTimeUtil;
 
+use function array_change_key_case;
 use function array_keys;
 use function array_merge;
 use function array_unique;
 use function is_array;
 use function ksort;
+use function sprintf;
 
 /**
  * Class Array2Sie4Dto
@@ -218,7 +220,7 @@ class Array2Sie4Dto extends ArrayBase
     private static string $ERR10part = '%s[%s][%s] must be an array';
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private array $input = [];
 
@@ -240,7 +242,7 @@ class Array2Sie4Dto extends ArrayBase
     /**
      * Transform Sie4 array to SieDto, factory method
      *
-     * @param array $input
+     * @param mixed[] $input
      * @return Sie4Dto
      * @throws InvalidArgumentException
      */
@@ -543,9 +545,9 @@ class Array2Sie4Dto extends ArrayBase
             $rarDto->setArsnr( $this->input[self::RARARSNR][$x] );
             if( isset( $this->input[self::RARSTART][$x] )) {
                 try {
-                $rarDto->setStart(
-                    DateTimeUtil::getDateTime( $this->input[self::RARSTART][$x], self::RAR, 6788 )
-                );
+                    $rarDto->setStart(
+                        DateTimeUtil::getDateTime( $this->input[self::RARSTART][$x], self::RAR, 6788 )
+                    );
                 }
                 catch( Exception $e ) {
                     throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
@@ -553,9 +555,9 @@ class Array2Sie4Dto extends ArrayBase
             } // end if
             if( isset( $this->input[self::RARSLUT][$x] )) {
                 try {
-                $rarDto->setSlut(
-                   DateTimeUtil::getDateTime( $this->input[self::RARSLUT][$x], self::RAR, 6789 )
-                );
+                    $rarDto->setSlut(
+                        DateTimeUtil::getDateTime( $this->input[self::RARSLUT][$x], self::RAR, 6789 )
+                    );
                 }
                 catch( Exception $e ) {
                     throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
@@ -625,7 +627,7 @@ class Array2Sie4Dto extends ArrayBase
             $sruDto = new SruDto();
             $sruDto->setKontoNr( $this->input[self::SRUKONTO][$x] );
             if( isset( $this->input[self::SRUKOD][$x] )) {
-                $sruDto->setSruKod( $this->input[self::SRUKOD][$x] );
+                $sruDto->setSruKod( $this->input[ self::SRUKOD ][ $x ] );
             }
             $this->sie4Dto->addSruDto( $sruDto );
         } // end foreach
@@ -654,7 +656,7 @@ class Array2Sie4Dto extends ArrayBase
             $dimDto = new DimDto();
             $dimDto->setDimensionNr( $this->input[self::DIMENSIONNR][$x] );
             if( isset( $this->input[self::DIMENSIONNAMN][$x] )) {
-                $dimDto->setDimensionsNamn( $this->input[self::DIMENSIONNAMN][$x] );
+                $dimDto->setDimensionNamn( $this->input[ self::DIMENSIONNAMN ][ $x ] );
             }
             $this->sie4Dto->addDimDto( $dimDto );
         } // end foreach
@@ -684,10 +686,10 @@ class Array2Sie4Dto extends ArrayBase
             $underDimDto = new UnderDimDto();
             $underDimDto->setDimensionNr( $this->input[self::UNDERDIMNR][$x] );
             if( isset( $this->input[self::UNDERDIMNAMN][$x] )) {
-                $underDimDto->setDimensionsNamn( $this->input[self::UNDERDIMNAMN][$x] );
+                $underDimDto->setDimensionNamn( $this->input[self::UNDERDIMNAMN][$x] );
             }
             if( isset( $this->input[self::UNDERDIMSUPER][$x] )) {
-                $underDimDto->setSuperDimNr((int) $this->input[self::UNDERDIMSUPER][$x] );
+                $underDimDto->setSuperDimNr( $this->input[self::UNDERDIMSUPER][$x] );
             }
             $this->sie4Dto->addUnderDimDto( $underDimDto );
         } // end foreach
@@ -786,18 +788,18 @@ class Array2Sie4Dto extends ArrayBase
      */
     private function loadBalansDto( array $keys, int|string $x ) : BalansDto
     {
-        $dto = new BalansDto();
-        $dto->setArsnr( $this->input[$keys[0]][$x] );
+        $balansDto = new BalansDto();
+        $balansDto->setArsnr( $this->input[$keys[0]][$x] );
         if( isset( $this->input[$keys[1]][$x] )) {
-            $dto->setKontoNr( $this->input[$keys[1]][$x] );
+            $balansDto->setKontoNr( $this->input[$keys[1]][$x] );
         }
         if( isset( $this->input[$keys[2]][$x] )) {
-            $dto->setSaldo( $this->input[$keys[2]][$x] );
+            $balansDto->setSaldo( $this->input[$keys[2]][$x] );
         }
         if( isset( $this->input[$keys[3]][$x] )) {
-            $dto->setKvantitet( $this->input[$keys[3]][$x] );
+            $balansDto->setKvantitet( $this->input[$keys[3]][$x] );
         }
-        return $dto;
+        return $balansDto;
     }
 
 
@@ -1051,7 +1053,7 @@ class Array2Sie4Dto extends ArrayBase
         }
         if( ! is_array( $this->input[$key] )) {
             throw new InvalidArgumentException( $key . self::$ERR10, 3710 );
-            }
+        }
         foreach( array_keys( $this->input[$key] ) as $verX ) {
             $this->currentVerDto = new VerDto();
             $key    = self::VERTIMESTAMP;
@@ -1091,12 +1093,12 @@ class Array2Sie4Dto extends ArrayBase
                 try {
                     $this->currentVerDto->setRegdatum(
                         DateTimeUtil::getDateTime( $this->input[$key][$verX], self::VER, 3712 )
-                );
-            }
+                    );
+                }
                 catch( Exception $e ) {
                     throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
                 }
-            }
+            } // end if
             else {
                 $this->currentVerDto->setRegdatum( $this->currentVerDto->getVerdatum());
             }
@@ -1161,7 +1163,7 @@ class Array2Sie4Dto extends ArrayBase
                 }
                 $this->currentTransDto = TransDto::factory(
                     $this->input[$keyKontoNr][$verX][$transX],
-                    (float) $this->input[$keybelopp][$verX][$transX],
+                    $this->input[$keybelopp][$verX][$transX],
                     $label
                 );
                 $this->processTransData( $keyArr, $verX, (int) $transX, $label );
@@ -1253,11 +1255,11 @@ class Array2Sie4Dto extends ArrayBase
     ) : void
     {
         $key = $keyArr[self::TRANSTIMESTAMP];
-        if( $this->transKeyExists( $key, $verX, $transX )) { // accepts empty
+        if( isset( $this->input[$key][$verX][$transX] )) { // accepts empty
             $this->currentTransDto->setTimestamp((float) $this->input[$key][$verX][$transX] );
         }
         $key = $keyArr[self::TRANSGUID];
-        if( $this->transKeyExists( $key, $verX, $transX ) &&
+        if( isset( $this->input[$key][$verX][$transX] ) &&
             ! empty( $this->input[$key][$verX][$transX] )) {
             $this->currentTransDto->setCorrelationId( $this->input[$key][$verX][$transX] );
         }
@@ -1268,49 +1270,32 @@ class Array2Sie4Dto extends ArrayBase
             $this->loadObjektlista( $keyDimNr, $keyObjektNr, $verX, $transX );
         }
         $key = $keyArr[self::TRANSDAT];
-        if( $this->transKeyExists( $key, $verX, $transX ) &&
+        if( isset( $this->input[$key][$verX][$transX] ) &&
             ! empty( $this->input[$key][$verX][$transX] )) {
             try {
                 $this->currentTransDto->setTransdat(
                     DateTimeUtil::getDateTime( $this->input[$key][$verX][$transX], $label, 4301 )
-            );
-        }
+                );
+            }
             catch( Exception $e ) {
                 throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
             }
-        }
+        } // end if
 
         $key = $keyArr[self::TRANSTEXT];
-        if( $this->transKeyExists( $key, $verX, $transX ) &&
+        if( isset( $this->input[$key][$verX][$transX] ) &&
             ! empty( $this->input[$key][$verX][$transX] )) {
             $this->currentTransDto->setTranstext( $this->input[$key][$verX][$transX] );
         }
         $key = $keyArr[self::TRANSKVANTITET];
-        if( $this->transKeyExists( $key, $verX, $transX )) { // accepts empty
+        if( isset( $this->input[$key][$verX][$transX] )) { // accepts empty
             $this->currentTransDto->setKvantitet( $this->input[$key][$verX][$transX] );
         }
         $key = $keyArr[self::TRANSSIGN];
-        if( $this->transKeyExists( $key, $verX, $transX ) &&
+        if( isset( $this->input[$key][$verX][$transX] ) &&
             ! empty( $this->input[$key][$verX][$transX] )) {
             $this->currentTransDto->setSign( $this->input[$key][$verX][$transX] );
         }
-    }
-
-    /**
-     * Return bol true if $this->input[<transKey>][verX] exists and is array and element transX exists
-     *
-     * @param string $key
-     * @param int $verX
-     * @param int $transX
-     * @return bool
-     */
-    private function transKeyExists( string $key, int $verX, int $transX ) : bool
-    {
-        return ( isset( $this->input[$key] ) &&
-            is_array( $this->input[$key] ) &&
-            isset( $this->input[$key][$verX] ) &&
-            is_array( $this->input[$key][$verX] ) &&
-            isset( $this->input[$key][$verX][$transX] ));
     }
 
     /**

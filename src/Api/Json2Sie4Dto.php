@@ -30,8 +30,9 @@ use Exception;
 use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 
+use function is_array;
 use function json_decode;
-
+use function json_last_error_msg;
 /**
  * Class Json2Sie4Dto
  *

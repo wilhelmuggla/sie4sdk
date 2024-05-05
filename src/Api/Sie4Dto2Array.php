@@ -206,7 +206,7 @@ class Sie4Dto2Array extends ArrayBase
     private Sie4Dto $sie4Dto;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private array $output = [];
 
@@ -214,7 +214,7 @@ class Sie4Dto2Array extends ArrayBase
      * Transform Sie4Dto to array, factory method
      *
      * @param Sie4Dto $sie4Dto
-     * @return array
+     * @return mixed[]
      */
     public static function process( Sie4Dto $sie4Dto ) : array
     {
@@ -325,11 +325,12 @@ class Sie4Dto2Array extends ArrayBase
             self::KONTOTYP,
             self::KONTOENHET
         ];
-        if( empty( $this->sie4Dto->countAccountDtos())) {
+        if( 0 === $this->sie4Dto->getAccountDtos()->count()) {
             return;
         }
         ArrayUtil::assureIsArray( $this->output, $KEYS );
-        foreach( $this->sie4Dto->getAccountDtos() as $x => $accountDto ) {
+        $x = 0;
+        foreach( $this->sie4Dto->getAccountDtos()->get() as $accountDto ) {
             if( $accountDto->isKontoNrSet()) {
                 $this->output[self::KONTONR][$x]    = $accountDto->getKontoNr();
             }
@@ -342,6 +343,7 @@ class Sie4Dto2Array extends ArrayBase
             if( $accountDto->isEnhetSet()) {
                 $this->output[self::KONTOENHET][$x] = $accountDto->getEnhet();
             }
+            $x++;
         } // end foreach
     }
 
@@ -393,7 +395,7 @@ class Sie4Dto2Array extends ArrayBase
                 $this->output[self::DIMENSIONNR][$x]   = $dimDto->getDimensionNr();
             }
             if( $dimDto->isDimensionsNamnSet()) {
-                $this->output[self::DIMENSIONNAMN][$x] = $dimDto->getDimensionsNamn();
+                $this->output[self::DIMENSIONNAMN][$x] = $dimDto->getDimensionNamn();
             }
         } // end foreach
     }
@@ -419,7 +421,7 @@ class Sie4Dto2Array extends ArrayBase
                 $this->output[self::UNDERDIMNR][$x]   = $underDimDto->getDimensionNr();
             }
             if( $underDimDto->isDimensionsNamnSet()) {
-                $this->output[self::UNDERDIMNAMN][$x] = $underDimDto->getDimensionsNamn();
+                $this->output[self::UNDERDIMNAMN][$x] = $underDimDto->getDimensionNamn();
             }
             if( $underDimDto->isSuperDimNrSet()) {
                 $this->output[self::UNDERDIMSUPER][$x] = $underDimDto->getSuperDimNr();
@@ -439,8 +441,7 @@ class Sie4Dto2Array extends ArrayBase
             self::OBJEKTNR,
             self::OBJEKTNAMN
         ];
-        $dimObjektDtos = $this->sie4Dto->getDimObjektDtos();
-        if( empty( $dimObjektDtos )) {
+        if( 0 === $this->sie4Dto->countDimObjektDtos()) {
             return;
         }
         ArrayUtil::assureIsArray( $this->output, $KEYS );
@@ -777,9 +778,16 @@ class Sie4Dto2Array extends ArrayBase
             if( $verDto->isSignSet()) {
                 $this->output[self::VERSIGN][$verX] = $verDto->getSign();
             }
-            foreach( $verDto->getTransDtos() as $transX =>$transDto ) {
+            foreach( $verDto->getTransDtos()->yield() as $transX => $transDto ) {
                 $this->processSingleTransDto( $verX, $transX, $transDto );
             }
+            /*
+            $transDtos = $verDto->getTransDtos();
+            $transX    = 0;
+            for( $transDtos->rewind(); $transDtos->valid(); $transDtos->next()) {
+                $this->processSingleTransDto( $verX, $transX++, $transDtos->current());
+            }
+            */
         } // end foreach
     }
 
@@ -801,9 +809,7 @@ class Sie4Dto2Array extends ArrayBase
 
         $key      = $keyArr[self::TRANSTIMESTAMP];
         $this->output[$key][$verX][$transX] =
-            number_format(
-                $transDto->getTimestamp(), 6, StringUtil::$DOT, StringUtil::$SP0
-            );
+            number_format( $transDto->getTimestamp(), 6, StringUtil::$DOT, StringUtil::$SP0 );
         $key      = $keyArr[self::TRANSGUID];
         $this->output[$key][$verX][$transX] = $transDto->getCorrelationId();
         $key      = $keyArr[self::TRANSPARENTGUID];

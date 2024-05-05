@@ -27,38 +27,55 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
 use DateTime;
+use Faker\Generator;
 use Kigkonsult\Sie4Sdk\Dto\VerDto as Dto;
 
 class VerDto extends LoaderBase
 {
     /**
+     * @param Generator $faker
      * @param int[] $kontoNrs
+     * @param int[] $dimObjectNrs
      * @return Dto
      * @since 1.8.3 2023-09-20
      */
-    public static function load( array $kontoNrs ) : Dto
+    public static function load( Generator $faker, array $kontoNrs, array $dimObjectNrs ) : Dto
     {
-        $faker = self::getFaker();
-        $dto   = new Dto();
+        static $theDaybefore = '-1 day';
+        static $VerNrBase    = 'Yz0000';
+        static $Ymd          = 'Y-m-d';
+        static $arr1234      = [ 1, 2, 3, 4 ];
+        static $SERIE        = 1;
+        static $VERNR        = null;
 
-        static $serie = 0;
-        $dto->setSerie( ++$serie );
-
-        static $VERNR = null;
         if( empty( $VERNR )) {
-            $VERNR = (int) date( 'Yz0000');
+            $VERNR = (int) date( $VerNrBase );
         }
-        $dto->setVernr( ++$VERNR );
+        $verText  = self::getRandomString( $faker, 4 );
+        $verDatum = ( 1 === $faker->randomElement( self::$Arr12 ))
+            ? new DateTime()
+            : ( new DateTime())->format( $Ymd );
+
+        if( 1 === $faker->randomElement( self::$Arr12 )) {
+            $dto   = new Dto();
+            $dto->setSerie( $SERIE );
+            $dto->setVernr( ++$VERNR );
+            $dto->setVerdatum( $verDatum );
+            $dto->setVertext( $verText );
+        }
+        else {
+            $dto   = Dto::factory( ++$VERNR, $verText, $verDatum );
+            $dto->setSerie( $SERIE );
+        }
+        if( 1 === $faker->randomElement( $arr1234 )) {
+            ++$SERIE;
+        }
 
         $dateTime = new DateTime();
-        if( 1 === $faker->randomElement( [ 1, 2 ] )) {
-            $dateTime->modify( '-1 day' );
-            $dto->setVerdatum( $dateTime );
-        }
-        $dto->setVertext((string) $faker->words( 4, true ));
-        if( 1 === $faker->randomElement( [ 1, 2 ] )) {
-            $dateTime = clone $dateTime;
-            $dto->setRegdatum( $dateTime->modify( '-1 day' ));
+        if( 1 === $faker->randomElement( self::$Arr12 )) {
+            $date1 = $dateTime->modify( $theDaybefore );
+            $date2 = ( 1 === $faker->randomElement( self::$Arr12 )) ? $date1 : $date1->format( $Ymd );
+            $dto->setRegdatum( $date2 );
         }
         $dto->setSign( $faker->randomLetter() . $faker->randomDigitNotNull());
 
@@ -66,10 +83,15 @@ class VerDto extends LoaderBase
         $kontoNrs2 = [];
         $balans    = 0;
         while( $max > count( $kontoNrs2 )) {
-            $kontoNr = $faker->randomElement( $kontoNrs );
-            if ( ! isset( $kontoNrs2[$kontoNr] )) {
-                $kontoNrs2[$kontoNr] = $kontoNr;
-                $transDto = TransDto::load( $kontoNr, $dateTime );
+            $kontoNr               = $faker->randomElement( $kontoNrs );
+            $kontoNrs2[ $kontoNr ] = $kontoNr;
+            $belopp = self::getRandomBelopp( $faker );
+            if( 1 === $faker->randomElement( self::$Arr123 )) {
+                $dto->addTransKontoNrBelopp( $kontoNr, $belopp );
+                $balans  += $belopp;
+            }
+            else {
+                $transDto = TransDto::load( $faker, $kontoNr, $dateTime, $belopp, $dimObjectNrs );
                 $balans  += $transDto->getBelopp();
                 $dto->addTransDto( $transDto );
             }
@@ -78,8 +100,7 @@ class VerDto extends LoaderBase
         while( isset($kontoNrs2[$kontoNr] )) {
             $kontoNr = $faker->randomElement( $kontoNrs );
         }
-        $transDto = TransDto::load( $kontoNr, $dateTime );
-        $transDto->setBelopp( 0 - $balans );
+        $transDto = TransDto::load( $faker, $kontoNr, $dateTime, ( 0 - $balans ), [] );
         $dto->addTransDto( $transDto );
 
         return $dto;

@@ -27,68 +27,81 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
 use DateTime;
+use Faker\Generator;
 use Kigkonsult\Sie4Sdk\Dto\IdDto as Dto;
 
 class IdDto extends LoaderBase
 {
     /**
+     * @var array|string[]
+     */
+    public static array $FTYPS = [
+        'AB'  => 'Aktiebolag',
+        'E'   => 'Enskild näringsidkare',
+        'HB'  => 'Handelsbolag',
+        'KB'  => 'Kommanditbolag',
+        'EK'  => 'Ekonomisk förening',
+        'KHF' => 'Kooperativ hyresrättsförening',
+        'BRF' => 'Bostadsrättsförening',
+        'BF'  => 'Bostadsförening',
+        'SF'  => 'Sambruksförening',
+        'I'   => 'Ideell förening som bedriver näring',
+        'S'   => 'Stiftelse som bedriver näring',
+        'FL'  => 'Filial till utländskt bolag',
+        'BAB' => 'Bankaktiebolag.',
+        'MB'  => 'Medlemsbank',
+        'SB'  => 'Sparbank',
+        'BFL' => 'Utländsk banks filial',
+        'FAB' => 'Försäkringsaktiebolag',
+        'OFB' => 'Ömsesidigt försäkringsbolag',
+        'SE'  => 'Europabolag',
+        'SCE' => 'Europakooperativ',
+        'TSF' => 'Trossamfund',
+        'X'   => 'Annan företagsform'
+    ];
+    /**
+     * @var array|string[]
+     */
+    public static array $KPTYPS = ['BAS95', 'BAS96', 'EUBAS97', 'NE2007'];
+    /**
+     * @param Generator $faker
      * @return Dto
      * @since 1.8.3 2023-09-20
      */
-    public static function load() : Dto
+    public static function load( Generator $faker ) : Dto
     {
-        static $FTYPS = [
-            'AB'  => 'Aktiebolag',
-            'E'   => 'Enskild näringsidkare',
-            'HB'  => 'Handelsbolag',
-            'KB'  => 'Kommanditbolag',
-            'EK'  => 'Ekonomisk förening',
-            'KHF' => 'Kooperativ hyresrättsförening',
-            'BRF' => 'Bostadsrättsförening',
-            'BF'  => 'Bostadsförening',
-            'SF'  => 'Sambruksförening',
-            'I'   => 'Ideell förening som bedriver näring',
-            'S'   => 'Stiftelse som bedriver näring',
-            'FL'  => 'Filial till utländskt bolag',
-            'BAB' => 'Bankaktiebolag.',
-            'MB'  => 'Medlemsbank',
-            'SB'  => 'Sparbank',
-            'BFL' => 'Utländsk banks filial',
-            'FAB' => 'Försäkringsaktiebolag',
-            'OFB' => 'Ömsesidigt försäkringsbolag',
-            'SE'  => 'Europabolag',
-            'SCE' => 'Europakooperativ',
-            'TSF' => 'Trossamfund',
-            'X'   => 'Annan företagsform'
-        ];
-        static $KPTYPS = ['BAS95', 'BAS96', 'EUBAS97', 'NE2007'];
 
-        $faker = self::getFaker();
-        $dto   = new Dto();
+        $fnamn = $faker->company;
+        $fnrId = (string) $faker->numberBetween( 10000000, 999999999999 );
+        $orgnr = (string) $faker->numberBetween( 10000000, 999999999999 );
 
-        $dto->setProsa((string) $faker->words( 4, true ));
+        if( 1 === $faker->randomElement( self::$Arr12 )) {
+            $dto = new Dto();
+            $dto->setFnamn( $fnamn );
+            $dto->setFnrId( $fnrId );
+            $dto->setOrgnr( $orgnr );
+        }
+        else {
+            $dto = Dto::factory( $fnamn, $fnrId, $orgnr );
+        }
 
-        $dto->setFtyp((string) $faker->randomElement(array_keys( $FTYPS )));
+        $dto->setProsa( self::getRandomString( $faker, 4 ));
 
-        $dto->setFnrId((string) $faker->numberBetween( 10000000, 999999999999 ));
-
-        $dto->setOrgnr((string) $faker->numberBetween( 10000000, 999999999999 ));
+        $dto->setFtyp((string) $faker->randomElement(array_keys( self::$FTYPS )));
 
         $dto->setMultiple(1);
 
         $dto->setBkod((string) $faker->numberBetween( 10000, 99999 ));
 
-        $dto->setAdress( AdressDto::load());
+        $dto->setAdress( AdressDto::load( $faker ));
 
-        $dto->setFnamn( $faker->company );
-
-        $dto->addRarDto( RarDto::load());
+        $dto->addRarDto( RarDto::load( $faker ));
 
         $dto->setTaxar((int) $faker->time( 'Y' ));
 
         $dto->setOmfattn( new DateTime());
 
-        $dto->setKptyp((string) $faker->randomElement( $KPTYPS ));
+        $dto->setKptyp((string) $faker->randomElement( self::$KPTYPS ));
 
         $dto->setValutakod( $faker->currencyCode );
 

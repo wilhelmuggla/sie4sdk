@@ -29,10 +29,10 @@ namespace Kigkonsult\Sie4Sdk;
 /**
  * Interface Sie4Interface
  *
- * Konstanter med '#'-prefix förekommer endast som direktiv i en Sie4 fil (string)
+ * Konstanter med '#'-värdePrefix förekommer endast som direktiv i en Sie4 fil (string)
  * I stor sett övriga som nycklar i Sie4 array
  *
- * @since 1.8.6 20230929
+ * @since 1.8.15 20240314
  */
 Interface Sie4Interface
 {
@@ -40,7 +40,7 @@ Interface Sie4Interface
      * Product constants
      */
     public const PRODUCTNAME              = 'Kigkonsult\Sie4Sdk';
-    public const PRODUCTVERSION           = '1.8.9';
+    public const PRODUCTVERSION           = '1.8.15';
 
     /**
      * Unik timestamp/guid för varje Sie4 fil (string)

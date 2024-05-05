@@ -23,20 +23,17 @@
            You should have received a copy of the GNU Lesser General Public License
            along with Sie4Sdk. If not, see <https://www.gnu.org/licenses/>.
 -->
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         bootstrap="autoload.php">
+<phpunit bootstrap="autoload.php"
+         displayDetailsOnTestsThatTriggerWarnings="true">
     <testsuites>
-        <testsuite name="Util Tests">
-            <directory suffix=".php">./test/Util</directory>
-        </testsuite>
         <testsuite name="Demo Sie4Dto Tests">
             <file>test/TestDemo.php</file>
+        </testsuite>
+        <testsuite name="Util Tests">
+            <file>test/Util/TestAssert.php</file>
+            <file>test/Util/TestDateTimeUtil.php</file>
+            <file>test/Util/TestGuidUtil.php</file>
+            <file>test/Util/TestStringUtil.php</file>
         </testsuite>
         <testsuite name="Generated Sie4Dto Tests">
             <file>test/TestGen.php</file>
@@ -48,17 +45,17 @@
             <file>test/TestRsc.php</file>
         </testsuite>
     </testsuites>
-    <coverage includeUncoveredFiles="true"
-              processUncoveredFiles="true"
-              pathCoverage="false"
-              ignoreDeprecatedCodeUnits="false"
-              disableCodeCoverageIgnore="true">
+    <source>
         <include>
-            <directory>./src</directory>
+            <directory suffix=".php">src</directory>
         </include>
         <exclude>
             <file>src/Api/Server/sie4Server.php</file>
         </exclude>
+    </source>
+    <coverage
+            includeUncoveredFiles="false"
+            disableCodeCoverageIgnore="true">
         <!-- Require the PHP Xdebug (2.7.0 or later) and tokenizer extensions-->
         <!-- Remove or comment after your own choice-->
         <!-- Note, all output in report/logging will be saved in 'testDocs' folder -->
@@ -77,11 +74,10 @@
         <!-- testdoxHtml outputFile="testDocs/testdox.html"/ -->
         <!-- testdoxText outputFile="testDocs/testdox.txt"/ -->
         <!-- testdoxXml outputFile="testDocs/testdox.xml"/ -->
-        <text outputFile="testDocs/logfile.txt"/>
     </logging>
     <php>
         <!-- Set max TestGen:genTestProvider test sets -->
-        <var name="GENTESTMAX" value="20"/>
+        <var name="GENTESTMAX" value="5"/>
         <!-- Set TestGen directory where to save sie4 test files, remove or comment for No save-files -->
         <var name="TESTSAVEDIR" value="testDocs/files"/>
     </php>

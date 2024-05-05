@@ -30,337 +30,317 @@ use Exception;
 use Kigkonsult\Sie4Sdk\Dto\AccountDto;
 use Kigkonsult\Sie4Sdk\Dto\DimDto;
 use Kigkonsult\Sie4Sdk\Dto\DimObjektDto;
-use Kigkonsult\Sie4Sdk\Dto\TransDto;
 use Kigkonsult\Sie4Sdk\Dto\UnderDimDto;
-use Kigkonsult\Sie4Sdk\Rsc\AccountList;
-use Kigkonsult\Sie4Sdk\Rsc\DimList;
-use Kigkonsult\Sie4Sdk\Rsc\DimObjektList;
-use Kigkonsult\Sie4Sdk\Rsc\Loader\AccountListCsvFileLoader;
-use Kigkonsult\Sie4Sdk\Rsc\Loader\AccountListLoader;
-use Kigkonsult\Sie4Sdk\Rsc\Loader\DimListCsvFileLoader;
-use Kigkonsult\Sie4Sdk\Rsc\Loader\DimListLoader;
-use Kigkonsult\Sie4Sdk\Rsc\Loader\DimObjektListCsvFileLoader;
-use Kigkonsult\Sie4Sdk\Rsc\Loader\DimObjektListLoader;
-use Kigkonsult\Sie4Sdk\Rsc\Loader\UnderDimListCsvFileLoader;
-use Kigkonsult\Sie4Sdk\Rsc\Loader\UnderDimListLoader;
-use Kigkonsult\Sie4Sdk\Rsc\RscAccountValidator;
-use Kigkonsult\Sie4Sdk\Rsc\RscDimensionValidator;
-use Kigkonsult\Sie4Sdk\Rsc\UnderDimList;
+use Kigkonsult\Sie4Sdk\Lists\AccountDtoList;
+use Kigkonsult\Sie4Sdk\Lists\DimDtoList;
+use Kigkonsult\Sie4Sdk\Lists\DimObjektDtoList;
+use Kigkonsult\Sie4Sdk\Lists\UnderDimDtoList;
+use Kigkonsult\Sie4Sdk\Rsc\Loader\AccountDtoListLoader;
+use Kigkonsult\Sie4Sdk\Rsc\Loader\Csv\AccountDtoListCsvFileLoader;
+use Kigkonsult\Sie4Sdk\Rsc\Loader\Csv\DimDtoListCsvFileLoader;
+use Kigkonsult\Sie4Sdk\Rsc\Loader\Csv\DimObjektDtoListCsvFileLoader;
+use Kigkonsult\Sie4Sdk\Rsc\Loader\Csv\UnderDimDtoListCsvFileLoader;
+use Kigkonsult\Sie4Sdk\Rsc\Loader\DimDtoListLoader;
+use Kigkonsult\Sie4Sdk\Rsc\Loader\DimObjektDtoListLoader;
+use Kigkonsult\Sie4Sdk\Rsc\Loader\UnderDimDtoListLoader;
 use PHPUnit\Framework\TestCase;
 
 class TestRsc extends TestCase
 {
     /**
-     * Tests Rsc/AccountListCsvFileLoader, Rsc/AccountLoader and Rsc/AccountList, includes some AsittagList tests...
+     * Tests Rsc/Loader/AccountDtoListCsvFileLoader, Rsc/Loader/AccountDtoListLoader and Lists/AccountDtoList, includes some AsittagList tests...
      *
      * @test
      *
      * @return void
      */
-    public function accountListLoadTest() : void
+    public function accountDtoListLoadTest() : void
     {
-        $file        = __DIR__ . '/Rsc_files/kontoplan.csv';
-        $load        = AccountListCsvFileLoader::factory( [ $file, ',', '"' ] )->getOutput();
-        $accountList = AccountListLoader::load( $load );
+        $file           = __DIR__ . '/Rsc_files/kontoplan.csv';
+        $accountDtoList = AccountDtoListLoader::load(
+            AccountDtoListCsvFileLoader::factory( [ $file, ',', '"' ] )
+        );
+        /*
+            $accountDtoList = AccountDtoListLoader::load(
+            AccountDtoListCsvFileLoader::class,
+            [ $file, ',', '"' ]
+        );
+        */
         // test $accounts class type
         $this->assertInstanceOf(
-            AccountList::class,
-            $accountList,
-            '#1011, NOT instanceof ' . AccountList::class . ', is instanceof ' . get_class( $accountList )
+            AccountDtoList::class,
+            $accountDtoList,
+            __FUNCTION__ . '#1011, NOT instanceof ' . AccountDtoList::class . ', is instanceof ' . get_class( $accountDtoList )
         );
         // test $accounts element value type
         $this->assertEquals(
             AccountDto::class,
-            $accountList->getValueType(),
-            '#1012, expects valueType ' . AccountDto::class . ', got ' . $accountList->getValueType()
+            $accountDtoList->getValueType(),
+            __FUNCTION__ . '#1012, expects valueType ' . AccountDto::class . ', got ' . $accountDtoList->getValueType()
         );
         // test count load
         $this->assertNotEmpty(
-            $accountList->count(),
-            '#1013, accountRsc empty ' . var_export( $accountList, true )
+            $accountDtoList->count(),
+            __FUNCTION__ . '#1013, accountRsc empty ' . var_export( $accountDtoList, true )
         );
-        $firstAccountDto = reset( $load );
+        $accountDtoList->rewind();;
+        $firstAccountDto = $accountDtoList->current();
         // test tag output
         $cnt = 0;
-        foreach( $accountList->tagGet( AccountDto::I ) as $accountDto ) {
+        foreach( $accountDtoList->tagGet( AccountDto::I ) as $accountDto ) {
             $this->assertEquals(
-                AccountDto::I, $accountDto->getKontoTyp(), '#1014, kontoNr ' . $accountDto->getKontoNr() . ' expected kontoyp I, actual ' . $accountDto->getKontoTyp()
+                AccountDto::I,
+                $accountDto->getKontoTyp(),
+                __FUNCTION__ . '#1014, kontoNr ' . $accountDto->getKontoNr() . ' expected kontoyp I, actual ' . $accountDto->getKontoTyp()
             );
             ++$cnt;
         } // end foreach
-        $this->assertNotEmpty( $cnt, ' NO  kontoyp I found' );
-
-        // echo 'test AccountDto (I) ' . var_export( $accountDto, true ) . PHP_EOL; // test
-        // echo 'test AsittagList ' . var_export( array_slice( $accounts->get(),0, 2, true ), true ) . PHP_EOL; // test
+        $this->assertNotEmpty( $cnt, __FUNCTION__ . ' NO  kontoyp I found' );
 
         // test element value type
-        $accountList->rewind();
+        $accountDtoList->rewind();
         $this->assertInstanceOf(
-            AccountDto::class, $accountList->current(), '#1015, current NOT instanceof ' . AccountDto::class
+            AccountDto::class,
+            $accountDtoList->current(),
+            __FUNCTION__ . '#1016, current NOT instanceof ' . AccountDto::class
         );
 
         // test kontoNr is set
-        $this->assertTrue(
-            $accountList->isKontoNrSet( $firstAccountDto->getKontoNr() ),
-            '#1016 error, kontoNr ' . $firstAccountDto->getKontoNr() . ' do not exists'
-        );
-        // test method exists
-        $this->assertTrue(
-            method_exists( $accountList, 'getAccountDto' ),
-            '#1017 error, method getAccountDto do not exists'
-        );
-        // echo '#1018, konto 1011, ' . var_export( $accountList->getAccountDto( '1011' ), true ) . PHP_EOL; // test
         $expKontoNr = $firstAccountDto->getKontoNr();
-        $actKontoNr = $accountList->pKeySeek( $expKontoNr)->current()->getKontoNr();
+        $this->assertTrue(
+            $accountDtoList->pKeyExists( $expKontoNr ),
+            __FUNCTION__ . '#1017 error, kontoNr ' . $firstAccountDto->getKontoNr() . ' do not exists'
+        );
+        $current    = $accountDtoList->pKeySeek( $expKontoNr )->current();
+        $actKontoNr = $current->getKontoNr();
         $this->assertEquals(
             $expKontoNr,
             $actKontoNr,
-            '#1019 exp kontoNr ' . $expKontoNr . ' NOT found in current, got ' . $actKontoNr
+            __FUNCTION__ . '#1019 exp kontoNr ' . $expKontoNr . ' NOT found in current, got ' . $actKontoNr
+        );
+        $expKontoNamn = $firstAccountDto->getKontoNamn();
+        $actKontoNamn = $current->getKontoNamn();
+        $this->assertEquals(
+            $expKontoNamn,
+            $actKontoNamn,
+            __FUNCTION__ . '#1020 exp kontoNr ' . $expKontoNr . ' name : ' . $expKontoNamn . ' NOT found in current, got ' . $actKontoNamn
+        );
+        $expKontoTyp = $firstAccountDto->getKontoTyp();
+        $actKontoTyp = $current->getKontoTyp();
+        $this->assertEquals(
+            $expKontoTyp,
+            $actKontoTyp,
+            __FUNCTION__ . '#1021 exp kontoNr ' . $expKontoNr . ' typ : ' . $expKontoTyp . ' NOT found in current, got ' . $actKontoTyp
+        );
+        $this->assertTrue(
+            $accountDtoList->isKontoNrSet( $firstAccountDto ),
+            __FUNCTION__ . '#1022 exp kontoNr ' . $expKontoNr . ' NOT found in AccountList'
         );
 
         // test setting of invalid element type
         $outcome = true;
         try {
-            $accountList->append( [] );
-        } catch( Exception $e ) {
-            $outcome = false;
-        }
-        $this->assertFalse( $outcome, '#1020 error load type' );
-
-        $rscAccountValidator = RscAccountValidator::factory( $accountList );
-        $transDtos = [];
-        foreach( $accountList as $accountDto ) {
-            $transDtos[] = TransDto::factory( $accountDto->getKontoNr(), 1.00 );
-        }
-        $ok = true;
-        try {
-            $rscAccountValidator->assertKontoNrs( $transDtos );
+            $accountDtoList->append( [] );
         }
         catch( Exception $e ) {
-            $ok = $e->getMessage();
+            $outcome = false;
         }
-        $this->assertTrue(
-            $ok,
-            '#1021 RscAccountValidator false !! ' . $ok
-        );
+        $this->assertFalse( $outcome, __FUNCTION__ . '#1020 error load type' );
+
         $this->assertFalse(
-            $rscAccountValidator->kontoNrExists( '99' ),
-            '#2022 RscAccountValidator : kontoNr 99 exp not found'
+            $accountDtoList->pKeyExists( '99' ),
+            __FUNCTION__ . '#2025 AccountDtoList :  expkontoNr 99 not found'
         );
     }
 
     /**
-     * Tests Rsc/DimListCsvFileLoader, Rsc/DimListLoader and Rsc/DimList, includes some AsittagList tests...
+     * Tests Rsc/DimDtoListCsvFileLoader, Rsc/DimDtoListLoader and Lists/DimDtoList, includes some AsitList tests...
      *
      * @test
      *
      * @return void
      */
-    public function dimListLoadTest() : void
+    public function dimDtoListLoadTest() : void
     {
         $file    = __DIR__ . '/Rsc_files/dimensioner.csv';
-        $load    = DimListCsvFileLoader::factory( [ $file, ',', '"' ] )->getOutput();
-        $dimList = DimListLoader::load( $load );
+        $dimDtoList = DimDtoListLoader::load(
+            DimDtoListCsvFileLoader::class,
+            [ $file, ',', '"' ]
+        );
         // test $dimList class type
         $this->assertInstanceOf(
-            DimList::class, $dimList, '#2011, NOT instanceof ' . DimList::class . ', is instanceof ' . get_class( $dimList )
+            DimDtoList::class,
+            $dimDtoList,
+            '#2011, NOT instanceof ' . DimDtoList::class . ', is instanceof ' . get_class( $dimDtoList )
         );
         // test $dimList element value type
         $this->assertEquals(
             DimDto::class,
-            $dimList->getValueType(),
-            '#2012, expects valueType ' . DimDto::class . ', got ' . $dimList->getValueType()
+            $dimDtoList->getValueType(),
+            '#2012, expects valueType ' . DimDto::class . ', got ' . $dimDtoList->getValueType()
         );
         // test count load
         $this->assertNotEmpty(
-            $dimList->count(),
-            '#2013, dimList empty ' . var_export( $dimList, true )
+            $dimDtoList->count(),
+            '#2013, dimList empty ' . var_export( $dimDtoList, true )
         );
-        $firstDimDto = reset( $load );
-
-        // echo 'test AsittagList ' . var_export( array_slice( $dimList->get(),0, 2, true ), true ) . PHP_EOL; // test
+        $dimDtoList->rewind();
+        $firstDimDto = $dimDtoList->current();
 
         // test element value type
-        $dimList->rewind();
+        $dimDtoList->rewind();
         $this->assertInstanceOf(
-            DimDto::class, $dimList->current(), '#2015, current NOT instanceof ' . DimDto::class
+            DimDto::class,
+            $dimDtoList->current(),
+            '#2015, current NOT instanceof ' . DimDto::class
         );
 
         // test DimensionNr is set
         $this->assertTrue(
-            $dimList->isDimensionNrSet( $firstDimDto->getDimensionNr()),
+            $dimDtoList->isDimensionNrSet( $firstDimDto->getDimensionNr()),
             '#2016 error, DimensionNr ' . $firstDimDto->getDimensionNr() . ' do not exists'
         );
-        // test method exists
-        $this->assertTrue(
-            method_exists( $dimList, 'getDimDto' ),
-            '#2017 error, method getDimDto do not exists'
-        );
-        // echo '#2018, pkey 1,  ' . var_export( $dimList->pKeyGet('1' ), true ) . PHP_EOL; // test
 
         // test setting of invalid element type
         $outcome = true;
         try {
-            $dimList->append( [] );
-        } catch( Exception $e ) {
+            $dimDtoList->append( [] );
+        }
+        catch( Exception $e ) {
             $outcome = false;
         }
         $this->assertFalse( $outcome, '#2020 error load type' );
-
-        // test RscDimensionValidator with dimDtos and (faked) $underDimDto
-        $dimDtos      = $underDimDtos = [];
-        $underDimList = new UnderDimList();
-        foreach( $dimList as $dimDto ) {
-            $dimDtos[]   = $dimDto;
-            $underDimDto = UnderDimDto::factoryUnderDim(
-                1,
-                'dimension 1 namn',
-                $dimDto->getDimensionNr()
-            );
-            $underDimList->append( $underDimDto );
-            $underDimDtos[] = $underDimDto;
-        }
-        $rscDimensionValidator = RscDimensionValidator::factory( $dimList, $underDimList );
-        $ok = true;
-        try {
-            $rscDimensionValidator->assertDimNrs( $dimDtos );
-            $rscDimensionValidator->assertDimNrs( $underDimDtos );
-            $rscDimensionValidator->assertUnderDimDto( $underDimDtos );
-        }
-        catch( Exception $e ) {
-            $ok = $e->getMessage();
-        }
-        $this->assertTrue(
-            $ok,
-            '#2021 RscDimensionValidator false !! ' . $ok
-        );
-        $this->assertFalse(
-            $rscDimensionValidator->dimNrExists( 99 ),
-            '#2022 RscDimensionValidator : dim 99 exp NOT found'
-        );
-        $this->assertFalse(
-            $rscDimensionValidator->underDimNrExists( 99 ),
-            '#2023 RscDimensionValidator : underDim 99 exp NOT found'
-        );
     }
 
     /**
-     * Tests Rsc/UnderDimListCsvFileLoader, Rsc/UnderDimListLoader and Rsc/UnderDimList, includes some AsittagList tests...
+     * Tests Rsc/UnderDimDtoListCsvFileLoader, Rsc/UnderDimDtoListLoader and Lists/UnderDimDtoList, includes some AsittagList tests...
      *
      * @test
      *
      * @return void
      */
-    public function underDimListLoadTest() : void
+    public function underDimDtoListLoadTest() : void
     {
         $file         = __DIR__ . '/Rsc_files/underDimensioner.csv';
-        $load         = UnderDimListCsvFileLoader::factory( [ $file, ',', '"' ] )->getOutput();
-        $underDimList = UnderDimListLoader::load( $load );
-        // test $underDimList class type
-        $this->assertInstanceOf(
-            UnderDimList::class, $underDimList, '#3011, NOT instanceof ' . UnderDimList::class . ', is instanceof ' . get_class( $underDimList )
+        $underDimDtoList = UnderDimDtoListLoader::load(
+            UnderDimDtoListCsvFileLoader::class,
+            [ $file, ',', '"' ]
         );
-        // test $dimList element value type
+        // test $underDimDtoList class type
+        $this->assertInstanceOf(
+            UnderDimDtoList::class,
+            $underDimDtoList,
+            '#3011, NOT instanceof ' . UnderDimDtoList::class . ', is instanceof ' . get_class( $underDimDtoList )
+        );
+        // test $underDimDtoList element value type
         $this->assertEquals(
             UnderDimDto::class,
-            $underDimList->getValueType(),
-            '#3012, expects valueType ' . UnderDimDto::class . ', got ' . $underDimList->getValueType()
+            $underDimDtoList->getValueType(),
+            '#3012, expects valueType ' . UnderDimDto::class . ', got ' . $underDimDtoList->getValueType()
         );
         // test count load
         $this->assertNotEmpty(
-            $underDimList->count(),
-            '#3013, underDimList empty ' . var_export( $underDimList, true )
+            $underDimDtoList->count(),
+            '#3013, underDimDtoList empty ' . var_export( $underDimDtoList, true )
         );
-        $firstDimDto     = reset( $load );
-        $firstSuperDimNr = $firstDimDto->getSuperDimNr();
+        $underDimDtoList->rewind();
+        $firstUnderDimDto   = $underDimDtoList->current();
+        $firstSuperDimNr    = $firstUnderDimDto->getSuperDimNr();
+        $firstDimensionNr   = $firstUnderDimDto->getDimensionNr();
+        $firstDimensionNamn = $firstUnderDimDto->getDimensionNamn();
         $this->assertCount(
-            3, $underDimList->getUnderDimDtosForSuper( $firstSuperDimNr ), '#3014, underDimList for ' . $firstSuperDimNr . ' empty, 3 exp, ' . var_export( $underDimList, true )
+            3,
+            $underDimDtoList->getUnderDimDtosForSuper( $firstSuperDimNr ),
+            '#3014, underDimDtoList for ' . $firstSuperDimNr . ' empty, 3 exp, ' . var_export( $underDimDtoList, true )
         );
-
-        // echo 'test AsittagList ' . var_export( array_slice( $underDimList->get(),0, 2, true ), true ) . PHP_EOL; // test
 
         // test element value type
-        $underDimList->rewind();
+        $underDimDtoList->rewind();
         $this->assertInstanceOf(
-            UnderDimDto::class, $underDimList->current(), '#3015, current NOT instanceof ' . UnderDimDto::class
+            UnderDimDto::class,
+            $underDimDtoList->current(),
+            '#3015, current NOT instanceof ' . UnderDimDto::class
         );
 
         // test DimensionNr is set
         $this->assertTrue(
-            $underDimList->isDimensionNrSet( $firstDimDto->getDimensionNr()),
-            '#3016 error, underDimensionNr ' . $firstDimDto->getDimensionNr() . ' do not exists'
+            $underDimDtoList->isDimensionNrSet( $firstDimensionNr ),
+            '#3016 error, underDimensionNr ' . $firstUnderDimDto->getDimensionNr() . ' do not exists'
         );
-        // test method exists
-        $this->assertTrue(
-            method_exists( $underDimList, 'getUnderDimDto' ),
-            '#3017 error, method getUnderDimDto do not exists'
+        // test DimensionNamn
+        $dimensionNamn = $underDimDtoList->pKeySeek( $firstDimensionNr )->current()->getDimensionNamn();
+        $this->assertSame(
+            $firstDimensionNamn,
+            $dimensionNamn,
+            '#3016 error, underDimensionNamn ' . $firstDimensionNamn . ' NOT equals ' . $dimensionNamn
         );
-        // echo '#3018, pkey 1,  ' . var_export( $underDimList->pKeyGet('1' ), true ) . PHP_EOL; // test ??
 
         // test setting of invalid element type
         $outcome = true;
         try {
-            $underDimList->append( [] );
-        } catch( Exception $e ) {
+            $underDimDtoList->append( [] );
+        }
+        catch( Exception $e ) {
             $outcome = false;
         }
         $this->assertFalse( $outcome, '#3020 error load type' );
     }
 
     /**
-     * Tests Rsc/DimObjektListCsvFileLoader, Rsc/DimObjektListLoader and Rsc/DimObjektList, includes some AsittagList tests...
+     * Tests Rsc/DimObjektDtoListCsvFileLoader, Rsc/DimObjektDtoListLoader and Lists/DimObjektDtoList, includes some AsitList tests...
      *
      * @test
      *
      * @return void
      */
-    public function dimObjektListLoadTest() : void
+    public function dimObjektDtoListLoadTest() : void
     {
         $file          = __DIR__ . '/Rsc_files/objekt.csv';
-        $load          = DimObjektListCsvFileLoader::factory( [ $file, ',', '"' ] )->getOutput();
-        $dimObjektList = DimObjektListLoader::load( $load );
+        $dimObjektDtoList = DimObjektDtoListLoader::load(
+            DimObjektDtoListCsvFileLoader::class,
+            [ $file, ',', '"' ]
+        );
         // test $dimList class type
         $this->assertInstanceOf(
-            DimObjektList::class, $dimObjektList, '#4011, NOT instanceof ' . DimObjektList::class . ', is instanceof ' . get_class( $dimObjektList )
+            DimObjektDtoList::class,
+            $dimObjektDtoList,
+            '#4011, NOT instanceof ' . DimObjektDtoList::class . ', is instanceof ' . get_class( $dimObjektDtoList )
         );
         // test $dimList element value type
         $this->assertEquals(
             DimObjektDto::class,
-            $dimObjektList->getValueType(),
-            '#4012, expects valueType ' . DimObjektDto::class . ', got ' . $dimObjektList->getValueType()
+            $dimObjektDtoList->getValueType(),
+            '#4012, expects valueType ' . DimObjektDto::class . ', got ' . $dimObjektDtoList->getValueType()
         );
         // test count load
         $this->assertNotEmpty(
-            $dimObjektList->count(),
-            '#4013, dimObjektList empty ' . var_export( $dimObjektList, true )
+            $dimObjektDtoList->count(),
+            '#4013, dimObjektDtoList empty ' . var_export( $dimObjektDtoList, true )
         );
-        $firstDimObjektDto = reset( $load );
-
-        // echo 'test AsittagList ' . var_export( array_slice( $dimObjektList->get(),0, 2, true ), true ) . PHP_EOL; // test
 
         // test element value type
-        $dimObjektList->rewind();
+        $dimObjektDtoList->rewind();
+        $firstDimObjektDto = $dimObjektDtoList->current();
+
         $this->assertInstanceOf(
-            DimObjektDto::class, $dimObjektList->current(), '#4015, current NOT instanceof ' . DimObjektDto::class
+            DimObjektDto::class,
+            $dimObjektDtoList->current(),
+            '#4015, current NOT instanceof ' . DimObjektDto::class
         );
 
         // test dimensionNr/objektNr is set
         $this->assertTrue(
-            $dimObjektList->isObjektNrSet( $firstDimObjektDto->getDimensionNr(), $firstDimObjektDto->getObjektNr()),
+            $dimObjektDtoList->isObjektNrSet( $firstDimObjektDto->getDimensionNr(), $firstDimObjektDto->getObjektNr()),
             '#4016 error, DimensionNr ' . $firstDimObjektDto->getDimensionNr() .
             '  objektNr ' . $firstDimObjektDto->getobjektNr() . ' do not exists'
-        );
-        // test method exists
-        $this->assertTrue(
-            method_exists( $dimObjektList, 'getDimObjektDto' ),
-            '#4017 error, method getDimObjektDto do not exists'
         );
 
         // test setting of invalid element type
         $outcome = true;
         try {
-            $dimObjektList->append( [] );
-        } catch( Exception $e ) {
+            $dimObjektDtoList->append( [] );
+        }
+        catch( Exception $e ) {
             $outcome = false;
         }
         $this->assertFalse( $outcome, '#4020 error load type' );

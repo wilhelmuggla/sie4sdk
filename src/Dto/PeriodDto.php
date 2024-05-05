@@ -31,7 +31,7 @@ use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Util\Assert;
 
 /**
- * Class BalansDto
+ * Class PeriodDto
  */
 class PeriodDto extends BalansObjektDto
 {
@@ -39,23 +39,6 @@ class PeriodDto extends BalansObjektDto
      * @var string|null  ÅÅÅÅMM
      */
     private ?string $period = null;
-
-    /**
-     * @var callable
-     */
-    public static $SORTER = [ PeriodDto::class, 'periodSorter' ];
-
-    /**
-     * Sort PeriodDto[] on kontonr, arsnr, dimensionNr, objektNr
-     *
-     * @param PeriodDto $a
-     * @param PeriodDto $b
-     * @return int
-     */
-    public static function periodSorter( PeriodDto $a, PeriodDto $b ) : int
-    {
-        return parent::balansObjektSorter( $a, $b );
-    }
 
     /**
      * Return period
@@ -82,12 +65,12 @@ class PeriodDto extends BalansObjektDto
      * @return self
      * @throws InvalidArgumentException
      */
-    public function setPeriod( int | string $period ) : self
+    public function setPeriod( int|string $period ) : self
     {
         static $PERIOD = 'period';
         try {
-        Assert::isIntegerish( $PERIOD, $period );
-        Assert::isYYYYMMDate( $PERIOD, $period );
+            Assert::isIntegerish( $PERIOD, $period );
+            Assert::isYYYYMMDate( $PERIOD, $period );
         }
         catch( Exception $e ) {
             throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );

@@ -36,7 +36,10 @@ use function implode;
 use function sprintf;
 use function str_getcsv;
 
-abstract class BaseCsvFileLoader
+/**
+ * class BaseCsvFileLoader
+ */
+abstract class BaseCsvFileLoader implements MediaLoaderInterface
 {
     /**
      * @var string|null
@@ -95,6 +98,7 @@ abstract class BaseCsvFileLoader
      *
      * @param string[] $config [ filename, separator, encloser, escape ]   default above, all opt
      * @return self
+     * @throws InvalidArgumentException
      */
     public function setConfig( array $config ) : self
     {

@@ -88,7 +88,7 @@ class DateTimeUtil
         static $TIMESTAMP = 'timestamp';
         static $AT        = '@';
         try {
-            self::getDateTime( $AT . (int)$timestamp, $TIMESTAMP, $errCode );
+            self::getDateTime( $AT . (int) $timestamp, $TIMESTAMP, $errCode );
         }
         catch( RuntimeException $e ) {
             throw new InvalidArgumentException( $e->getMessage(), ( $errCode + 1 ), $e );

@@ -27,20 +27,21 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
 use DateTime;
+use Faker\Generator;
 use Kigkonsult\Sie4Sdk\Dto\PeriodDto as Dto;
 
 class PeriodDto extends LoaderBase
 {
     /**
+     * @param Generator $faker
      * @param string $kontoNr
      * @param int $dimensionNr
      * @param string $objektNr
      * @return Dto
      * @since 1.8.3 2023-09-20
      */
-    public static function load( string $kontoNr, int $dimensionNr, string $objektNr ) : Dto
+    public static function load( Generator $faker, string $kontoNr, int $dimensionNr, string $objektNr ) : Dto
     {
-        $faker = self::getFaker();
         $dto   = new Dto();
 
         $dto->setArsnr( 0 );

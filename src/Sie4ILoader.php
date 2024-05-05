@@ -161,18 +161,20 @@ class Sie4ILoader extends Sie4LoaderBase
     }
 
     /**
-     * @param LedgerEntryTypeEntry $ledgerEntryTypeEntry
+     * Creates a TrabsDto from a LedgerEntry
+     *
+     * @param object $ledgerEntryType LedgerEntryTypeEntry
      * @param string $verDatumYmd
      * @return TransDto
      */
     protected static function getTransDto(
-        LedgerEntryTypeEntry $ledgerEntryTypeEntry,
+        object $ledgerEntryType,
         string $verDatumYmd
     ) : TransDto
     {
         $transDto      = new TransDto();
-        $transDto->setKontoNr( $ledgerEntryTypeEntry->getAccountId());
-        $dimObjektData = $ledgerEntryTypeEntry->getLedgerEntryTypeEntries();
+        $transDto->setKontoNr( $ledgerEntryType->getAccountId());
+        $dimObjektData = $ledgerEntryType->getLedgerEntryTypeEntries();
         if( ! empty( $dimObjektData )) {
             foreach( $dimObjektData as $elementSets ) {
                 foreach( $elementSets as $elementSet ) {
@@ -187,17 +189,17 @@ class Sie4ILoader extends Sie4LoaderBase
                 } // end foreach
             } // end foreach
         } // end if
-        $transDto->setBelopp( $ledgerEntryTypeEntry->getAmount() ?? 0.0 );
-        $transDate = $ledgerEntryTypeEntry->getLedgerDate();
+        $transDto->setBelopp( $ledgerEntryType->getAmount() ?? 0.0 );
+        $transDate = $ledgerEntryType->getLedgerDate();
         if( $transDate !== null &&
             ( $verDatumYmd !== $transDate->format( self::SIE4YYYYMMDD ))) {
             $transDto->setTransdat( $transDate );
         }
-        $transtext = $ledgerEntryTypeEntry->getText();
+        $transtext = $ledgerEntryType->getText();
         if( ! empty( $transtext )) {
             $transDto->setTranstext( $transtext );
         }
-        $kvantitet = $ledgerEntryTypeEntry->getQuantity();
+        $kvantitet = $ledgerEntryType->getQuantity();
         if( null !== $kvantitet ) {
             $transDto->setKvantitet( $kvantitet );
         }

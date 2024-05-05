@@ -26,34 +26,15 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
-use Kigkonsult\Sie4Sdk\Util\StringUtil;
-
+/**
+ * class UnderDimDto
+ */
 class UnderDimDto extends DimDto
 {
     /**
      * @var int|null
      */
     protected ?int $superDimNr = null;
-
-    /**
-     * @var callable
-     */
-    public static $SORTER = [ self::class, 'underDimSorter' ];
-
-    /**
-     * Sort UnderDimDto[] on (super-)dimensionsnr and (under-)dimensionsnr
-     *
-     * @param UnderDimDto $a
-     * @param UnderDimDto $b
-     * @return int
-     */
-    public static function underDimSorter( UnderDimDto $a, UnderDimDto $b ) : int
-    {
-        if( 0 !== ( $res = StringUtil::strSort((string) $a->getSuperDimNr(),(string) $b->getSuperDimNr()))) {
-            return $res;
-        }
-        return StringUtil::strSort((string) $a->getDimensionNr(), (string) $b->getDimensionNr());
-    }
 
     /**
      * Class factory method, set dimensionNr, dimensionsNamn and superDimNr
@@ -71,7 +52,7 @@ class UnderDimDto extends DimDto
     {
         $instance = new self();
         $instance->setDimensionNr( $dimensionsNr );
-        $instance->setDimensionsNamn( $dimensionsNamn );
+        $instance->setDimensionNamn( $dimensionsNamn );
         $instance->setSuperDimNr((int) $superDimNr );
         return $instance;
     }

@@ -26,6 +26,8 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
+use DateTime;
+use Faker\Factory;
 use Kigkonsult\Sie4Sdk\Dto\Sie4Dto as Dto;
 
 class Sie4Dto extends LoaderBase
@@ -36,10 +38,28 @@ class Sie4Dto extends LoaderBase
      */
     public static function load() : Dto
     {
-        $faker = self::getFaker();
-        $dto   = new Dto( IdDto::load());
+        $faker = Factory::create();
 
-        if( 1 === $faker->randomElement( [ 1, 2, 3 ] )) {
+        $idDto = IdDto::load( $faker );
+        if( 1 === $faker->randomElement( self::$Arr12 )) {
+            $dto = new Dto( $idDto );
+        }
+        else {
+            $dto = Dto::factory( $idDto->getFnamn(), $idDto->getFnrId(), $idDto->getOrgnr());
+            $dto->getIdDto()
+                ->setProsa( $idDto->getProsa())
+                ->setFtyp( $idDto->getFtyp())
+                ->setMultiple( $idDto->getMultiple())
+                ->setBkod( $idDto->getBkod())
+                ->setAdress( $idDto->getAdress())
+                ->setRarDtos( $idDto->getRarDtos())
+                ->setTaxar( $idDto->getTaxar())
+                ->setOmfattn( $idDto->getOmfattn())
+                ->setKptyp( $idDto->getKptyp())
+                ->setValutakod( $idDto->getValutakod());
+        } // end else
+
+        if( 1 === $faker->randomElement( self::$Arr123 )) {
             $dto->setKsumma( 1 );
         }
 
@@ -52,17 +72,21 @@ class Sie4Dto extends LoaderBase
             $kontoNr = (string) $faker->numberBetween( 1000, 9999 );
             if( ! isset( $kontoNrs[$kontoNr] )) {
                 $kontoNrs[$kontoNr] = $kontoNr;
-                $dto->addAccountDto( AccountDto::load( $kontoNr ));
             }
         } // end while
+        sort( $kontoNrs );
+        foreach( $kontoNrs as $kontoNr ) {
+            $dto->addAccountDto( AccountDto::load( $faker, $kontoNr ));
+        }
 
         /**
          * SruDto[]   #SRU
          */
         foreach( $kontoNrs as $kontoNr ) {
-            $dto->addSruDto( SruDto::load( $kontoNr ));
+            $dto->addSruDto( SruDto::load( $faker, $kontoNr ));
         }
 
+        $dimObjectNrs = [];
         /**
          * DimDto[]  #DIM
          */
@@ -77,32 +101,30 @@ class Sie4Dto extends LoaderBase
         ];
         foreach( $DIMs as $dimensionNr => $dimensionNamn ) {
             $dto->addDim( $dimensionNr, $dimensionNamn );
+            $dimObjectNrs[$dimensionNr] = [];
         } // end foreach
 
         /**
          * UnderDimDto[]  #UNDERDIM
          */
-        static $UNDERDIMs = [
-            1 => 'underDimension 1',
-            2 => 'underDimension 2',
-        ];
+        $dimensionNamn = 'underDimension ';
+        $underDimNr    = 20;
         foreach( array_keys( $DIMs ) as $superDimNr ) {
-            foreach( $UNDERDIMs as $dimensionNr => $dimensionNamn ) {
-                $dto->addUnderDim( $dimensionNr, $dimensionNamn, $superDimNr );
+            for( $x = 0; $x < 3; $x++ ) {
+                $dto->addUnderDim( ++$underDimNr, $dimensionNamn . $underDimNr, $superDimNr );
+                $dimObjectNrs[$underDimNr] = [];
             } // end foreach
         } // end foreach
 
         /**
          * DimObjektDto[]   #OBJECT
          */
-        static $OBJECTs = [
-            1 => 'objekt 1',
-            2 => 'objekt 2',
-            3 => 'objekt 3',
-        ];
-        foreach( array_keys( $DIMs ) as $DimensionNr ) {
-            foreach( $OBJECTs as $objektNr => $objektNamn ) {
-                $dto->addDimObjekt( $DimensionNr, (string) $objektNr, $objektNamn );
+        $objektNr     = 0;
+        $objektNamn   = 'objekt ';
+        foreach( array_keys( $dimObjectNrs) as $dimensionNr ) {
+            for( $x = 0; $x < 3; $x++ ) {
+                $dto->addDimObjekt( $dimensionNr, (string) ++$objektNr, $objektNamn . $objektNr );
+                $dimObjectNrs[$dimensionNr][] = $objektNr;
             } // end foreach
         } // end foreach
 
@@ -110,23 +132,26 @@ class Sie4Dto extends LoaderBase
          * BalansDto[]  Ingående balans  #IB
          */
         foreach( $kontoNrs as $kontoNr ) {
-            $dto->addIbDto( BalansDto::load( $kontoNr ));
+            $dto->addIbDto( BalansDto::load( $faker, $kontoNr ));
         }
 
         /**
          * BalansDto[]  Utgående balans #UB
          */
         foreach( $kontoNrs as $kontoNr ) {
-            $dto->addUbDto( BalansDto::load( $kontoNr ));
+            $dto->addUbDto( BalansDto::load( $faker, $kontoNr ));
         }
 
         /**
          * BalansObjektDto[]  Ingående balans för objekt  #OIB
          */
         foreach( $kontoNrs as $kontoNr ) {
-            foreach( array_keys( $DIMs ) as $dimensionNr ) {
-                foreach( array_keys( $OBJECTs ) as $objektNr ) {
-                    $dto->addOibDto( BalansObjektDto::load( $kontoNr, (int) $dimensionNr, (string) $objektNr ));
+            if( 1 !== $faker->randomElement( self::$Arr123 )) {
+                continue;
+            }
+            foreach( array_keys( $dimObjectNrs ) as $dimensionNr ) {
+                foreach( $dimObjectNrs[$dimensionNr] as $objektNr ) {
+                    $dto->addOibDto( BalansObjektDto::load( $faker, $kontoNr, (int) $dimensionNr, (string) $objektNr ));
                 } // end foreach
             } // end foreach
         } // end foreach
@@ -135,9 +160,12 @@ class Sie4Dto extends LoaderBase
          * BalansObjektDto[]  Utgående balans för objekt   #OUB
          */
         foreach( $kontoNrs as $kontoNr ) {
-            foreach( array_keys( $DIMs ) as $DimensionNr ) {
-                foreach( array_keys( $OBJECTs ) as $objektNr ) {
-                    $dto->addOubDto( BalansObjektDto::load( $kontoNr, (int) $DimensionNr, (string) $objektNr ));
+            if( 1 !== $faker->randomElement( self::$Arr123 )) {
+                continue;
+            }
+            foreach( array_keys( $dimObjectNrs ) as $dimensionNr ) {
+                foreach( $dimObjectNrs[$dimensionNr] as $objektNr ) {
+                    $dto->addOubDto( BalansObjektDto::load( $faker, $kontoNr, (int) $dimensionNr, (string) $objektNr ));
                 } // end foreach
             } // end foreach
         } // end foreach
@@ -146,27 +174,33 @@ class Sie4Dto extends LoaderBase
          * BalansDto[]   Saldo för resultatkonto  #RES
          */
         foreach( $kontoNrs as $kontoNr ) {
-            $dto->addSaldoDto( BalansDto::load( $kontoNr ));
+            $dto->addSaldoDto( BalansDto::load( $faker, $kontoNr ));
         }
 
         /**
-         * PeriodDto[]  Periodsaldopost  #PSALDO
+         * PeriodDto[]  PeriodSaldopost  #PSALDO
          */
         foreach( $kontoNrs as $kontoNr ) {
-            foreach( array_keys( $DIMs ) as $DimensionNr ) {
-                foreach( array_keys( $OBJECTs ) as $objektNr ) {
-                    $dto->addPsaldoDto( PeriodDto::load( $kontoNr, (int) $DimensionNr, (string) $objektNr ));
+            foreach( array_keys( $dimObjectNrs ) as $dimensionNr ) {
+                if( 1 !== $faker->randomElement( self::$Arr123 )) {
+                    continue;
+                }
+                foreach( $dimObjectNrs[$dimensionNr] as $objektNr ) {
+                    $dto->addPsaldoDto( PeriodDto::load( $faker, $kontoNr, (int) $dimensionNr, (string) $objektNr ));
                 } // end foreach
             } // end foreach
         } // end foreach
 
         /**
-         *  PeriodDto[]  Periodbudgetpost  #PBUDGET
+         *  PeriodDto[]  PeriodBudgetpost  #PBUDGET
          */
         foreach( $kontoNrs as $kontoNr ) {
-            foreach( array_keys( $DIMs ) as $DimensionNr ) {
-                foreach( array_keys( $OBJECTs ) as $objektNr ) {
-                    $dto->addPbudgetDto( PeriodDto::load( $kontoNr, (int) $DimensionNr, (string) $objektNr ));
+            foreach( array_keys( $dimObjectNrs ) as $dimensionNr ) {
+                if( 1 !== $faker->randomElement( self::$Arr123 )) {
+                    continue;
+                }
+                foreach( $dimObjectNrs[$dimensionNr] as $objektNr ) {
+                    $dto->addPbudgetDto( PeriodDto::load( $faker, $kontoNr, (int) $dimensionNr, (string) $objektNr ));
                 } // end foreach
             } // end foreach
         } // end foreach
@@ -176,7 +210,7 @@ class Sie4Dto extends LoaderBase
          */
         $max = $faker->numberBetween( 10, 20 );
         for( $x = 0; $x < $max; $x++ ) {
-            $dto->addVerDto( VerDto::load( $kontoNrs ));
+            $dto->addVerDto( VerDto::load( $faker, $kontoNrs, $dimObjectNrs ));
         } // end for
 
         return $dto;

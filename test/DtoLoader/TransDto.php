@@ -27,6 +27,7 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
 use DateTime;
+use Faker\Generator;
 use Kigkonsult\Sie4Sdk\Dto\DimObjektDto;
 use Kigkonsult\Sie4Sdk\Dto\TransDto as Dto;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
@@ -34,61 +35,61 @@ use Kigkonsult\Sie4Sdk\Util\StringUtil;
 class TransDto extends LoaderBase
 {
     /**
+     * @param Generator $faker
      * @param string $kontoNr
      * @param DateTime $dateTime
+     * @param float $belopp
+     * @param int[] $dimObjectNrs
      * @return Dto
      * @since 1.8.3 2023-09-20
      */
-    public static function load( string $kontoNr, DateTime $dateTime ) : Dto
+    public static function load(
+        Generator $faker,
+        string $kontoNr,
+        DateTime $dateTime,
+        float $belopp,
+        array $dimObjectNrs
+    ) : Dto
     {
-        $faker = self::getFaker();
-        $dto   = new Dto();
-
-        $dto->setKontoNr( $kontoNr );
-
-        static $DIMs    = [ 1, 2, 6, 7, 8, 9, 10 ];
-        static $OBJECTs = [ '1', '2', '3', '4', '5' ];
-        static $maxOpts = [ 0, 1, 2, 3 ];
-        $max            = $faker->randomElement( $maxOpts );
-        for( $x = 0; $x < $max; $x++ ) {
-            $dto->addObjektlista(
-                DimObjektDto::factoryDimObject(
-                    (int) $faker->randomElement( $DIMs ),
-                    (string) $faker->randomElement( $OBJECTs )
-                )
-            );
-        } // end for
-
-        $dto->setBelopp( $faker->randomFloat( 2, 1, 999999 ));
-
+        static $Arr012  = [ 0, 1, 2 ];
+        static $maxOpts = [ 0, 0, 1, 2, 3 ];
         static $theDaybefore = '-1 day';
-        if( 1 === $faker->randomElement( [ 1, 2 ] )) {
-            $transDat = clone $dateTime;
-            $dto->setTransdat( $transDat->modify( $theDaybefore ));
-        }
+        static $Ymd     = 'Y-m-d';
 
-        static $Arr123 = [ 1, 2, 3 ];
-        static $Arr012 = [ 0, 1, 2 ];
-        switch( $faker->randomElement( $Arr123 )) {
-            case 1 :
-                $dto->setTranstext(
-                    (string) $faker->words( $faker->randomElement( $Arr123 ), true )
-                );
-                break;
-            case 2 :
-                $dto->setTranstext(
-                    str_pad(
-                        StringUtil::$SP0,
-                        (int) ( $faker->randomElement( $Arr012 )),
-                        StringUtil::$SP1
+        $transText = ( 1 === $faker->randomElement( self::$Arr123 ))
+            ? self::getRandomString( $faker, self::$Arr123 )
+            : str_pad(
+                StringUtil::$SP0,
+                (int) ( $faker->randomElement( $Arr012 )),
+                StringUtil::$SP1
+            );
+
+        $dto = new Dto();
+        $dto->setKontoNr( $kontoNr );
+        $dto->setBelopp( $belopp );
+        $dto->setTranstext( $transText );
+
+        if( ! empty( $dimObjectNrs )) {
+            $max = $faker->randomElement( $maxOpts );
+            for( $x = 0; $x < $max; $x++ ) {
+                $dimNr = $faker->randomElement( array_keys( $dimObjectNrs ) );
+                $dto->addObjektlista(
+                    DimObjektDto::factoryDimObject(
+                        (int) $dimNr,
+                        (string) $faker->randomElement( $dimObjectNrs[ $dimNr ] )
                     )
                 );
-                break;
-            default :
-                break;
+            } // end for
         }
 
-        if( 1 === $faker->randomElement( $Arr123 )) {
+        if( 1 === $faker->randomElement( self::$Arr12 )) {
+            $date1 = ( clone $dateTime )->modify( $theDaybefore );
+            $date2 = ( 1 === $faker->randomElement( self::$Arr12 )) ? $date1 : $date1->format( $Ymd );
+            $dto->setTransdat( $date2 );
+        }
+
+
+        if( ! empty( $dimObjectNrs ) && ( 1 === $faker->randomElement( self::$Arr123 ))) {
             $dto->setKvantitet( $faker->randomDigitNot( 0 ));
         }
 

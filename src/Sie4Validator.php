@@ -46,9 +46,10 @@ use Kigkonsult\Sie4Sdk\Util\DateTimeUtil;
 use Kigkonsult\Sie4Sdk\Util\GuidUtil;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
-use function number_format;
+use function in_array;
 use function sprintf;
 use function str_contains;
+use function str_starts_with;
 
 class Sie4Validator implements Sie4Interface
 {
@@ -175,8 +176,8 @@ class Sie4Validator implements Sie4Interface
         self::assertBase( $sie4IDto );
         self::assertIdDto( $sie4IDto->getIdDto(), false );
 
-        if( 0 < $sie4IDto->countAccountDtos()) {
-            foreach( $sie4IDto->getAccountDtos() as $x => $accountDto ) {
+        if( 0 < $sie4IDto->getAccountDtos()->count()) {
+            foreach( $sie4IDto->getAccountDtos()->get() as $x => $accountDto ) {
                 self::assertAccountDto( $x, $accountDto );
             }
         }
@@ -244,8 +245,8 @@ class Sie4Validator implements Sie4Interface
         static $FMT6 = 'Saldo (resultat) saknas';
         self::assertBase( $sie4EDto );
         self::assertIdDto( $sie4EDto->getIdDto(), true );
-        if( 0 < $sie4EDto->countAccountDtos()) {
-            foreach( $sie4EDto->getAccountDtos() as $x => $accountDto ) {
+        if( 0 < $sie4EDto->getAccountDtos()->count()) {
+            foreach( $sie4EDto->getAccountDtos()->get() as $x => $accountDto ) {
                 self::assertAccountDto( $x, $accountDto );
             }
         }
@@ -658,7 +659,6 @@ class Sie4Validator implements Sie4Interface
         static $FMT1 = 'ver %s (#%d), datum saknas';
         static $FMT2 = 'ver %s (#%d), konteringsrader saknas';
         static $FMT3 = 'ver %s (#%d), ej i balans, %f'; // %.2F
-        static $SP0  = '';
         DateTimeUtil::assertTimestamp( $verDto->getTimestamp(), 3701 );
         GuidUtil::assertGuid( $verDto->getCorrelationId(), 3703 );
         $verNr = $verDto->isVernrSet() ? (string) $verDto ->getVernr() : StringUtil::$SP0;
@@ -674,14 +674,7 @@ class Sie4Validator implements Sie4Interface
                 3706
             );
         }
-        $balans = 0.00;
-        foreach( $verDto->getTransDtos() as $kx => $transDto ) {
-            self::assertTransDto( $verNr, $x, $kx, $transDto );
-            if( self::TRANS === $transDto->getTransType()) {
-                $balans += $transDto->getBelopp() ?? 0.00;
-            }
-        } // end foreach
-        if( 0.00 != (float) number_format( $balans, 2, StringUtil::$DOT, $SP0 )) { // Note !=
+        if( ! $verDto->iBalans( $balans )) {
             throw new InvalidArgumentException(
                 sprintf( $FMT3, $verNr, $x, $balans ),
                 3707
@@ -726,18 +719,16 @@ class Sie4Validator implements Sie4Interface
             foreach( $transDto->getObjektlista() as $x => $dimObjekt ) {
                 if( ! $dimObjekt->isDimensionsNrSet() ||
                     ! $dimObjekt->isObjektNrSet()) {
+                    $dimNr    = $dimObjekt->isDimensionsNrSet()
+                        ? (string) $dimObjekt->getDimensionNr()
+                        : StringUtil::$SP1;
+                    $objektNr = $dimObjekt->isObjektNrSet() ? $dimObjekt->getObjektNr() : StringUtil::$SP1;
                     throw new InvalidArgumentException(
-                        sprintf(
-                            $FMT6,
-                            $errKey,
-                            $x,
-                            ( $dimObjekt->isDimensionsNrSet() ? (string) $dimObjekt->getDimensionNr() : StringUtil::$SP1 ),
-                            ( $dimObjekt->isObjektNrSet() ? $dimObjekt->getObjektNr() : StringUtil::$SP1 )
-                        ),
+                        sprintf( $FMT6, $errKey, $x, $dimNr, $objektNr ),
                         3713
                     );
-                }
+                } // end if
             } // end foreach
-        }
+        } // end if
     }
 }

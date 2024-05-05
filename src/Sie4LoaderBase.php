@@ -27,6 +27,7 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk;
 
 use Exception;
+use Kigkonsult\Sie4Sdk\Dto\TransDto;
 use Kigkonsult\Sie4Sdk\Dto\VerDto;
 use Kigkonsult\Sie4Sdk\Dto\IdDto;
 use Kigkonsult\Sie4Sdk\Dto\RarDto;
@@ -104,8 +105,8 @@ abstract class Sie4LoaderBase implements Sie4Interface
                 $idDto->addRarDto(
                     RarDto::factory(
                         $arsNr,
-                        DateTimeUtil::gYearMonthToDateTime( $start, false ),
-                        DateTimeUtil::gYearMonthToDateTime( $end, true )
+                        DateTimeUtil::gYearMonthToDateTime((string) $start, false ),
+                        DateTimeUtil::gYearMonthToDateTime((string) $end, true )
                     )
                 );
                 --$arsNr;
@@ -130,7 +131,7 @@ abstract class Sie4LoaderBase implements Sie4Interface
      */
     protected static function getVerDto(
         JournalEntryType|JournalEntryTypeEntry $journalEntry,
-        int | string | null $serie = null
+        int|string|null $serie = null
     ) : VerDto
     {
         $verDto  = new VerDto();
@@ -159,4 +160,17 @@ abstract class Sie4LoaderBase implements Sie4Interface
         } // end foreach
         return $verDto;
     }
+
+    /**
+     * Creates a TrabsDto from a LedgerEntry
+     *
+     * @param object  $ledgerEntryType   LedgerEntryType|LedgerEntryTypeEntry
+     * @param string  $verDatumYmd
+     * @return TransDto
+     * @throws RuntimeException
+     */
+    abstract protected static function getTransDto(
+        object $ledgerEntryType,
+        string $verDatumYmd
+    ) : TransDto;
 }

@@ -27,7 +27,6 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
 use Kigkonsult\Sie4Sdk\Dto\Traits\ObjektNrTrait;
-use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
 /**
  * Class DimObjektDto
@@ -42,28 +41,7 @@ class DimObjektDto extends DimDto
     /**
      * @var string|null
      */
-    private ?string $objektNamn = null;
-
-    /**
-     * @var callable
-     */
-    public static $SORTER = [ DimObjektDto::class, 'dimObjektSorter' ];
-
-    /**
-     * Sort DimObjektDto[] on dimensionsnr and ojektNr
-     *
-     * @override
-     * @param DimObjektDto $a
-     * @param DimObjektDto $b
-     * @return int
-     */
-    public static function dimObjektSorter( DimObjektDto $a, DimObjektDto $b ) : int
-    {
-        if( 0 !== ( $dimCmp = parent::dimSorter( $a, $b ))) {
-            return $dimCmp;
-        }
-        return StringUtil::strSort((string) $a->getObjektNr(), (string) $b->getObjektNr());
-    }
+    private ? string $objektNamn = null;
 
     /**
      * Class factory method, set dimensionNr and objektNr, objektName opt

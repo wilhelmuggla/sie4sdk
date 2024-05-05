@@ -31,8 +31,8 @@ use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnr2Trait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnrTrait;
 use Kigkonsult\Sie4Sdk\Dto\Traits\SignTrait;
-
 use Kigkonsult\Sie4Sdk\Util\Assert;
+
 use function count;
 use function usort;
 
@@ -238,7 +238,7 @@ class IdDto implements DtoInterface
      * @return self
      * @throws InvalidArgumentException
      */
-    public function setSieTyp( int | string $sieTyp ) : self
+    public function setSieTyp( int|string $sieTyp ) : self
     {
         Assert::isIntegerish( self::SIETYP, $sieTyp );
         $this->sieTyp = (int) $sieTyp;
@@ -455,7 +455,7 @@ class IdDto implements DtoInterface
      * @return self
      * @throws InvalidArgumentException
      */
-    public function setTaxar( int | string $taxar ) : self
+    public function setTaxar( int|string $taxar ) : self
     {
         Assert::isIntegerish( self::TAXAR, $taxar );
         Assert::isYYYYDate( self::TAXAR, $taxar );

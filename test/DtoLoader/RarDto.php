@@ -27,6 +27,7 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\DtoLoader;
 
 use DateTime;
+use Faker\Generator;
 use Kigkonsult\Sie4Sdk\Dto\RarDto as Dto;
 
 /**
@@ -37,9 +38,10 @@ use Kigkonsult\Sie4Sdk\Dto\RarDto as Dto;
 class RarDto extends LoaderBase
 {
     /**
+     * @param Generator $faker
      * @return Dto
      */
-    public static function load() : Dto
+    public static function load( Generator $faker ) : Dto
     {
         $dto = new Dto();
 

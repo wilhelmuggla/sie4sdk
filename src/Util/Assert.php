@@ -29,6 +29,10 @@ namespace Kigkonsult\Sie4Sdk\Util;
 use InvalidArgumentException;
 use RuntimeException;
 
+use function is_float;
+use function is_int;
+use function is_numeric;
+use function is_string;
 use function sprintf;
 use function strlen;
 use function substr;
@@ -38,6 +42,28 @@ use function var_export;
 class Assert
 {
     /**
+     * Assert value is float, int or string (int/float)
+     *
+     * @param string $label
+     * @param int|float|string $value
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public static function isfloatish( string $label, int|float|string $value ) : void
+    {
+        static $ERR = '%s float förväntas, nu %s';
+        if( is_int( $value ) ||
+            is_float( $value ) ||
+            ( is_string( $value ) && is_numeric( $value ))) {
+            return;
+        }
+        throw new InvalidArgumentException(
+            sprintf( $ERR, $label, var_export( $value, true )),
+            3711
+        );
+    }
+
+    /**
      * Assert value is non positive int
      *
      * @param string $label
@@ -45,7 +71,7 @@ class Assert
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function isNonPositiveInt( string $label, int | string $value ) : void
+    public static function isNonPositiveInt( string $label, int|string $value ) : void
     {
         static $ERR = '%s integer <= 0 förväntas, nu %s';
         self::isIntegerish( $label, $value );
@@ -65,7 +91,7 @@ class Assert
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function isIntegerish( string $label, int | string $value ) : void
+    public static function isIntegerish( string $label, int|string $value ) : void
     {
         static $ERR = '%s integer förväntas, nu %s';
         if( $value != (int)$value ) { // Note !=
@@ -84,7 +110,7 @@ class Assert
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function isYYYYDate( string $label, int | string $value ) : void
+    public static function isYYYYDate( string $label, int|string $value ) : void
     {
         static $MMDD = '0101';
         static $ERR  = '%s (#%d) YYYY-datum förväntas, nu %s';
@@ -118,7 +144,7 @@ class Assert
      * @return void
      * @throws InvalidArgumentException
      */
-    public static function isYYYYMMDate( string $label, int | string $value ) : void
+    public static function isYYYYMMDate( string $label, int|string $value ) : void
     {
         static $ONE = '01';
         static $ERR = '%s (#%d) YYYYMM-datum förväntas, nu %s';

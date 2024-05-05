@@ -26,7 +26,9 @@
 declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk;
 
+use Kigkonsult\Sie4Sdk\Dto\DimObjektDto;
 use Kigkonsult\Sie4Sdk\Dto\IdDto;
+use Kigkonsult\Sie4Sdk\Dto\Sie4Dto;
 use Kigkonsult\Sie4Sdk\Util\DateTimeUtil;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 use Kigkonsult\Sie5Sdk\Dto\AccountingCurrencyType;
@@ -37,6 +39,7 @@ use Kigkonsult\Sie5Sdk\Dto\FiscalYearType;
 use Kigkonsult\Sie5Sdk\Dto\Sie;
 use Kigkonsult\Sie5Sdk\Dto\SoftwareProductType;
 
+use function str_contains;
 use function str_replace;
 use function trim;
 
@@ -135,5 +138,30 @@ abstract class Sie5LoaderBase  implements Sie4Interface
                     ->setPrimary( ( 0 === $rarDto->getArsnr()))
             );
         } // end foreach
+    }
+
+    /**
+     * Return name for dimensionNr
+     *
+     * @param Sie4Dto $sieDto
+     * @param int   $dimensionNr
+     * @param DimObjektDto $dimObjektDto
+     * @return string
+     */
+    protected static function getDimensionName( Sie4Dto $sieDto, int $dimensionNr, DimObjektDto $dimObjektDto ) : string
+    {
+        return match( true ) {
+            // found in dimObjektDto
+            $dimObjektDto->isDimensionsNamnSet() => $dimObjektDto->getDimensionNamn(),
+             // found in dimDto
+            (( 0 < $sieDto->countDimDtos()) &&
+                $sieDto->getDimDtos()->isDimensionNrSet( $dimensionNr )) =>
+                    $sieDto->getDimDtos()->getDimensionNamn( $dimensionNr ),
+             // found in underDimDto
+            (( 0 < $sieDto->countUnderDimDtos()) &&
+                $sieDto->getUnderDimDtos()->isDimensionNrSet( $dimensionNr )) =>
+                $sieDto->getUnderDimDtos()->getDimensionNamn( $dimensionNr ),
+            default => StringUtil::$SP0
+        }; // end match
     }
 }

@@ -46,6 +46,9 @@ class Sie4IWriter extends Sie4WriterBase
         ? bool $writeKsumma = null
     ) : string
     {
-        return $this->write( false, $sie4Dto, $outputfile, $writeKsumma );
+        if( null !== $sie4Dto ) {
+            $this->setSie4Dto( $sie4Dto );
+        }
+        return $this->write( false, $outputfile, $writeKsumma );
     }
 }

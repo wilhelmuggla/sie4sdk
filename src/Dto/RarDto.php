@@ -30,6 +30,9 @@ use DateTime;
 use Kigkonsult\Sie4Sdk\Dto\Traits\ArsnrTrait;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
 
+/**
+ * class RarDto
+ */
 class RarDto implements DtoInterface
 {
     use ArsnrTrait;
@@ -37,12 +40,12 @@ class RarDto implements DtoInterface
     /**
      * @var DateTime|null
      */
-    private ?DateTime $start = null;
+    private ? DateTime $start = null;
 
     /**
      * @var DateTime|null
      */
-    private ?DateTime $slut = null;
+    private ? DateTime $slut = null;
 
     /**
      * @var callable
@@ -69,7 +72,7 @@ class RarDto implements DtoInterface
      * @param DateTime $slut
      * @return self
      */
-    public static function factory( int | string $arsnr, DateTime $start, DateTime $slut ) : self
+    public static function factory( int|string $arsnr, DateTime $start, DateTime $slut ) : self
     {
         $instance = new self();
         $instance->setArsnr( $arsnr );

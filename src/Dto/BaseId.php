@@ -27,6 +27,7 @@ declare( strict_types = 1 );
 namespace Kigkonsult\Sie4Sdk\Dto;
 
 use Exception;
+use InvalidArgumentException;
 use Kigkonsult\Sie4Sdk\Dto\Traits\FnrIdOrgnrTrait;
 use Kigkonsult\Sie4Sdk\Util\GuidUtil;
 use Kigkonsult\Sie4Sdk\Util\StringUtil;
@@ -64,13 +65,18 @@ abstract class BaseId implements DtoInterface
     /**
      * Class constructor
      *
-     * @param mixed|null $arg
-     * @throws Exception
+     * @param mixed|null $arg   used in child classs
+     * @throws InvalidArgumentException
      */
     public function __construct( mixed $arg = null )
     {
         $this->setTimestamp( microtime( true ));
-        $this->setCorrelationId( GuidUtil::getGuid());
+        try {
+            $this->setCorrelationId( GuidUtil::getGuid() );
+        }
+        catch( Exception $e ) {
+            throw new InvalidArgumentException( $e->getMessage(), $e->getCode(), $e );
+        }
     }
 
     /**

@@ -29,10 +29,12 @@ namespace Kigkonsult\Sie4Sdk\Util;
 use Exception;
 use RuntimeException;
 
+use function ctype_digit;
 use function explode;
 use function iconv;
-use function ord;
 use function mb_convert_encoding;
+use function ord;
+use function rtrim;
 use function sprintf;
 use function str_contains;
 use function str_replace;
@@ -41,6 +43,7 @@ use function strcmp;
 use function strlen;
 use function strpos;
 use function strrev;
+use function strval;
 use function substr;
 use function trim;
 
@@ -67,14 +70,24 @@ class StringUtil
     public static string $SP1  = ' ';
 
     /**
-     * @var string[]
+     * @var string
      */
-    public static array $CURLYBRACKETS = [ '{', '}' ];
+    public static string $CURLYBRACKETSTART = '{';
 
     /**
      * @var string
      */
-    public static string $QUOTE = '"';
+    public static string $CURLYBRACKETEND = '}';
+
+    /**
+     * @var string
+     */
+    public static string $CURLYBRACKETS = '{}';
+
+    /**
+     * @var string
+     */
+    public static string $QUOTE     = '"';
 
     /**
      * @var string
@@ -210,6 +223,17 @@ class StringUtil
     }
 
     /**
+     * @param float $amount
+     * @return string
+     */
+    public static function formatAmount( float $amount ) : string
+    {
+        static $DP = '.';
+        static $TS = '';
+        return number_format( $amount, 2, $DP, $TS );
+    }
+
+    /**
      * Explode string to array using PHP_EOL as separator
      *
      * @param string $string
@@ -270,11 +294,11 @@ class StringUtil
      */
     public static function curlyBacketsString( string $string ) : string
     {
-        return self::$CURLYBRACKETS[0] . trim( $string ) . self::$CURLYBRACKETS[1];
+        return self::$CURLYBRACKETSTART . trim( $string ) . self::$CURLYBRACKETEND;
     }
 
     /**
-     * Rtrim trailing ' ""' from (output) Sie4-row
+     * Rtrim trailing ' ""' ('empty') from (output) Sie4-row
      *
      * @param string $string
      * @return string
@@ -286,7 +310,7 @@ class StringUtil
             ( $BSQQ !== substr( $string, -3 ))) {
             $string = substr( $string, 0, -3 );
         }
-        return $string;
+        return rtrim( $string );
     }
 
     /**
@@ -328,7 +352,7 @@ class StringUtil
         if( empty( $content )) {
             return [];
         }
-        if( in_array( $content, self::$CURLYBRACKETS )) {
+        if( str_contains( self::$CURLYBRACKETS, $content )) {
             return [ $content ];
         }
         $output        = [];
@@ -345,7 +369,7 @@ class StringUtil
                     $current  = self::$SP0;
                     ++$x;
                     break;
-                case in_array( $content[$x], self::$CURLYBRACKETS ) :
+                case (  ! empty( $content[$x] ) && str_contains( self::$CURLYBRACKETS, $content[$x] )) :
                     // 'field' within curly brackets start/end
                     $bracketsFound = ! $bracketsFound;
                     break;
@@ -430,7 +454,7 @@ class StringUtil
      */
     private static function isEmptyCurlyBracketField( string $content, int $x ) : bool
     {
-        if( $content[$x] !== self::$CURLYBRACKETS[0] ) {
+        if( $content[$x] !== self::$CURLYBRACKETSTART ) {
             return false;
         }
         $len     = strlen( $content );
@@ -438,7 +462,7 @@ class StringUtil
             if( ! isset( $content[$x2] )) {
                 break; // ??
             }
-            if( self::$CURLYBRACKETS[1] === $content[$x2] ) {
+            if( self::$CURLYBRACKETEND === $content[$x2] ) {
                 return true;
             }
             if( self::$SP1 !== $content[$x2] ) {
@@ -494,7 +518,12 @@ class StringUtil
      */
     public static function strSort( string $a,string $b ) : int
     {
-        return strcmp( $a, $b );
+        $return = strcmp( $a, $b );
+        return match( true ) {
+            ( 0 > $return ) => -1,
+            ( 0 < $return ) => 1,
+            default         => 0
+        };
     }
 
     /**
