@@ -17,7 +17,7 @@
         "asset",
         "inventory"
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "type": "library",
     "license": "LGPL-3.0-or-later",
     "authors": [
@@ -50,7 +50,7 @@
         "ext-json": "*",
         "php": ">=7.0",
         "kigkonsult/asit": ">=1.8",
-        "kigkonsult/sie5sdk": "v1.2.1@dev"
+        "kigkonsult/dsigsdk": "v1.0.1.x-dev"
     },
     "require-dev": {
         "fzaninotto/faker": ">=v1.9.2",
@@ -68,6 +68,15 @@
         {
             "type": "vcs",
             "url": "https://github.com/wilhelmuggla/sie5sdk.git"
+        },
+            {
+                "type": "vcs",
+                "url": "https://github.com/wilhelmuggla/dsigsdk.git"
+            }
+    ],
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
-    ]
+    }
 }
