@@ -50,7 +50,7 @@
         "ext-json": "*",
         "php": ">=7.0",
         "kigkonsult/asit": ">=1.8",
-        "kigkonsult/sie5sdk": "v1.2.1"
+        "kigkonsult/sie5sdk": "dev-v1.2.1"
     },
     "require-dev": {
         "fzaninotto/faker": ">=v1.9.2",
