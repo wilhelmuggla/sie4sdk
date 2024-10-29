@@ -36,15 +36,21 @@
         }
     ],
     "autoload": {
-        "files": ["autoload.php"],
-        "psr-4": { "Kigkonsult\\Sie4Sdk\\": ["src/"] }
+        "files": [
+            "autoload.php"
+        ],
+        "psr-4": {
+            "Kigkonsult\\Sie4Sdk\\": [
+                "src/"
+            ]
+        }
     },
     "require": {
         "ext-iconv": "*",
         "ext-json": "*",
         "php": ">=7.0",
         "kigkonsult/asit": ">=1.8",
-        "kigkonsult/sie5sdk": ">=1.0.6"
+        "kigkonsult/sie5sdk": "1.2.1"
     },
     "require-dev": {
         "fzaninotto/faker": ">=v1.9.2",
@@ -55,7 +61,18 @@
     },
     "scripts": {
         "post-install-cmd": "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility",
-        "post-update-cmd" : "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility"
+        "post-update-cmd": "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility"
     },
-    "scriptId": ""
+    "scriptId": "",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packagist.org",
+            "canonical": false
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/wilhelmuggla/sie5sdk.git"
+        }
+    ]
 }
