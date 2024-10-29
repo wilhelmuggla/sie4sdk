@@ -66,11 +66,6 @@
     "scriptId": "",
     "repositories": [
         {
-            "type": "composer",
-            "url": "https://packagist.org",
-            "canonical": false
-        },
-        {
             "type": "vcs",
             "url": "https://github.com/wilhelmuggla/sie5sdk.git"
         }
